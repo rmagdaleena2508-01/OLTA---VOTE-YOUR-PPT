@@ -8,8 +8,8 @@
  * be put in this file, in a workflow, or anywhere the browser can reach.
  */
 window.PODIUM_CONFIG = {
-  supabaseUrl: 'https://YOUR-PROJECT-REF.supabase.co',
-  supabaseKey: 'sb_publishable_YOUR-KEY',
+  supabaseUrl: 'https://hfetqtgvscyrmiesdswk.supabase.co',
+  supabaseKey: 'sb_publishable_GLdAFKkyG2FKH9rmzyaTDQ_U5zNNqwV',
 
   /* Rendered deck pages are read from here once the R2 bucket is enabled.
      Leave it empty until then — the site falls back to browser storage. */

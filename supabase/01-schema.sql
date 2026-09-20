@@ -127,8 +127,8 @@ create index if not exists votes_event_idx on public.votes (event_id);
 
 -- A vote is never deleted or edited. There is no update or delete policy, and
 -- this trigger refuses it even from a mistaken server-side call.
-create or replace function public.votes_are_final() returns trigger
-language plpgsql as $$
+create or replace function app.votes_are_final() returns trigger
+language plpgsql set search_path = public, pg_temp as $$
 begin
   raise exception 'a vote cannot be changed or taken back';
 end $$;
@@ -136,7 +136,7 @@ end $$;
 drop trigger if exists votes_no_change on public.votes;
 create trigger votes_no_change
   before update or delete on public.votes
-  for each row execute function public.votes_are_final();
+  for each row execute function app.votes_are_final();
 
 -- ---------------------------------------------------------------- results
 -- What was announced, and who announced it. Written once when voting closes, so
@@ -152,15 +152,23 @@ create table if not exists public.results (
 -- ---------------------------------------------------------------- counts
 -- Counts without exposing who voted for what. Used by the wall after close and
 -- by the organiser's dashboard at any time.
-create or replace view public.deck_counts as
+-- security_invoker makes the view run as the caller, so it obeys the vote
+-- policies. Without it the view reads with its owner's rights and leaks counts
+-- before the organiser closes voting.
+create or replace view public.deck_counts with (security_invoker = on) as
   select d.id as deck_id, d.event_id, count(v.id)::int as votes
   from public.decks d
   left join public.votes v on v.deck_id = d.id
   group by d.id, d.event_id;
 
 -- ---------------------------------------------------------------- helpers
-create or replace function public.is_organiser(target_event uuid) returns boolean
-language sql stable security definer set search_path = public as $$
+-- Helpers live in a private schema: PostgREST exposes `public`, so a helper
+-- there would be callable at /rest/v1/rpc/ by anyone.
+create schema if not exists app;
+grant usage on schema app to anon, authenticated;
+
+create or replace function app.is_organiser(target_event uuid) returns boolean
+language sql stable security definer set search_path = public, pg_temp as $$
   select exists (
     select 1 from public.event_members m
     where m.event_id = target_event
@@ -169,8 +177,8 @@ language sql stable security definer set search_path = public as $$
   );
 $$;
 
-create or replace function public.event_is(target_event uuid, want event_stage) returns boolean
-language sql stable security definer set search_path = public as $$
+create or replace function app.event_is(target_event uuid, want event_stage) returns boolean
+language sql stable security definer set search_path = public, pg_temp as $$
   select exists (
     select 1 from public.events e where e.id = target_event and e.stage = want
   );
@@ -178,8 +186,8 @@ $$;
 
 -- The organiser of a new event is its creator, added as a member automatically
 -- so the rules have something to read from the first request.
-create or replace function public.claim_new_event() returns trigger
-language plpgsql security definer set search_path = public as $$
+create or replace function app.claim_new_event() returns trigger
+language plpgsql security definer set search_path = public, pg_temp as $$
 begin
   insert into public.event_members (event_id, profile_id, role)
   values (new.id, new.organiser_id, 'organiser')
@@ -190,4 +198,4 @@ end $$;
 drop trigger if exists events_claim on public.events;
 create trigger events_claim
   after insert on public.events
-  for each row execute function public.claim_new_event();
+  for each row execute function app.claim_new_event();
