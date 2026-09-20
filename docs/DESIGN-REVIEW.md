@@ -368,3 +368,33 @@ Techniques taken from the public write-ups of this effect (kube.io, LogRocket,
 ekino) and from the CSS-and-SVG recreations on GitHub — nikdelvin/liquid-glass
 and archisvaze/liquid-glass. No library was installed: those projects are React
 components or full frameworks, and this is one card.
+
+
+---
+
+## 17. The results page
+
+`results.html`, and it has two states.
+
+**Before voting closes** it shows one sentence and a way back to the wall. No
+partial standings, no teaser. A leaderboard shown early is the one change that
+would quietly ruin a contest.
+
+**After** it opens with "The room has spoken", then the podium: the winner in
+the middle and raised, second on the left, third on the right, each card
+carrying the event banner, the team name, their college and group, their one
+line, and the vote count in the same green pill the wall uses. On a phone the
+grid collapses to one column and the winner is pulled to the top, so the reading
+order stays 1, 2, 3.
+
+Below it, every other deck in order with its count, then three actions: back to
+the decks, copy the results as text for a group chat, and — for the organiser —
+download the CSV they will ask for the next morning.
+
+Two details worth keeping:
+
+- **Ties are stated, not hidden.** When the top two finish level the note reads
+  "Two decks finished level on 2 votes. The organiser decides how to break it."
+  A page that silently picks a winner on alphabetical order would be lying.
+- **The podium rises** with a GSAP stagger played from the centre outwards, so
+  the winner lands first. Reduced motion skips it.

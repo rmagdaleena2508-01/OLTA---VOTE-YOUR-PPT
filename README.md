@@ -187,6 +187,7 @@ onboarding.html   sign in, pick a role, finish a profile
 create-event.html the organiser screen: banner, basics, deck rules, voting
 event.html        the deck wall: every deck, filters, upload, viewer, voting
 dashboard.html    the organiser's screen: let decks in, open and close voting
+results.html      the podium, the rest of the field, copy and CSV
 
 The three signed-in screens share one header: wordmark, the event you are in,
 Wall / Dashboard / Settings, and your name. Dashboard and Settings only appear
@@ -245,8 +246,8 @@ screen.
 **Built:** the landing page, the onboarding flow, the folding menu, the event code
 field (shape check only), the organiser setup screen with a live preview of the
 event card, the deck wall with upload, filters, a slide viewer and working vote
-rules, the organiser dashboard, the results podium layout, and the research
-behind every rule above.
+rules, the organiser dashboard, the results page with the podium, and the
+research behind every rule above.
 
 The wall reads the event the organiser set up and keeps decks and votes in the
 browser, so the whole flow can be walked end to end before there is a server.
@@ -255,7 +256,8 @@ browser, so the whole flow can be walked end to end before there is a server.
 
 1. **Event page** — poster, dates, a link out to the organiser's sign-up form, and a
    countdown to the voting deadline.
-2. **Results page** — the podium, plus a share card sized for Instagram stories.
+2. **Share card** — a 1080 x 1920 image of the winner, for the stories every
+   team will post anyway.
 3. **Real accounts and storage** — Google sign-in, decks in object storage, slides
    rendered to images, and votes in a table with a unique constraint on
    `(voter_id, deck_id)` so a double vote is impossible in the data, not only in

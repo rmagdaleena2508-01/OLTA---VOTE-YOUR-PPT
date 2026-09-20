@@ -1085,7 +1085,7 @@
     }
 
     if (now === 'closed') {
-      add('See the podium', false, () => (location.href = 'event.html'));
+      add('See the podium', false, () => (location.href = 'results.html'));
       add('Reopen voting', true, () => {
         event.stage = 'open';
         event.voteClose = localStamp(3600e3);
@@ -1449,5 +1449,174 @@
     io.observe(bridge);
   } else {
     run();
+  }
+})();
+
+/* ---------------- results ---------------- */
+
+(function results() {
+  const page = document.querySelector('.results-page');
+  if (!page) return;
+
+  const read = (key, fallback) => {
+    try {
+      return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    } catch (err) {
+      return fallback;
+    }
+  };
+
+  const event = read('podium.event', null);
+  const decks = read('podium.decks', []).filter((d) => d.status !== 'hidden');
+  const rawVotes = read('podium.votes', []);
+  const votes = Array.isArray(rawVotes) ? rawVotes : Object.values(rawVotes || {}).filter(Boolean);
+
+  const BANNERS = {
+    1: 'linear-gradient(120deg, #f7efe2, #e8d9c2)',
+    2: 'linear-gradient(120deg, #47564a, #6f8472)',
+    3: 'linear-gradient(120deg, #c9541f, #e59264)',
+    4: 'linear-gradient(120deg, #1b1a16, #4a463c)',
+  };
+
+  const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18v-6H5l7-7 7 7h-4v6z"/></svg>';
+
+  function closed() {
+    if (!event) return false;
+    if (event.stage === 'closed') return true;
+    return Boolean(event.voteClose) && Date.now() > new Date(event.voteClose).getTime();
+  }
+
+  function when(value) {
+    if (!value) return '';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+  }
+
+  /* Voting is still open, so the page says so and nothing else. Showing a
+     leaderboard early is the one change that would quietly ruin a contest. */
+  if (!closed()) {
+    document.querySelector('[data-wait]').hidden = false;
+    const note = document.querySelector('[data-wait-note]');
+    note.textContent = event?.voteClose
+      ? `Voting closes ${when(event.voteClose)}.`
+      : 'The organiser has not opened voting yet.';
+    return;
+  }
+
+  document.querySelector('[data-results]').hidden = false;
+
+  const ranked = decks
+    .map((d) => ({ ...d, n: votes.filter((id) => id === d.id).length }))
+    .sort((a, b) => b.n - a.n || a.team.localeCompare(b.team));
+
+  const top = ranked.slice(0, 3);
+  const rest = ranked.slice(3);
+
+  document.querySelector('[data-results-event]').textContent = event?.name || 'Your event';
+  document.querySelector('[data-results-sub]').textContent = `${decks.length} deck${
+    decks.length === 1 ? '' : 's'
+  }, ${votes.length} vote${votes.length === 1 ? '' : 's'}, one winner.`;
+
+  /* The podium reads 2, 1, 3 across the screen, so the winner stands in the
+     middle. On a phone the grid stacks and the winner is pulled to the top. */
+  const order = [top[1], top[0], top[2]];
+  const RANK_WORD = ['Second', 'Winner', 'Third'];
+  const CLASS = ['second', 'first', 'third'];
+
+  const podium = document.querySelector('[data-podium]');
+
+  order.forEach((deck, i) => {
+    if (!deck) return;
+    const el = document.createElement('article');
+    el.className = `place ${CLASS[i]}`;
+    el.innerHTML = `
+      <div class="place-banner" style="background:${BANNERS[event?.banner || 1]}"></div>
+      <p class="place-rank">${RANK_WORD[i]}</p>
+      <p class="place-team">${deck.team}</p>
+      <p class="place-detail">${[deck.college, deck.group].filter(Boolean).join(' · ')}</p>
+      ${deck.line ? `<p class="place-detail" style="margin-top:6px">${deck.line}</p>` : ''}
+      <span class="place-votes">${ARROW}${deck.n} vote${deck.n === 1 ? '' : 's'}</span>`;
+    podium.appendChild(el);
+  });
+
+  /* A tie on the top step is the one result the page must not paper over. */
+  const tied = top.length > 1 && top[0].n === top[1].n && top[0].n > 0;
+
+  document.querySelector('[data-podium-note]').textContent = !ranked.length
+    ? 'No decks were uploaded for this event.'
+    : tied
+    ? `Two decks finished level on ${top[0].n} vote${top[0].n === 1 ? '' : 's'}. The organiser decides how to break it.`
+    : `Closed ${when(event?.voteClose) || 'by the organiser'}. Counts were hidden until then.`;
+
+  const list = document.querySelector('[data-rest]');
+  (rest.length ? rest : []).forEach((deck, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span class="rank">${i + 4}</span>
+      <span>
+        <span class="team">${deck.team}</span><br />
+        <span class="sub">${[deck.college, deck.group].filter(Boolean).join(' · ')}</span>
+      </span>
+      <span class="count">${deck.n} vote${deck.n === 1 ? '' : 's'}</span>`;
+    list.appendChild(li);
+  });
+
+  if (!rest.length) {
+    const li = document.createElement('li');
+    li.innerHTML = '<span class="sub">Every deck is on the podium.</span>';
+    list.appendChild(li);
+  }
+
+  /* the winners rise into place */
+  if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    gsap.from('.place', {
+      y: 26,
+      opacity: 0,
+      duration: 0.62,
+      ease: 'power3.out',
+      stagger: { each: 0.12, from: 'center' },
+    });
+  }
+
+  /* one line an organiser can paste into a group chat */
+  function resultLines() {
+    return ranked
+      .map((d, i) => `${i + 1}. ${d.team}${d.college ? ` (${d.college})` : ''} — ${d.n} vote${d.n === 1 ? '' : 's'}`)
+      .join('\n');
+  }
+
+  const note = document.querySelector('[data-results-note]');
+
+  document.querySelector('[data-copy-results]').addEventListener('click', async () => {
+    const text = `${event?.name || 'Results'}\n\n${resultLines()}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      note.textContent = 'Results copied. Paste them wherever your teams are.';
+    } catch (err) {
+      note.textContent = 'Could not copy here. Select the list and copy it by hand.';
+    }
+  });
+
+  /* the organiser also gets the file they will ask for the next morning */
+  const csvBtn = document.querySelector('[data-csv]');
+  if (event) {
+    csvBtn.hidden = false;
+    csvBtn.addEventListener('click', () => {
+      const rows = [
+        ['rank', 'team', 'college', 'group', 'votes'],
+        ...ranked.map((d, i) => [i + 1, d.team, d.college || '', d.group || '', d.n]),
+      ];
+      const csv = rows
+        .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(event.name || 'podium').toLowerCase().replace(/\s+/g, '-')}-results.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      note.textContent = 'CSV downloaded.';
+    });
   }
 })();
