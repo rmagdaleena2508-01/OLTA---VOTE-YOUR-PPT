@@ -33,9 +33,10 @@ Anti-fraud floor for a college event (cheap to build, catches most abuse):
 
 ## 2. Vote rules — the confirmed model, and the verdict on the credit idea
 
-**Confirmed model (user's decision, and it matches Product Hunt/Devpost):**
-- If the organiser created categories → **one vote per person per category**.
-- If there are no categories → **one vote per person for the whole event**, for their favourite deck.
+**Confirmed model (matches Product Hunt and Devpost):**
+- A voter may back **as many decks as they like, once each**. Devpost says it plainly: vote for as many submissions as you want, but only once per submission.
+- **A vote cannot be taken back.** Devpost's button flips to "Thanks for voting!" and stays there. Reversible votes invite last-hour lobbying, where teams work the hall asking people to switch.
+- Groups become filter chips on the wall, not vote budgets.
 
 **The "spend 10 votes here, 3 there" idea:** this is not a bad idea — it already exists in the market under the name **quadratic voting** (Devfolio's QV rounds, DoraHacks grant rounds, Gitcoin). So the instinct is sound and proven. But it is the wrong fit here, for reasons the same platforms document:
 
@@ -123,7 +124,7 @@ Layout, per the brief:
 | Question | Answer |
 |---|---|
 | Who votes | Any user signed in with Google who has completed a profile. One vote per deck. Team members cannot vote for their own deck. |
-| Vote rule | Categories exist → one vote per category. No categories → one vote overall. |
+| Vote rule | Back as many decks as you like, once each. A vote is final. |
 | Credit / weighted votes | Dropped. It is quadratic voting; real, but Sybil-fragile and too complex for a fest. |
 | Live vote counts | Hidden until voting closes (Devpost's explicit recommendation). |
 | Sign-ups and money | Not handled here. The poster's Google Form takes registration, fee and proof; the organiser verifies there. Podium holds decks and votes only. |

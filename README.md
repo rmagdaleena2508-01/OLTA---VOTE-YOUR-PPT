@@ -63,8 +63,11 @@ handle the same problem. Sources are in [`docs/MARKET-RESEARCH.md`](docs/MARKET-
 
 - **You must sign in to vote.** No product in this space lets strangers decide a
   prize. One Google account is one voter.
-- **One vote per deck.** If the organiser made groups (Fintech, Health, and so on),
-  you get one vote in each group. No groups means one vote for the whole event.
+- **Back as many decks as you like, once each.** This is Product Hunt's and
+  Devpost's rule. A good idea should not cost you the chance to back another one.
+- **A vote is final.** Once you back a deck, that deck is closed to you and the
+  button reads "You have voted". Taking votes back turns the last hour of an
+  event into lobbying — teams walk the hall asking people to switch.
 - **You cannot vote for your own team.**
 - **Counts stay hidden until voting closes.** This is Devpost's own advice. When
   people can see a leader, the leader snowballs and everyone else gives up.

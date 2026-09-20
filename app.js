@@ -515,7 +515,12 @@
   const event = store.read('podium.event', null);
   const profile = store.read('podium.profile', null);
   let decks = store.read('podium.decks', []);
-  let votes = store.read('podium.votes', {});   /* group name (or "all") -> deck id */
+  /* Votes used to be one per group, stored as an object. Anything left over
+     from that shape is folded into the list this version expects. */
+  const savedVotes = store.read('podium.votes', []);
+  let votes = Array.isArray(savedVotes)
+    ? savedVotes
+    : Object.values(savedVotes || {}).filter(Boolean);
 
   let filter = 'all';
   let query = '';
@@ -606,9 +611,7 @@
       .join('');
   }
 
-  function voteKeyFor(deck) {
-    return groups.length ? deck.group : 'all';
-  }
+  const hasVoted = (deck) => votes.includes(deck.id);
 
   function isMine(deck) {
     return profile?.name && deck.owner === profile.name;
@@ -640,16 +643,59 @@
     });
   }
 
+  /* A vote is final. You may back as many decks as you like, once each, and a
+     deck you have backed is closed to you from then on. */
   function voteLabel(deck) {
-    const key = voteKeyFor(deck);
-    const mine = votes[key];
     const now = stage();
-
-    if (now === 'closed') return { text: 'Voting closed', disabled: true, voted: mine === deck.id };
+    if (hasVoted(deck)) return { text: 'You have voted', disabled: true, voted: true };
+    if (now === 'closed') return { text: 'Voting closed', disabled: true, voted: false };
     if (now !== 'voting') return { text: 'Voting soon', disabled: true, voted: false };
     if (isMine(deck)) return { text: 'Your deck', disabled: true, voted: false };
-    if (mine === deck.id) return { text: 'Voted', disabled: false, voted: true };
-    return { text: 'Vote', disabled: false, voted: false };
+    return { text: 'Vote now', disabled: false, voted: false };
+  }
+
+  const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18v-6H5l7-7 7 7h-4v6z"/></svg>';
+
+  const canMove = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.gsap;
+
+  /* The arrow leaves the button, flies up and fades; a fresh one rises into its
+     place as the button settles into its voted state. */
+  function flyArrow(btn) {
+    if (!canMove) return;
+
+    const arrow = btn.querySelector('.vote-arrow');
+    const text = btn.querySelector('.vote-text');
+    const box = arrow.getBoundingClientRect();
+
+    const ghost = document.createElement('span');
+    ghost.className = 'vote-ghost';
+    ghost.innerHTML = ARROW;
+    ghost.style.left = `${box.left + box.width / 2 - 11}px`;
+    ghost.style.top = `${box.top + box.height / 2 - 11}px`;
+    ghost.style.position = 'fixed';
+    document.body.appendChild(ghost);
+
+    gsap.timeline({ onComplete: () => ghost.remove() })
+      .to(ghost, { y: -14, scale: 1.25, duration: 0.18, ease: 'power2.out' })
+      .to(ghost, { y: -74, scale: 0.55, opacity: 0, duration: 0.5, ease: 'power2.in' });
+
+    gsap.fromTo(
+      arrow,
+      { y: 16, opacity: 0, scale: 0.7 },
+      { y: 0, opacity: 1, scale: 1, duration: 0.42, delay: 0.14, ease: 'back.out(2.2)' }
+    );
+
+    gsap.fromTo(
+      text,
+      { y: 10, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.34, delay: 0.2, ease: 'power2.out' }
+    );
+
+    gsap.fromTo(
+      btn,
+      { scale: 0.94 },
+      { scale: 1, duration: 0.5, delay: 0.12, ease: 'elastic.out(1, 0.55)' }
+    );
   }
 
   function render() {
@@ -677,7 +723,10 @@
         <div class="deck-foot">
           <span class="deck-tag">${deck.group || 'All decks'}</span>
           <button class="vote-btn${state.voted ? ' voted' : ''}" data-vote="${deck.id}"
-                  ${state.disabled ? 'disabled' : ''}>${state.text}</button>
+                  ${state.disabled ? 'disabled' : ''}>
+            <span class="vote-arrow" aria-hidden="true">${ARROW}</span>
+            <span class="vote-text">${state.text}</span>
+          </button>
         </div>`;
 
       grid.appendChild(card);
@@ -688,21 +737,30 @@
 
   /* ---- voting: one per group, never your own, counts stay hidden ---- */
 
-  function castVote(id) {
+  function castVote(id, btn) {
     const deck = decks.find((d) => d.id === id);
-    if (!deck || stage() !== 'voting' || isMine(deck)) return;
+    if (!deck || stage() !== 'voting' || isMine(deck) || hasVoted(deck)) return;
 
-    const key = voteKeyFor(deck);
-    votes[key] = votes[key] === id ? undefined : id;   /* clicking again takes it back */
-    if (!votes[key]) delete votes[key];
+    votes.push(id);
     store.write('podium.votes', votes);
-    render();
+
+    /* Paint this one button straight away so the animation runs on the element
+       the person actually pressed, then redraw the rest of the wall. */
+    if (btn) {
+      btn.classList.add('voted');
+      btn.disabled = true;
+      btn.querySelector('.vote-text').textContent = 'You have voted';
+      flyArrow(btn);
+      setTimeout(render, 620);
+    } else {
+      render();
+    }
   }
 
   grid.addEventListener('click', (e) => {
     const voteBtn = e.target.closest('[data-vote]');
     if (voteBtn) {
-      castVote(voteBtn.dataset.vote);
+      castVote(voteBtn.dataset.vote, voteBtn);
       return;
     }
     const cover = e.target.closest('[data-open]');
@@ -848,7 +906,7 @@
     next.disabled = page === open.slides;
 
     const state = voteLabel(open);
-    vVote.textContent = state.text;
+    vVote.querySelector('.vote-text').textContent = state.text;
     vVote.disabled = state.disabled;
     vVote.classList.toggle('voted', state.voted);
   }
@@ -870,8 +928,7 @@
 
   vVote.addEventListener('click', () => {
     if (!open) return;
-    castVote(open.id);
-    drawViewer();
+    castVote(open.id, vVote);
   });
 
   document.querySelector('[data-viewer-close]').addEventListener('click', () => viewer.close());

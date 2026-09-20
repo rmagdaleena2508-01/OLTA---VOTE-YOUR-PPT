@@ -17,7 +17,11 @@
 
   --dot: rgba(38, 30, 20, 0.12);   /* background dot grid */
 
-  --accent: #c9541f;               /* the seat orange: vote actions and live states only */
+  --accent: #c9541f;               /* the seat orange: live states and warnings */
+  --vote: #1f8a4c;                 /* votes are green, and only votes */
+  --vote-soft: #e8f4ec;
+  --vote-line: #bcdcc7;
+  --vote-ink: #14663a;
   --accent-ink: #fffdf8;
   --sage: #47564a;                 /* the carriage green, for quiet marks */
   --positive: #3f7d52;
@@ -485,24 +489,60 @@ section[id] { scroll-margin-top: 104px; }
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  height: 34px;
+  height: 36px;
   padding-inline: 14px;
   border-radius: 999px;
   border: 1px solid var(--hairline);
-  background: transparent;
+  background: var(--surface);
   color: var(--text);
   font: inherit;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.18s var(--ease);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease),
+    background-color 0.18s var(--ease);
 }
-.vote-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.vote-btn:hover:not([disabled]) { border-color: var(--vote); color: var(--vote); }
+
+/* the arrow: Lucide's arrow-big-up, inlined so it can be animated */
+.vote-arrow {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  color: var(--vote);
+  flex: none;
+}
+
+.vote-arrow svg { width: 17px; height: 17px; display: block; }
+
 .vote-btn.voted {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
+  background: var(--vote-soft);
+  border-color: var(--vote-line);
+  color: var(--vote-ink);
+  cursor: default;
 }
+
+.vote-btn.voted .vote-arrow { color: var(--vote); }
+.vote-btn.voted .vote-arrow svg { fill: currentColor; }
+
+.vote-btn[disabled] { cursor: not-allowed; }
+.vote-btn[disabled]:not(.voted) { color: var(--text-faint); }
+.vote-btn[disabled]:not(.voted) .vote-arrow { display: none; }
+
+/* the arrow that flies off on the way up */
+.vote-ghost {
+  position: absolute;
+  pointer-events: none;
+  color: var(--vote);
+  z-index: 60;
+}
+.vote-ghost svg { width: 22px; height: 22px; display: block; fill: currentColor; }
+
+.deck-card, .deck-card + .deck-card { background: #fff; }
 
 .deck-card, .deck-card + .deck-card { background: #fff; }
 

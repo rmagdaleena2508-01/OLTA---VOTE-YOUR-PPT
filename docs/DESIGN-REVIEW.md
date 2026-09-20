@@ -260,3 +260,30 @@ rest of the product uses.
 
 Left for the server: saving the event, checking the code is unique, storing the
 banner and poster, and the organiser dashboard that follows.
+
+
+---
+
+## 14. The vote button
+
+Green, and green is used for nothing else. The arrow is Lucide's `arrow-big-up`
+— a solid pennant shape rather than a thin line arrow, because at 17px a stroke
+arrow reads as "scroll up" while this one reads as "back this".
+
+Icon sets weighed: Lucide `arrow-big-up` (chosen — MIT, one path, animates
+cleanly), Lucide `chevron-up` (too close to a dropdown), Phosphor `caret-up`
+(good, but the library is heavier than one inlined path), and a plain triangle
+(what Product Hunt uses, but it loses meaning without their context).
+
+The press is a GSAP timeline, about 0.6s in total:
+
+1. A copy of the arrow is cloned into a fixed-position ghost.
+2. The ghost lifts 14px and grows, then flies 74px up, shrinks and fades.
+3. The real arrow rises from 16px below with `back.out(2.2)`, so it lands with a
+   small overshoot.
+4. The label fades up behind it, and the button itself settles with
+   `elastic.out(1, 0.55)`.
+
+The button is painted before the wall re-renders, so the animation runs on the
+element the person actually pressed. Under `prefers-reduced-motion` the state
+changes with no movement at all.
