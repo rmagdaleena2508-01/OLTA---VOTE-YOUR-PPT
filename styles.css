@@ -1963,24 +1963,83 @@ section[id] { scroll-margin-top: 104px; }
   gap: 10px;
 }
 
+/* Liquid glass. Three layers do the work: a blurred, saturated backdrop; a
+   bright rim and inner highlights that stand in for the specular edge; and a
+   slow sheen that drifts across the surface. Chromium also gets real
+   refraction from the SVG displacement filter. */
 .bridge {
+  position: relative;
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border: 1px solid var(--hairline);
   border-radius: var(--r-xl);
-  background: rgba(255, 253, 248, 0.94);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 18px 50px rgba(38, 30, 20, 0.12);
   overflow: hidden;
+  isolation: isolate;
+
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 253, 248, 0.22) 42%, rgba(255, 255, 255, 0.4));
+  backdrop-filter: blur(16px) saturate(190%) brightness(1.06);
+  -webkit-backdrop-filter: blur(16px) saturate(190%) brightness(1.06);
+
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 18px 50px rgba(38, 30, 20, 0.18),
+    0 2px 10px rgba(38, 30, 20, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),      /* top rim catch */
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),     /* bottom rim */
+    inset 0 0 22px rgba(255, 255, 255, 0.28);     /* inner glow */
 }
 
+/* Real refraction, where the browser allows it. Chromium is the only engine
+   that reads an SVG filter inside backdrop-filter today, so this is additive:
+   everything above already looks right without it. */
+@supports (backdrop-filter: url(#liquid)) {
+  .bridge {
+    backdrop-filter: blur(14px) saturate(190%) url(#liquid);
+  }
+}
+
+.filter-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* the sheen that drifts across the glass */
+.bridge-sheen {
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.34) 48%,
+    rgba(255, 255, 255, 0.1) 54%,
+    transparent 62%
+  );
+  transform: translateX(-30%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bridge-sheen { animation: sheen 9s linear infinite; }
+}
+
+@keyframes sheen {
+  0% { transform: translateX(-35%); }
+  100% { transform: translateX(35%); }
+}
+
+.bridge-cell + .bridge-cell { border-left: 1px solid rgba(255, 255, 255, 0.45); }
+
 .bridge-cell {
+  position: relative;
+  z-index: 1;                 /* text sits above the sheen, never under it */
   padding: 22px 20px 20px;
   text-align: center;
 }
 
-.bridge-cell + .bridge-cell { border-left: 1px solid var(--hairline); }
+.bridge-cell .micro {
+  color: #4a453c;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
 
 .bridge-n {
   font-family: var(--font-display);
@@ -1988,6 +2047,8 @@ section[id] { scroll-margin-top: 104px; }
   font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0 0 4px;
+  font-variant-numeric: tabular-nums;   /* digits keep their width while counting */
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .bridge-cell .micro { margin: 0; }
@@ -2021,7 +2082,7 @@ section[id] { scroll-margin-top: 104px; }
 
 @media (max-width: 640px) {
   .bridge { grid-template-columns: 1fr; }
-  .bridge-cell + .bridge-cell { border-left: 0; border-top: 1px solid var(--hairline); }
+  .bridge-cell + .bridge-cell { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.45); }
   .bridge-wrap { margin-bottom: -40px; }
 }
 

@@ -324,3 +324,47 @@ server. A flag is a reason to look, not proof.
 **Closing** needs a ticked box before the button turns on, because it is the one
 step that cannot be undone from the fest floor. It sets the stage to closed, and
 the wall reads that flag rather than only the clock.
+
+
+---
+
+## 16. The bridge card: liquid glass and counting numbers
+
+**Counting.** The three numbers start at zero and count up when the card
+scrolls into view, not on page load — a counter that finishes before anyone
+looks at it is decoration. The tween is GSAP with `snap: { n: 1 }`, so the
+digits land on whole numbers instead of flickering through decimals, and each
+cell starts 90ms after the one before it. `font-variant-numeric: tabular-nums`
+keeps the digits from jittering as they change width. Reduced motion skips
+straight to the final value.
+
+GSAP was chosen over CountUp.js because the project already loads GSAP for the
+vote arrow. CountUp.js is smaller on its own (about 3 KB against GSAP's 23 KB
+gzipped) and its Odometer plugin gives rolling digits, but adding a second
+animation library to save nothing on pages that already carry the first one is
+a bad trade. One engine, one easing vocabulary.
+
+**Liquid glass.** Built in three layers, in order of how much they matter:
+
+1. **Blur and saturation.** `backdrop-filter: blur(16px) saturate(190%)
+   brightness(1.06)` over a diagonal white gradient. This alone is ordinary
+   glassmorphism.
+2. **The specular edge.** What makes Apple's version read as glass rather than
+   frosted plastic is light caught on the rim. Four inset shadows do it: a
+   bright top line, a softer bottom line, an inner glow, and a 55% white
+   border.
+3. **Refraction.** An SVG filter — `feTurbulence` making a noise field,
+   `feGaussianBlur` softening it, `feDisplacementMap` pushing the pixels behind
+   the card around by that field. It is applied inside `backdrop-filter`, which
+   only Chromium reads today, so it sits behind `@supports (backdrop-filter:
+   url(#liquid))`. Every other browser keeps layers 1 and 2 and still looks
+   right.
+
+A slow sheen drifts across the surface on a 9s loop, held at 34% white so the
+labels underneath stay readable, with the text raised above it on its own
+stacking level.
+
+Techniques taken from the public write-ups of this effect (kube.io, LogRocket,
+ekino) and from the CSS-and-SVG recreations on GitHub — nikdelvin/liquid-glass
+and archisvaze/liquid-glass. No library was installed: those projects are React
+components or full frameworks, and this is one card.

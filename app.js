@@ -1398,7 +1398,56 @@
 
   const live = decks.filter((d) => d.status !== 'hidden');
 
-  set('a', event ? '1' : '0', event ? 'Event running' : 'Events running');
-  set('b', String(live.length), live.length === 1 ? 'Deck on the wall' : 'Decks on the wall');
-  set('c', String(votes.length), votes.length === 1 ? 'Vote cast' : 'Votes cast');
+  const cells = [
+    { key: 'a', to: event ? 1 : 0, label: event ? 'Event running' : 'Events running' },
+    { key: 'b', to: live.length, label: live.length === 1 ? 'Deck on the wall' : 'Decks on the wall' },
+    { key: 'c', to: votes.length, label: votes.length === 1 ? 'Vote cast' : 'Votes cast' },
+  ];
+
+  cells.forEach(({ key, to, label }) => set(key, '0', label));
+
+  const move = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.gsap;
+
+  /* Count only once the card is actually on screen, otherwise the numbers have
+     already finished by the time anyone looks at them. */
+  function run() {
+    cells.forEach(({ key, to }, i) => {
+      const el = document.querySelector(`[data-bridge-${key}]`);
+      if (!move) {
+        el.textContent = String(to);
+        return;
+      }
+      const counter = { n: 0 };
+      gsap.to(counter, {
+        n: to,
+        duration: 0.9 + i * 0.12,
+        delay: 0.1 + i * 0.09,
+        ease: 'power2.out',
+        snap: { n: 1 },
+        onUpdate: () => {
+          el.textContent = String(Math.round(counter.n));
+        },
+      });
+    });
+
+    if (move) {
+      gsap.from(bridge, { y: 14, opacity: 0, duration: 0.6, ease: 'power3.out' });
+    }
+  }
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          io.disconnect();
+          run();
+        });
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(bridge);
+  } else {
+    run();
+  }
 })();
