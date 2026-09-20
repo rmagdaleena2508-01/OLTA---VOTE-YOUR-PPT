@@ -2554,3 +2554,100 @@ section[id] { scroll-margin-top: 104px; }
   .block-n, .stand.first .block-n { font-size: 15px; }
   .stage::after { display: none; }
 }
+
+/* ---------- trusted by: a looping ribbon of college marks ---------- */
+
+.trust {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 0 clamp(40px, 6vw, 68px);
+  margin-bottom: clamp(24px, 4vw, 44px);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.trust-label {
+  flex: none;
+  margin: 0;
+  align-self: flex-start;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding-top: 18px;
+}
+
+/* the window the ribbon runs through, faded at both ends so marks arrive and
+   leave rather than popping */
+.trust-track {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.trust-row {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  width: max-content;
+}
+
+/* the second copy of the row is added by the script, which is what makes the
+   loop seamless: when the first copy has travelled its own width, the frame
+   looks identical, so the reset is invisible */
+@media (prefers-reduced-motion: no-preference) {
+  .trust-row { animation: ribbon 26s linear infinite; }
+  .trust-track:hover .trust-row { animation-play-state: paused; }
+}
+
+@keyframes ribbon {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 17px)); }   /* half the doubled row, plus half a gap */
+}
+
+.trust-logo {
+  flex: none;
+  width: 62px;
+  height: 62px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(38, 30, 20, 0.05);
+}
+
+.trust-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 9px;
+}
+
+/* until a real mark is dropped in, the circle carries the short name */
+.trust-fallback {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.1;
+  padding: 6px;
+}
+
+@media (max-width: 620px) {
+  .trust { flex-direction: column; align-items: stretch; gap: 14px; }
+  .trust-label { padding-top: 0; }
+  .trust-logo { width: 54px; height: 54px; }
+  .trust-row { gap: 24px; }
+}
