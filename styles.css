@@ -2451,3 +2451,106 @@ section[id] { scroll-margin-top: 104px; }
 
 /* the vote pill on the landing podium sits under the details */
 .place .place-votes { margin-top: 14px; }
+
+/* ---------- the podium stage ---------- */
+
+.stage {
+  display: grid;
+  grid-template-columns: 1fr 1.12fr 1fr;
+  gap: 18px;
+  align-items: end;
+  max-width: 880px;
+  margin: 48px auto 0;
+  text-align: center;
+}
+
+.stand { display: grid; align-content: end; gap: 0; }
+
+.stand-card {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: 10px 10px 18px;
+  box-shadow: 0 8px 26px rgba(38, 30, 20, 0.08);
+  position: relative;
+  z-index: 2;
+}
+
+.stand-banner {
+  height: 78px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stand.first .stand-card {
+  border-color: rgba(201, 84, 31, 0.32);
+  box-shadow: 0 16px 42px rgba(38, 30, 20, 0.14);
+}
+.stand.first .stand-banner { height: 96px; }
+.stand.first .place-team { font-size: 20px; }
+.stand.first .place-rank { color: var(--accent); font-weight: 600; }
+
+/* the blocks they stand on */
+.block {
+  border-radius: 6px 6px 0 0;
+  border: 1px solid rgba(38, 30, 20, 0.12);
+  border-bottom: 0;
+  display: grid;
+  place-items: center;
+  transform-origin: bottom center;
+  position: relative;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+.block-gold { height: 132px; background: linear-gradient(180deg, #e7c25f, #b98b23); }
+.block-silver { height: 94px; background: linear-gradient(180deg, #d7dade, #9ba0a6); }
+.block-bronze { height: 68px; background: linear-gradient(180deg, #d09263, #96572c); }
+
+/* the front face catches light along its top edge */
+.block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 40%);
+}
+
+.block-n {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  color: rgba(27, 26, 22, 0.42);
+  position: relative;
+  z-index: 1;
+}
+
+.stand.first .block-n { font-size: 44px; color: rgba(27, 26, 22, 0.5); }
+
+/* the floor the blocks sit on */
+.stage::after {
+  content: "";
+  grid-column: 1 / -1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(38, 30, 20, 0.22) 12%,
+    rgba(38, 30, 20, 0.22) 88%,
+    transparent
+  );
+}
+
+@media (max-width: 720px) {
+  .stage {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+  .stand.first { order: -1; }
+  .block { height: 26px; border-radius: 6px; }
+  .block-gold, .block-silver, .block-bronze { height: 26px; }
+  .block-n, .stand.first .block-n { font-size: 15px; }
+  .stage::after { display: none; }
+}

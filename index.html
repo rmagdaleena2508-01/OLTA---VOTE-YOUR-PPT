@@ -13,7 +13,7 @@
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=202609202229" />
+<link rel="stylesheet" href="styles.css?v=202609202233" />
 </head>
 <body>
 
@@ -215,28 +215,41 @@
         name, and what they sent. Nothing else.
       </p>
 
-      <div class="podium">
-        <div class="place second reveal">
-          <div class="place-banner metal metal-silver" data-metal="silver"></div>
-          <p class="place-rank">Second</p>
-          <p class="place-team">Team Monsoon</p>
-          <p class="place-detail">NIT Trichy · Fintech</p>
-          <span class="place-votes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18v-6H5l7-7 7 7h-4v6z"/></svg>2 votes</span>
+      <div class="stage" data-stage>
+
+        <div class="stand second">
+          <article class="stand-card">
+            <div class="stand-banner metal metal-silver" data-metal="silver"></div>
+            <p class="place-rank">Second</p>
+            <p class="place-team">Team Monsoon</p>
+            <p class="place-detail">NIT Trichy · Fintech</p>
+            <span class="place-votes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18v-6H5l7-7 7 7h-4v6z"/></svg>2 votes</span>
+          </article>
+          <div class="block block-silver"><span class="block-n">2</span></div>
         </div>
-        <div class="place first reveal">
-          <div class="place-banner metal metal-gold" data-metal="gold"></div>
-          <p class="place-rank">Winner</p>
-          <p class="place-team">Team Kestrel</p>
-          <p class="place-detail">IIT Madras · Fintech</p>
-          <span class="place-votes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18v-6H5l7-7 7 7h-4v6z"/></svg>3 votes</span>
+
+        <div class="stand first">
+          <article class="stand-card">
+            <div class="stand-banner metal metal-gold" data-metal="gold"></div>
+            <p class="place-rank">Winner</p>
+            <p class="place-team">Team Kestrel</p>
+            <p class="place-detail">IIT Madras · Fintech</p>
+            <span class="place-votes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18v-6H5l7-7 7 7h-4v6z"/></svg>3 votes</span>
+          </article>
+          <div class="block block-gold"><span class="block-n">1</span></div>
         </div>
-        <div class="place third reveal">
-          <div class="place-banner metal metal-bronze" data-metal="bronze"></div>
-          <p class="place-rank">Third</p>
-          <p class="place-team">Team Nightshift</p>
-          <p class="place-detail">VIT Vellore · Fintech</p>
-          <span class="place-votes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18v-6H5l7-7 7 7h-4v6z"/></svg>1 vote</span>
+
+        <div class="stand third">
+          <article class="stand-card">
+            <div class="stand-banner metal metal-bronze" data-metal="bronze"></div>
+            <p class="place-rank">Third</p>
+            <p class="place-team">Team Nightshift</p>
+            <p class="place-detail">VIT Vellore · Fintech</p>
+            <span class="place-votes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18v-6H5l7-7 7 7h-4v6z"/></svg>1 vote</span>
+          </article>
+          <div class="block block-bronze"><span class="block-n">3</span></div>
         </div>
+
       </div>
     </div>
   </section>
@@ -337,6 +350,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="app.js?v=202609202229"></script>
+<script src="app.js?v=202609202233"></script>
 </body>
 </html>

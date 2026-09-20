@@ -1851,3 +1851,72 @@
     el.style.backgroundImage = `url("${canvas.toDataURL('image/png')}")`;
   });
 })();
+
+
+/* ---------------- the podium stage on the landing page ---------------- */
+
+/* Built here rather than pulled in: LottieFiles has podium animations but the
+   player is 250 KB and the art would not match a type-led page; unDraw and
+   Storyset give static SVGs in their own illustration style; icon sets only
+   carry a trophy glyph. Three blocks and three cards in CSS cost nothing and
+   use the product's own colours. */
+(function podiumStage() {
+  const stage = document.querySelector('[data-stage]');
+  if (!stage) return;
+
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.gsap;
+  if (still) return;
+
+  const order = ['.stand.third', '.stand.second', '.stand.first'];
+
+  gsap.set('.stage .block', { scaleY: 0 });
+  gsap.set('.stage .stand-card', { opacity: 0, y: 26 });
+
+  function run() {
+    const tl = gsap.timeline();
+
+    order.forEach((sel, i) => {
+      const at = i * 0.18;
+      const winner = sel === '.stand.first';
+
+      /* the block grows up out of the floor */
+      tl.to(
+        `${sel} .block`,
+        {
+          scaleY: 1,
+          duration: winner ? 0.72 : 0.55,
+          ease: winner ? 'back.out(1.5)' : 'power3.out',
+        },
+        at
+      );
+
+      /* the team lands on it a moment later */
+      tl.to(
+        `${sel} .stand-card`,
+        {
+          opacity: 1,
+          y: 0,
+          duration: winner ? 0.7 : 0.5,
+          ease: winner ? 'back.out(1.8)' : 'power3.out',
+        },
+        at + 0.16
+      );
+    });
+  }
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          io.disconnect();
+          run();
+        });
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(stage);
+  } else {
+    run();
+  }
+})();
