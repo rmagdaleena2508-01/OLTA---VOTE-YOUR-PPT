@@ -227,12 +227,23 @@
     input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
   });
 
+  /* Until the lookup is a server call, the code is matched against the event
+     this browser knows about. A wrong code is refused rather than waved
+     through, because a field that accepts anything is worse than no field. */
+  function knownEvent() {
+    try {
+      return JSON.parse(localStorage.getItem('podium.event'));
+    } catch (err) {
+      return null;
+    }
+  }
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const code = input.value.trim();
 
     if (!code) {
-      say('Type the six-character code from the poster, or browse open events.', true);
+      say('Type the six-character code from the poster, or <a href="event.html">browse the open event</a>.', true);
       input.focus();
       return;
     }
@@ -243,8 +254,21 @@
       return;
     }
 
+    const event = knownEvent();
+
+    if (!event?.code) {
+      say('No event has been set up yet. <a href="create-event.html">Run one</a>, or wait for an organiser to send you a code.', true);
+      return;
+    }
+
+    if (event.code !== code) {
+      say(`No event with the code ${code}. Check the poster — letters and numbers only.`, true);
+      input.select();
+      return;
+    }
+
     say(defaultNote, false);
-    location.href = `onboarding.html?intent=vote&code=${encodeURIComponent(code)}`;
+    location.href = `event.html?code=${encodeURIComponent(code)}`;
   });
 })();
 
@@ -765,7 +789,7 @@
 
       card.innerHTML = `
         <button class="deck-cover" style="background:${deck.cover}" data-open="${deck.id}"
-                data-slides="${deck.slides} slides" aria-label="Open ${deck.team}'s deck">
+                data-slides="${deck.slides ? `${deck.slides} slides` : 'PDF'}" aria-label="Open ${deck.team}'s deck">
           ${initials(deck.team)}
         </button>
         <div class="deck-info">
@@ -847,10 +871,17 @@
   (function poster() {
     const btn = document.querySelector('[data-open-poster]');
     const sheet = document.querySelector('[data-poster-sheet]');
-    if (!btn || !sheet || !event?.posterImage) return;
+    if (!btn || !sheet) return;
+
+    /* A button that vanishes leaves people wondering. It stays, and says why. */
+    if (!event?.posterImage) {
+      btn.disabled = true;
+      btn.textContent = 'No poster added';
+      btn.title = 'The organiser has not uploaded their poster';
+      return;
+    }
 
     document.querySelector('[data-poster-img]').src = event.posterImage;
-    btn.hidden = false;
     btn.addEventListener('click', () => sheet.showModal());
     document.querySelector('[data-poster-close]').addEventListener('click', () => sheet.close());
     sheet.addEventListener('click', (e) => {
@@ -880,7 +911,7 @@
   }
 
   if (event?.maxSlides) {
-    document.querySelector('[data-slide-rule]').textContent = `${event.maxSlides} slides`;
+    document.querySelector('[data-slide-rule]').textContent = `up to ${event.maxSlides} slides`;
   }
 
   document.querySelectorAll('[data-open-upload]').forEach((btn) => {
@@ -934,8 +965,9 @@
       group: groups.length ? groupSelect.value : '',
       line: uploadForm.querySelector('#oneLiner').value.trim(),
       file: picked.name,
-      /* real slide counts come from the server once the file is rendered */
-      slides: event?.maxSlides || 15,
+      /* The real page count arrives when the file is rendered. Until then it
+         stays null, and the viewer says "Page 3" rather than inventing a total. */
+      slides: null,
       cover: COVERS[decks.length % COVERS.length],
       status: event?.reviewDecks ? 'pending' : 'live',
       owner: profile?.name || team,
@@ -971,11 +1003,13 @@
     if (!open) return;
     vTeam.textContent = open.team;
     vSub.textContent = [open.college, open.group].filter(Boolean).join(' · ');
-    vNum.textContent = `Slide ${page}`;
-    vCount.textContent = `${page} of ${open.slides}`;
-    vNote.textContent = `From ${open.file}. Slides appear here once the file has been turned into pictures.`;
+    const total = Number(open.slides) || null;
+
+    vNum.textContent = `Page ${page}`;
+    vCount.textContent = total ? `Page ${page} of ${total}` : `Page ${page}`;
+    vNote.textContent = `From ${open.file}. Pages appear here once the file has been turned into pictures.`;
     prev.disabled = page === 1;
-    next.disabled = page === open.slides;
+    next.disabled = total ? page === total : false;
 
     const state = voteLabel(open);
     vVote.querySelector('.vote-text').textContent = state.text;
@@ -995,7 +1029,8 @@
     if (page > 1) { page -= 1; drawViewer(); }
   });
   next.addEventListener('click', () => {
-    if (open && page < open.slides) { page += 1; drawViewer(); }
+    const total = Number(open?.slides) || null;
+    if (open && (!total || page < total)) { page += 1; drawViewer(); }
   });
 
   vVote.addEventListener('click', () => {

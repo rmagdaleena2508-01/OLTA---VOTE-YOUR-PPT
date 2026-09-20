@@ -5,23 +5,22 @@ Grouped by how much it matters. Nothing here is fixed yet.
 
 ---
 
-## Part 1 — Things that say one thing and do another
+## Part 1 — Things that say one thing and do another — **all ten fixed**
 
-These are the ones I would fix first, because a button that lies costs trust
-faster than a missing feature.
+Fixed. What each one does now is in the last column.
 
-| # | Where | It says | It actually does | Fix |
+| # | Where | It said | It did | It now does |
 |---|---|---|---|---|
-| 1.1 | Landing header, closing line, FAQ, onboarding page | "Sign in **with Google**" | Signs nobody in at all, and you asked for the words to be just "Sign in" | Cut "with Google" everywhere; leave the provider unnamed until it works |
-| 1.2 | FAQ, "Who can vote?" | "you get one vote in each group" | The rule changed: back as many decks as you like, once each, and a vote is final | Rewrite the answer. This is the worst one on the page — it describes a rule the product no longer has |
-| 1.3 | Hero, "Open event" with a code | Implies the code opens **that** event | The code's shape is checked and then thrown away. Any six valid characters land you in the same single event | Either check the code against the stored event and refuse a wrong one, or say plainly that codes are not live yet |
-| 1.4 | Landing brand mark, top left and footer | Podium home | `href="/"`, which on GitHub Pages is the **domain root**, not this project — a 404 for every visitor who clicks the logo | Point both at `index.html`, as the other five pages already do |
-| 1.5 | Onboarding, "Open your organiser invite" | An invite link | `href="#"` with a click handler that jumps straight to the setup screen. No invite exists, so anyone can become an organiser by clicking a sentence | Until invites are real, either hide the line or label it "Set up an event" |
-| 1.6 | Menu, "Voting" | The voting rules | Scrolls to the three role tabs, which is the "One pitching event, three jobs" section | Point it at the FAQ voting answer, or rename the item "Who does what" |
-| 1.7 | Footer, "What we store" and "How to enter" | Two different pages | Both jump to the same FAQ block | Make them jump to the specific question, or drop to one link |
-| 1.8 | Footer, `hello@podium.app` | A mailbox | The domain does not exist, so the mail bounces | Put a real address in, or remove the line |
-| 1.9 | Wall, "See the poster" | Always available | Appears only if a poster image was uploaded on the setup screen, which most organisers will skip | Show the button with an empty state, or say "no poster added" |
-| 1.10 | Deck viewer, "Slide 3 of 15" | The deck has 15 slides | 15 is the event's slide **limit**, not the file's page count | Read the real page count on upload, or say "page 3" with no total |
+| 1.1 | Landing header, closing line, FAQ, onboarding page | "Sign in **with Google**" | Signs nobody in at all, and you asked for the words to be just "Sign in" | Says "Sign in", and the onboarding button says "Continue". The provider stays unnamed until it works |
+| 1.2 | FAQ, "Who can vote?" | "you get one vote in each group" | The rule changed: back as many decks as you like, once each, and a vote is final | States the real rule: back as many decks as you like, once each, a vote cannot be taken back, and you cannot vote for your own team |
+| 1.3 | Hero, "Open event" with a code | Implies the code opens **that** event | The code's shape is checked and then thrown away. Any six valid characters land you in the same single event | Matches the code against the event and refuses anything else: "No event with the code ZZZZZZ." With no event set up it says so and offers to run one |
+| 1.4 | Landing brand mark, top left and footer | Podium home | `href="/"`, which on GitHub Pages is the **domain root**, not this project — a 404 for every visitor who clicks the logo | Both point at `index.html`, like the other five pages |
+| 1.5 | Onboarding, "Open your organiser invite" | An invite link | `href="#"` with a click handler that jumps straight to the setup screen. No invite exists, so anyone can become an organiser by clicking a sentence | Reads "Set up an event" and links straight to the setup screen. No pretend invite |
+| 1.6 | Menu, "Voting" | The voting rules | Scrolls to the three role tabs, which is the "One pitching event, three jobs" section | Renamed "Who does what", which is what that section is |
+| 1.7 | Footer, "What we store" and "How to enter" | Two different pages | Both jump to the same FAQ block | Jump to their own answers, `#faq-deck` and `#faq-enter` |
+| 1.8 | Footer, `hello@podium.app` | A mailbox | The domain does not exist, so the mail bounces | Replaced with "Report a problem", pointing at the repository issues |
+| 1.9 | Wall, "See the poster" | Always available | Appears only if a poster image was uploaded on the setup screen, which most organisers will skip | Stays visible, disabled, reading "No poster added" with a tooltip saying the organiser has not uploaded one |
+| 1.10 | Deck viewer, "Slide 3 of 15" | The deck has 15 slides | 15 is the event's slide **limit**, not the file's page count | New uploads store no count, and the viewer says "Page 3" with no total. A count is only shown when one is known |
 
 ---
 
