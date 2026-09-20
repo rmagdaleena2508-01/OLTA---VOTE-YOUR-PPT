@@ -1476,6 +1476,33 @@
 })();
 
 
+/* Run a function when an element is on screen. If it is already on screen when
+   the page loads, run it now — an observer with a threshold can sit silent on
+   an element that was visible from the first frame. */
+function whenSeen(el, fn) {
+  const onScreen = () => {
+    const r = el.getBoundingClientRect();
+    return r.top < window.innerHeight && r.bottom > 0;
+  };
+
+  if (onScreen() || !('IntersectionObserver' in window)) {
+    fn();
+    return;
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        fn();
+      });
+    },
+    { threshold: 0 }
+  );
+  io.observe(el);
+}
+
 /* ---------------- the hero bridge ---------------- */
 
 (function heroBridge() {
@@ -1515,12 +1542,18 @@
   /* Count only once the card is actually on screen, otherwise the numbers have
      already finished by the time anyone looks at them. */
   function run() {
+    /* A hidden tab throttles requestAnimationFrame, so a counter started there
+       would sit on its first frame. Show the real number instead and let the
+       animation belong to people who are looking. */
+    if (!move || document.hidden) {
+      cells.forEach(({ key, to }) => {
+        document.querySelector(`[data-bridge-${key}]`).textContent = String(to);
+      });
+      return;
+    }
+
     cells.forEach(({ key, to }, i) => {
       const el = document.querySelector(`[data-bridge-${key}]`);
-      if (!move) {
-        el.textContent = String(to);
-        return;
-      }
       const counter = { n: 0 };
       gsap.to(counter, {
         n: to,
@@ -1531,6 +1564,9 @@
         onUpdate: () => {
           el.textContent = String(Math.round(counter.n));
         },
+        onComplete: () => {
+          el.textContent = String(to);   /* never leave a half-counted number */
+        },
       });
     });
 
@@ -1539,21 +1575,7 @@
     }
   }
 
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          io.disconnect();
-          run();
-        });
-      },
-      { threshold: 0.4 }
-    );
-    io.observe(bridge);
-  } else {
-    run();
-  }
+  whenSeen(bridge, run);
 })();
 
 /* ---------------- results ---------------- */
@@ -1900,19 +1922,5 @@
     });
   }
 
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          io.disconnect();
-          run();
-        });
-      },
-      { threshold: 0.35 }
-    );
-    io.observe(stage);
-  } else {
-    run();
-  }
+  whenSeen(stage, run);
 })();
