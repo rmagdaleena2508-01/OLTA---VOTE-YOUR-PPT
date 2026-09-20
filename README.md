@@ -483,6 +483,67 @@ what makes a second vote impossible rather than merely difficult. The plan is in
 [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) and the full audit, with what is fixed
 and what is not, is in [`docs/AUDIT-V1.md`](docs/AUDIT-V1.md).
 
+## The backend: Supabase and Cloudflare R2
+
+v1 keeps everything in the browser. v2 moves it to a database, because two of
+this product's rules cannot live in a browser at all: "one vote per deck" and
+"no counts until voting closes". A rule the console can edit is not a rule.
+
+**What was chosen, and why.**
+
+- **Supabase** for data, sign-in and permissions. It is the only free tier that
+  carries Postgres, sign-in and row-level security in one project, and those
+  three are exactly where the voting rules belong. 500 MB of rows is far more
+  than a fest needs: an event is one row, a deck one row, a vote one row, so a
+  300-voter event is a few thousand rows.
+- **Cloudflare R2** for files. 10 GB, and no charge for traffic out — which
+  matters when 300 people open decks on the venue wifi at the same time. A 25 MB
+  deck cap means Supabase's own 1 GB of storage would fill after about 40 decks;
+  R2 holds a term's worth.
+- Both are managed. Nothing to patch, back up or restart.
+- **Firebase was rejected.** Its Cloud Storage left the free plan in February
+  2026, so uploads would need a card from the first deck, and Firestore has no
+  unique constraints — the one thing this product is built on.
+
+**The catch, and the fix.** A free Supabase project is paused after seven days
+without database activity, and a fest runs once a term. Data survives a pause —
+it restores from the dashboard with the disk intact — but anyone opening the site
+mid-pause sees errors. So a scheduled GitHub Action reads one row every third
+day, which counts as activity and keeps the project awake. It is ten lines of
+YAML and costs nothing.
+
+**What is in the repository now**
+
+| File | What it does |
+|---|---|
+| `supabase/01-schema.sql` | Tables, types, constraints, indexes, the vote-count view, and a trigger that refuses to change or delete a vote |
+| `supabase/02-policies.sql` | Row-level security for every table — who may read and write what |
+| `supabase/03-keepalive.sql` | The single `heartbeat` row the scheduled job reads |
+| `.github/workflows/keep-supabase-awake.yml` | Reads that row every third day so the project never pauses |
+| `config.example.js` | Copy to `config.js` and fill in the keys. `config.js` is git-ignored |
+| `docs/SUPABASE-SETUP.md` | The twenty minutes of clicking that needs your own login |
+
+**The six rules the database will enforce, not the interface**
+
+1. `unique (event_id, voter_id, deck_id)` — a second vote for the same deck
+   cannot be inserted, whatever the browser sends.
+2. A vote inserts only if you are signed in, the event is in its voting stage,
+   the deck is live, you are a member of the event, and **you do not own that
+   deck**.
+3. Vote rows are readable by the organiser at any time, and by everyone only
+   once the stage is `closed`. Before that, a curious visitor querying directly
+   gets nothing.
+4. There is no update or delete policy on votes, and a trigger refuses both, so
+   "a vote is final" is true at the storage layer.
+5. `unique (event_id, owner_id)` on decks — one deck per team per event.
+6. Your role comes from a membership row, so the console can no longer claim to
+   be an organiser.
+
+**Keys, in one line.** The **anon** key is meant to be public and sits in the
+browser; the policies are what protect the data. The **service_role** key
+bypasses every policy and never goes into this repository, a workflow, or the
+browser.
+
 ## File rules for uploads
 
 - PDF or PPTX. PDF is safer — fonts and layout stay exactly as the team made them.
