@@ -56,8 +56,8 @@
   const panels = card.querySelectorAll('.step-panel');
   const dots = card.querySelectorAll('.dot');
   const roleButtons = card.querySelectorAll('.role');
-  const roleNext = card.querySelector('[data-action="role-next"]');
   const finishBtn = card.querySelector('[data-action="finish"]');
+  const profile = card.querySelector('[data-profile]');
   const teamField = card.querySelector('[data-participant-only]');
   const nameInput = card.querySelector('#displayName');
   const collegeInput = card.querySelector('#college');
@@ -68,39 +68,40 @@
   /* The landing page splits the role at the button (Luma's pattern), so honour
      ?intent= and pre-select the matching card. */
   const intentToRole = { upload: 'participant', vote: 'voter', host: 'organiser' };
-  const intent = new URLSearchParams(location.search).get('intent');
+  const params = new URLSearchParams(location.search);
+  const intent = params.get('intent');
+  const eventCode = params.get('code');
 
   function show(step) {
     panels.forEach((p) => p.classList.toggle('on', Number(p.dataset.panel) === step));
-    dots.forEach((d) => d.classList.toggle('on', Number(d.dataset.dot) <= Math.min(step, 3)));
-    card.scrollIntoView({ block: 'nearest' });
+    dots.forEach((d) => d.classList.toggle('on', Number(d.dataset.dot) <= Math.min(step, 2)));
+  }
+
+  function checkProfile() {
+    if (!finishBtn) return;
+    const named = nameInput.value.trim().length > 1 && collegeInput.value.trim().length > 1;
+    finishBtn.disabled = !(state.role && named);
   }
 
   function selectRole(role) {
     state.role = role;
     roleButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.role === role)));
-    if (roleNext) roleNext.disabled = false;
+    if (profile) profile.hidden = false;
     if (teamField) teamField.hidden = role !== 'participant';
-  }
-
-  function checkProfile() {
-    if (!finishBtn) return;
-    const ok = nameInput.value.trim().length > 1 && collegeInput.value.trim().length > 1;
-    finishBtn.disabled = !ok;
+    checkProfile();
+    nameInput?.focus({ preventScroll: true });
   }
 
   card.querySelector('[data-action="signin"]')?.addEventListener('click', (e) => {
     /* Real Google sign-in goes here. For now it just advances the flow. */
     e.preventDefault();
-    if (intent && intentToRole[intent]) selectRole(intentToRole[intent]);
     show(2);
+    if (intent && intentToRole[intent]) selectRole(intentToRole[intent]);
   });
 
   roleButtons.forEach((btn) => {
     btn.addEventListener('click', () => selectRole(btn.dataset.role));
   });
-
-  roleNext?.addEventListener('click', () => show(3));
 
   card.querySelectorAll('.back-step').forEach((btn) => {
     btn.addEventListener('click', () => show(Number(btn.dataset.back)));
@@ -111,30 +112,70 @@
   });
 
   finishBtn?.addEventListener('click', () => {
-    const profile = {
+    const saved = {
       role: state.role,
       name: nameInput.value.trim(),
       college: collegeInput.value.trim(),
       team: card.querySelector('#teamName')?.value.trim() || null,
+      eventCode: eventCode || null,
     };
     try {
-      localStorage.setItem('olta.profile', JSON.stringify(profile));
+      localStorage.setItem('olta.profile', JSON.stringify(saved));
     } catch (err) {
       /* private mode — the flow still works, it just won't be remembered */
     }
     if (doneLine) {
       doneLine.textContent =
-        profile.role === 'participant'
-          ? 'Taking you to the upload screen.'
-          : 'Taking you to the decks.';
+        saved.role === 'participant'
+          ? 'Next stop: the upload screen.'
+          : 'Next stop: the deck wall.';
     }
-    show(4);
+    show(3);
   });
 
   card.querySelector('[data-action="invite"]')?.addEventListener('click', (e) => {
     e.preventDefault();
     selectRole('organiser');
     if (teamField) teamField.hidden = true;
-    show(3);
   });
+})();
+
+/* Join by event code, straight from the hero. */
+(function joinByCode() {
+  const form = document.querySelector('[data-join]');
+  if (!form) return;
+  const input = form.querySelector('input');
+  const note = document.querySelector('[data-join-note]');
+  const defaultNote = note?.textContent;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const code = input.value.trim().toUpperCase();
+    if (code.length < 4) {
+      if (note) {
+        note.textContent = 'Event codes are at least 4 characters. Check the poster.';
+        note.dataset.state = 'bad';
+      }
+      input.focus();
+      return;
+    }
+    if (note) {
+      note.textContent = defaultNote;
+      delete note.dataset.state;
+    }
+    location.href = `onboarding.html?intent=vote&code=${encodeURIComponent(code)}`;
+  });
+})();
+
+/* Sticky action bar on phones, once the hero buttons scroll away. */
+(function mobileBar() {
+  const bar = document.querySelector('[data-mobile-bar]');
+  const hero = document.querySelector('.hero .cta-row');
+  if (!bar || !hero || !('IntersectionObserver' in window)) return;
+
+  const io = new IntersectionObserver(
+    ([entry]) => bar.classList.toggle('show', !entry.isIntersecting),
+    { threshold: 0 }
+  );
+  io.observe(hero);
 })();

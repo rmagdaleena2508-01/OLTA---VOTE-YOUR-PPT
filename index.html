@@ -8,10 +8,14 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffffff'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='20' font-weight='bold' text-anchor='middle' fill='%23070707'%3EO%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+<a class="skip-link" href="#main">Skip to content</a>
 
 <header class="header">
   <div class="wrap">
@@ -31,11 +35,12 @@
   </div>
 </header>
 
-<main>
+<main id="main">
 
   <!-- HERO -->
   <section class="hero">
     <div class="wrap">
+      <p class="chip"><span class="pulse" aria-hidden="true"></span> <b>Startup Summit '26</b> is voting now</p>
       <h1 class="display">Every deck.<br />One place.</h1>
       <p class="lede">
         Teams send their slides. Everyone reads them. Everyone votes. The best deck
@@ -47,7 +52,19 @@
         <a class="btn btn-ghost btn-lg" href="onboarding.html?intent=vote">Browse &amp; vote</a>
       </div>
 
-      <p class="micro cta-note">Sign in with Google · PDF or PPTX up to 25 MB · Free for college events</p>
+      <form class="join" data-join>
+        <label class="micro" for="eventCode" style="position:absolute;left:-9999px">Event code</label>
+        <input id="eventCode" name="code" placeholder="Have an event code?" maxlength="8" autocomplete="off" />
+        <button class="btn btn-ghost" type="submit">Join event</button>
+      </form>
+      <p class="micro join-note" data-join-note role="status">Sign in with Google · PDF or PPTX up to 25 MB · Free for college events</p>
+
+      <div class="proof">
+        <span>Case competitions</span>
+        <span>B-plan finals</span>
+        <span>Tech fests</span>
+        <span>Club selections</span>
+      </div>
 
       <div class="hero-frame reveal">
         <div class="frame-bar">
@@ -57,7 +74,7 @@
         <div class="frame-body">
           <picture>
             <source media="(max-width: 640px)" srcset="assets/hero-mobile.jpg" />
-            <img class="hero-media" src="assets/hero-desktop.jpg" alt="A window seat view of mountains from a moving train" width="735" height="414" />
+            <img class="hero-media" src="assets/hero-desktop.jpg" alt="A snow-capped mountain framed by a train window, seen from an empty carriage" width="1600" height="900" fetchpriority="high" />
           </picture>
         </div>
       </div>
@@ -321,16 +338,49 @@
 </main>
 
 <footer class="footer rule">
-  <div class="wrap footer-inner">
-    <a class="brand" href="/"><span class="mark">O</span> OLTA</a>
-    <div class="footer-links">
-      <a href="#how">How it works</a>
-      <a href="#faq">FAQ</a>
-      <a href="onboarding.html">Sign in</a>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/"><span class="mark">O</span> OLTA</a>
+        <p class="footer-blurb">A room for college decks. Upload, read, vote, and crown a winner the same evening.</p>
+      </div>
+      <div>
+        <h4>Take part</h4>
+        <ul>
+          <li><a href="onboarding.html?intent=upload">Upload a deck</a></li>
+          <li><a href="onboarding.html?intent=vote">Browse and vote</a></li>
+          <li><a href="onboarding.html?intent=host">Run an event</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Learn</h4>
+        <ul>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#vote">Voting rules</a></li>
+          <li><a href="#faq">Questions</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Small print</h4>
+        <ul>
+          <li><a href="#faq">What we store</a></li>
+          <li><a href="#faq">Payments</a></li>
+          <li><a href="mailto:hello@olta.app">Email us</a></li>
+        </ul>
+      </div>
     </div>
-    <p class="micro">© 2026 OLTA</p>
+
+    <div class="footer-bottom">
+      <p class="micro">© 2026 OLTA</p>
+      <p class="micro">You pay in your UPI app, never here. We never touch your money.</p>
+    </div>
   </div>
 </footer>
+
+<div class="mobile-bar" data-mobile-bar>
+  <a class="btn btn-ghost" href="onboarding.html?intent=vote">Browse</a>
+  <a class="btn btn-primary" href="onboarding.html?intent=upload">Upload deck</a>
+</div>
 
 <script src="app.js"></script>
 </body>
