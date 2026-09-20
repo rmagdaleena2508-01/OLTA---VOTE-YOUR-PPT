@@ -325,6 +325,89 @@ The plan for all six, with the security holes to close first, is in
 > Keeping this file honest: new work goes under **What's in v2** when I say so.
 > Until then, changes belong in this v1 section.
 
+## The problems faced while building it
+
+Building fast leaves a gap between what the screen promises and what the code
+does. A read-through of every page found ten places where a button, a link or a
+line of text said one thing and did another. Grouped, they were six problems.
+
+**1. The product's own rule went stale in the copy.**
+The voting rule changed twice while building — from one vote per category, to
+credits, to unlimited votes cast once each and never taken back. The code
+followed each change. The FAQ did not, so the page still told readers "you get
+one vote in each group". The most-read explanation on the site described a
+product that no longer existed.
+
+**2. A promise was made that nothing could keep.**
+"Sign in with Google" appeared in four places. There is no sign-in yet, so the
+button named a provider it had never spoken to. A visitor who trusts that line
+and finds nothing happens stops trusting the rest of the page too.
+
+**3. An input that accepted everything.**
+The hero asked for a six-character event code, checked that it *looked* like a
+code, and then threw it away — every value opened the same event. A field that
+never says no is worse than no field, because it teaches people the code does
+not matter.
+
+**4. Links written before the pages they point at.**
+The landing page's logo pointed at `/`, which is the domain root and a 404 on
+GitHub Pages. An "Open your organiser invite" line was an empty anchor whose
+click handler quietly made anyone an organiser. A menu item called "Voting"
+scrolled to a section about roles. Two footer links shared one destination. A
+footer mailbox belonged to a domain that does not exist.
+
+**5. Controls that vanished instead of explaining.**
+"See the poster" hid itself when no poster had been uploaded, which reads as a
+missing feature rather than a missing file.
+
+**6. A number invented to fill a gap.**
+The deck viewer showed "Slide 3 of 15". The 15 was the event's *slide limit*,
+borrowed because the real page count was not known. A made-up total is worse
+than no total: it is a fact the reader cannot check and will quote back.
+
+## How we tackled these six problems
+
+**1. One rule, written once.**
+The FAQ answer was rewritten to the rule the code enforces: back as many decks
+as you like, once each, a vote cannot be taken back, and no one votes for their
+own team. Every other page that mentions voting was checked against the same
+sentence.
+
+**2. Say only what works today.**
+Every "with Google" is gone. The header says **Sign in**, the onboarding button
+says **Continue**, and the provider stays unnamed until it actually signs
+someone in. Naming it is a one-line change on the day it works.
+
+**3. Make the input answer back.**
+The code is now matched against the event it claims to open. A wrong code is
+refused by name — "No event with the code ZZZZZZ." A badly shaped code gets its
+own message. When no event exists at all, the field says so and offers to set
+one up. A correct code goes straight to the wall instead of detouring through a
+sign-in that does not exist.
+
+**4. Every link points at something real.**
+The logo goes to `index.html`, like the other five pages. The invite line reads
+**Set up an event** and links to the setup screen — no pretend invite, and no
+handler granting rights on a click. The menu item became **Who does what**,
+matching the section underneath it. The two footer links got their own anchors,
+`#faq-deck` and `#faq-enter`. The dead mailbox became **Report a problem**,
+pointing at the repository's issues, which exists and is read.
+
+**5. Disable, don't disappear.**
+"See the poster" stays on screen, disabled, reading **No poster added**, with a
+tooltip saying the organiser has not uploaded one. The reader learns the state
+of the event instead of guessing about the software.
+
+**6. Show a number only when it is known.**
+New uploads store no page count at all. The viewer says **Page 3** with no
+total, the Next arrow stops guessing where the end is, and the card's corner
+pill reads **PDF** instead of a slide count. When pages are really rendered, the
+count appears everywhere on its own.
+
+**The rule this left behind:** if the interface cannot keep a promise today, it
+should not make it. An honest empty state costs nothing; a confident lie costs
+the reader's trust in everything next to it.
+
 ## File rules for uploads
 
 - PDF or PPTX. PDF is safer — fonts and layout stay exactly as the team made them.
