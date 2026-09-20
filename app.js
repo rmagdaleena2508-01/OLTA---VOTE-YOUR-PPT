@@ -1495,10 +1495,6 @@
   const rawVotes = read('podium.votes', []);
   const votes = Array.isArray(rawVotes) ? rawVotes : Object.values(rawVotes || {}).filter(Boolean);
 
-  /* With nothing to count, the strip states the three rules instead. Zeros on a
-     landing page say "nobody is here". */
-  if (!event && !decks.length) return;
-
   const set = (key, big, small) => {
     document.querySelector(`[data-bridge-${key}]`).textContent = big;
     document.querySelector(`[data-bridge-${key}-sub]`).textContent = small;
