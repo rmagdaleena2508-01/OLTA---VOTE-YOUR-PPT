@@ -56,8 +56,10 @@
           <span>48 decks</span>
         </div>
         <div class="frame-body">
-          <!-- Drop your hero image at assets/hero.jpg — it replaces this placeholder automatically. -->
-          <img class="hero-media" src="assets/hero.jpg" alt="The OLTA deck gallery" onerror="this.outerHTML='&lt;div class=\'hero-placeholder\'&gt;&lt;span&gt;Hero image slot&lt;/span&gt;&lt;span&gt;save yours as assets/hero.jpg&lt;/span&gt;&lt;/div&gt;'" />
+          <picture>
+            <source media="(max-width: 640px)" srcset="assets/hero-mobile.jpg" />
+            <img class="hero-media" src="assets/hero-desktop.jpg" alt="A window seat view of mountains from a moving train" width="735" height="414" />
+          </picture>
         </div>
       </div>
     </div>

@@ -246,12 +246,18 @@ section[id] { scroll-margin-top: 104px; }
   border: 1px solid var(--hairline);
 }
 
-/* Hero image slot — drop a file at assets/hero.jpg and it replaces the placeholder. */
+/* Hero image. Desktop uses the 16:9 crop; phones swap to the taller 3:2 file
+   through the <picture> source in index.html. */
 .hero-media {
   aspect-ratio: 16 / 9;
   width: 100%;
+  height: auto;
   object-fit: cover;
   display: block;
+}
+
+@media (max-width: 640px) {
+  .hero-media { aspect-ratio: 4 / 5; }
 }
 
 .hero-placeholder {
