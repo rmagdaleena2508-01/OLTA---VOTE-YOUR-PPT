@@ -24,14 +24,27 @@
         <span class="mark">O</span>
         OLTA
       </a>
-      <nav class="nav">
-        <a href="#how">How it works</a>
-        <a href="#vote">Voting</a>
-        <a href="#organisers">For organisers</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-      <a class="btn btn-primary btn-sm" href="onboarding.html">Sign in with Google</a>
+
+      <div class="header-actions">
+        <a class="btn btn-primary btn-sm" href="onboarding.html">Sign in<span class="hide-sm">&nbsp;with Google</span></a>
+        <button class="menu-btn" data-menu-btn aria-expanded="false" aria-controls="menu" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
     </div>
+
+    <nav class="menu" id="menu" data-menu hidden aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#vote">Voting</a>
+      <a href="#organisers">For organisers</a>
+      <a href="#faq">Questions</a>
+      <div class="menu-split"></div>
+      <a href="onboarding.html?intent=upload">Upload a deck</a>
+      <a href="onboarding.html?intent=vote">Browse and vote</a>
+      <a href="onboarding.html?intent=host">Run an event</a>
+    </nav>
   </div>
 </header>
 
@@ -61,10 +74,12 @@
 
       <form class="join" data-join>
         <label class="micro" for="eventCode" style="position:absolute;left:-9999px">Event code</label>
-        <input id="eventCode" name="code" placeholder="Have an event code?" maxlength="8" autocomplete="off" />
+        <input id="eventCode" name="code" placeholder="Event code, e.g. K7MQ2P" maxlength="6" autocomplete="off" />
         <button class="btn btn-ghost" type="submit">Join event</button>
       </form>
-      <p class="micro join-note" data-join-note role="status">Sign in with Google · PDF or PPTX up to 25 MB · Free for college events</p>
+      <p class="micro join-note" data-join-note role="status">
+        No code? <a href="onboarding.html?intent=vote">Browse open events</a> · Codes come from your organiser
+      </p>
 
       <div class="proof">
         <span>Case competitions</span>

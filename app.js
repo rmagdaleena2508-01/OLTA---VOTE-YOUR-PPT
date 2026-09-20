@@ -140,29 +140,79 @@
   });
 })();
 
+/* Header menu: the three-line button opens the short navigation. */
+(function headerMenu() {
+  const btn = document.querySelector('[data-menu-btn]');
+  const menu = document.querySelector('[data-menu]');
+  if (!btn || !menu) return;
+
+  function setOpen(open) {
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menu.hidden = !open;
+  }
+
+  btn.addEventListener('click', () => setOpen(menu.hidden));
+
+  menu.addEventListener('click', (e) => {
+    if (e.target.tagName === 'A') setOpen(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) {
+      setOpen(false);
+      btn.focus();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (menu.hidden) return;
+    if (!menu.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+  });
+})();
+
 /* Join by event code, straight from the hero. */
 (function joinByCode() {
   const form = document.querySelector('[data-join]');
   if (!form) return;
   const input = form.querySelector('input');
   const note = document.querySelector('[data-join-note]');
-  const defaultNote = note?.textContent;
+  const defaultNote = note?.innerHTML;
+
+  /* Codes are six characters from an alphabet with no 0/O/1/I, so a code read
+     off a poster can't be mistyped into a different event. The real lookup is
+     a server call; until that exists we only check the shape and carry the
+     code into sign-in. See docs/EVENT-CODES.md. */
+  const CODE = /^[A-HJ-NP-Z2-9]{6}$/;
+
+  function say(message, bad) {
+    if (!note) return;
+    note.innerHTML = message;
+    if (bad) note.dataset.state = 'bad';
+    else delete note.dataset.state;
+  }
+
+  input.addEventListener('input', () => {
+    input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+  });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const code = input.value.trim().toUpperCase();
-    if (code.length < 4) {
-      if (note) {
-        note.textContent = 'Event codes are at least 4 characters. Check the poster.';
-        note.dataset.state = 'bad';
-      }
+    const code = input.value.trim();
+
+    if (!code) {
+      say('Type the six-character code from the poster, or browse open events.', true);
       input.focus();
       return;
     }
-    if (note) {
-      note.textContent = defaultNote;
-      delete note.dataset.state;
+
+    if (!CODE.test(code)) {
+      say('That code looks wrong. Six letters and numbers, no O, I, zero or one.', true);
+      input.focus();
+      return;
     }
+
+    say(defaultNote, false);
     location.href = `onboarding.html?intent=vote&code=${encodeURIComponent(code)}`;
   });
 })();
