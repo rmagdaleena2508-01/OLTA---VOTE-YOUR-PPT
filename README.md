@@ -241,6 +241,15 @@ screen.
 
 ---
 
+## How a code reaches a team
+
+Teams register on the organiser's own poster, which circulated on WhatsApp long
+before the Podium event existed. So the code cannot live on that poster. The
+dashboard hands the organiser a message to paste into the event's WhatsApp
+group — event name, wall link, code, file rules and the voting deadline — plus a
+QR of the wall they can attach. The poster itself is kept only so a team can tap
+it on the wall and re-read the rules.
+
 ## What is built, and what is not
 
 **Built:** the landing page, the onboarding flow, the folding menu, the event code

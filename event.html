@@ -53,6 +53,7 @@
           <p class="micro" data-event-meta>No event on this device yet</p>
         </div>
         <div class="event-state">
+          <button class="btn btn-ghost btn-sm" data-open-poster hidden>See the poster</button>
           <span class="state-pill" data-state-pill>Uploads open</span>
           <span class="micro" data-vote-left>One vote per group</span>
         </div>
@@ -100,6 +101,18 @@
   <button class="fab" data-open-upload aria-label="Upload your deck">＋</button>
   <span class="fab-label">Upload</span>
 </div>
+
+<!-- POSTER -->
+<dialog class="sheet poster-sheet" data-poster-sheet aria-label="Event poster">
+  <div class="sheet-body">
+    <div class="sheet-head">
+      <h2 class="h3">Event poster</h2>
+      <button class="icon-btn" data-poster-close aria-label="Close">✕</button>
+    </div>
+    <img class="poster-img" data-poster-img alt="The event poster, with the organiser's sign-up form and payment code on it" />
+    <p class="micro">Sign-ups and the fee live on this poster, not on Podium.</p>
+  </div>
+</dialog>
 
 <!-- UPLOAD SHEET -->
 <dialog class="sheet" data-upload-sheet aria-label="Upload your deck">

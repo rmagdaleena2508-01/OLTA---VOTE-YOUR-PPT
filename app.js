@@ -339,7 +339,29 @@
     });
   });
 
-  function showImage(input, target, label) {
+  /* Browser storage is small, so an uploaded image is redrawn at 1200px wide
+     and saved as a JPEG before it is kept. A real server would keep the
+     original and serve sizes from it. */
+  function shrink(file, maxWidth) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(img.src);
+        resolve(canvas.toDataURL('image/jpeg', 0.78));
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  const images = { banner: null, poster: null };
+
+  async function showImage(input, target, label) {
     const file = input.files && input.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
@@ -347,15 +369,22 @@
       input.value = '';
       return;
     }
-    const url = URL.createObjectURL(file);
-    if (target) {
-      target.className = 'preview-banner';
-      target.style.backgroundImage = `url("${url}")`;
-    }
+
     const drop = input.closest('.drop');
     if (drop) {
       drop.classList.add('filled');
       drop.querySelector('.drop-title').textContent = `${label}: ${file.name}`;
+    }
+
+    try {
+      const data = await shrink(file, label === 'Poster' ? 1200 : 1600);
+      images[label.toLowerCase()] = data;
+      if (target) {
+        target.className = 'preview-banner';
+        target.style.backgroundImage = `url("${data}")`;
+      }
+    } catch (err) {
+      note('That image could not be read. Try a JPG or PNG.', true);
     }
   }
 
@@ -444,6 +473,8 @@
       voteClose: bind('voteClose').value,
       privacy: state.privacy,
       banner: state.banner,
+      bannerImage: images.banner,
+      posterImage: images.poster,
     };
   }
 
@@ -579,7 +610,12 @@
     els.name.textContent = event.name || 'The deck wall';
     const bits = [event.host, event.venue || (event.mode === 'online' ? 'Online' : '')].filter(Boolean);
     els.meta.textContent = bits.join(' · ') || 'Your event';
-    if (event.banner) els.banner.className = `event-banner sw-${event.banner}`;
+    if (event.bannerImage) {
+      els.banner.className = 'event-banner';
+      els.banner.style.backgroundImage = `url("${event.bannerImage}")`;
+    } else if (event.banner) {
+      els.banner.className = `event-banner sw-${event.banner}`;
+    }
 
     const now = stage();
     els.pill.dataset.stage = now;
@@ -805,6 +841,22 @@
     sort = e.target.value;
     render();
   });
+
+  /* ---- the poster, kept only to be looked at ---- */
+
+  (function poster() {
+    const btn = document.querySelector('[data-open-poster]');
+    const sheet = document.querySelector('[data-poster-sheet]');
+    if (!btn || !sheet || !event?.posterImage) return;
+
+    document.querySelector('[data-poster-img]').src = event.posterImage;
+    btn.hidden = false;
+    btn.addEventListener('click', () => sheet.showModal());
+    document.querySelector('[data-poster-close]').addEventListener('click', () => sheet.close());
+    sheet.addEventListener('click', (e) => {
+      if (e.target === sheet) sheet.close();
+    });
+  })();
 
   /* ---- upload ---- */
 
@@ -1277,12 +1329,68 @@
     }
   });
 
+  /* Teams registered on the organiser's poster long before this event existed,
+     so the code has to reach them some other way. This is that way: a message
+     they paste into the event's WhatsApp group, and a QR of the wall. */
+  function drawShare() {
+    const box = document.querySelector('[data-share-msg]');
+    if (!box || !event) return;
+
+    const wall = `${location.origin}${location.pathname.replace('dashboard.html', 'event.html')}`;
+    const closes = event.voteClose ? ` Voting closes ${when(event.voteClose)}.` : '';
+
+    box.value =
+      `${event.name} — upload your deck\n\n` +
+      `Open ${wall}\n` +
+      `Event code: ${event.code}\n\n` +
+      `One deck per team, PDF or PPTX, up to 25 MB.${closes}`;
+
+    const note = document.querySelector('[data-share-note]');
+
+    const copy = async (text, said) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        note.textContent = said;
+      } catch (err) {
+        note.textContent = 'Could not copy here. Select the text and copy it by hand.';
+      }
+    };
+
+    document.querySelector('[data-copy-msg]').onclick = () =>
+      copy(box.value, 'Message copied. Paste it into your group.');
+    document.querySelector('[data-copy-link]').onclick = () =>
+      copy(wall, 'Link copied.');
+
+    const canvas = document.querySelector('[data-qr]');
+    if (window.QRious && canvas) {
+      /* QRious draws to a canvas, which means the PNG comes out of the same
+         element with no extra library. */
+      new QRious({
+        element: canvas,
+        value: wall,
+        size: 180,
+        background: '#fffdf8',
+        foreground: '#1b1a16',
+        level: 'M',
+      });
+
+      document.querySelector('[data-qr-download]').onclick = () => {
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = `${(event.name || 'podium').toLowerCase().replace(/\s+/g, '-')}-qr.png`;
+        a.click();
+        note.textContent = 'QR saved. Attach it to your message.';
+      };
+    }
+  }
+
   function drawAll() {
     drawHead();
     drawStats();
     drawDecks();
     drawStandings();
     drawChecks();
+    drawShare();
   }
 
   drawAll();

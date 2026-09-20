@@ -76,7 +76,7 @@ Ordered by what a fest would feel first.
 | # | Feature | Why | Size |
 |---|---|---|---|
 | 3.1 | **Results page with the podium** | The event has no ending today. Voting closes and nothing happens. This is the missing last screen | M |
-| 3.2 | **Printable poster** | Generate an A4 sheet with the event name, the code in large type and a QR to the wall. Organisers currently copy a line of text by hand. This is the single most useful thing we could hand them | M |
+| 3.2 | ~~Printable poster~~ **Dropped, replaced by the share kit** | Wrong idea: the organiser already made a poster in Canva, it already carries their form and payment QR, and it circulated before Podium existed. Generating a second poster helps nobody. What was actually missing is a way to get the code to teams who registered on that poster — so the dashboard now carries a copy-ready WhatsApp message and a QR of the wall, and the uploaded poster is kept on the wall to be looked at, nothing more | **done** |
 | 3.3 | **Share card for winners** | A 1080 × 1920 image with the team name and the event. Every winner posts it; every post is a poster for the product | M |
 | 3.4 | **Live count on the wall for the organiser only** | They already see counts on the dashboard. Seeing them on the wall while walking the hall saves a tab | S |
 | 3.5 | **Countdown to voting close** | On the wall, in the corner. Turns browsing into urgency at the right moment | S |

@@ -91,6 +91,33 @@
 
   <div class="dash-grid">
 
+    <!-- SHARE -->
+    <section class="panel share-panel">
+      <h2 class="panel-title">Send the code to your teams</h2>
+      <p class="panel-note">
+        Your teams registered on the poster. This is how they find the upload screen: paste
+        this into your event's WhatsApp group, or into the confirmation message on your form.
+      </p>
+
+      <div class="share-grid">
+        <div>
+          <label class="label-text" for="shareMsg">Message</label>
+          <textarea id="shareMsg" class="share-msg" rows="6" data-share-msg></textarea>
+          <div class="share-actions">
+            <button class="btn btn-primary btn-sm" type="button" data-copy-msg>Copy message</button>
+            <button class="btn btn-ghost btn-sm" type="button" data-copy-link>Copy link only</button>
+          </div>
+        </div>
+
+        <div class="share-qr">
+          <canvas data-qr width="180" height="180" aria-label="QR code to the deck wall"></canvas>
+          <p class="micro">Teams scan this to land on the wall.</p>
+          <button class="btn btn-ghost btn-sm" type="button" data-qr-download>Download QR</button>
+        </div>
+      </div>
+      <p class="micro" data-share-note role="status"></p>
+    </section>
+
     <!-- DECKS -->
     <section class="panel">
       <div class="panel-bar">
@@ -146,6 +173,7 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
