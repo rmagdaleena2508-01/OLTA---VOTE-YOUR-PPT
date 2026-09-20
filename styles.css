@@ -2428,20 +2428,25 @@ section[id] { scroll-margin-top: 104px; }
   );
 }
 
-/* a fine brushed grain over all three */
-.metal-gold::after,
-.metal-silver::after,
-.metal-bronze::after {
+/* The blocks come from a 16x6 canvas blown up with nearest-neighbour, so the
+   gradient reads as chunky pixels rather than a smooth sweep. The CSS gradient
+   above stays as the fallback for anything that cannot run the script. */
+.metal {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* a thin grid, so the pixel blocks read as blocks */
+.metal::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    108deg,
-    rgba(255, 255, 255, 0.1) 0 1px,
-    rgba(0, 0, 0, 0.06) 1px 3px
-  );
-  mix-blend-mode: overlay;
-  opacity: 0.55;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0 1px, transparent 1px calc(100% / 16)),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px calc(100% / 6));
+  opacity: 0.5;
 }
 
 /* the vote pill on the landing podium sits under the details */

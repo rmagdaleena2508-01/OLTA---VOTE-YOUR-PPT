@@ -1802,3 +1802,52 @@
     });
   }
 })();
+
+
+/* ---------------- pixelated metal banners ---------------- */
+
+/* A CSS gradient is resolution-independent, so it can never look pixelated.
+   These are drawn into a tiny canvas — 16 by 6 pixels — and then scaled up by
+   the browser with `image-rendering: pixelated`, which is real nearest-
+   neighbour blow-up: every block is one honest pixel of the original. */
+(function pixelMetal() {
+  const banners = document.querySelectorAll('[data-metal]');
+  if (!banners.length) return;
+
+  const METALS = {
+    gold: ['#8a5d12', '#c28f2a', '#f0d489', '#fff6dc', '#f6e2a4', '#d7a53c', '#9a6a15'],
+    silver: ['#74777d', '#a4a8ae', '#dcdfe3', '#ffffff', '#e9ecef', '#b8bcc2', '#7f8288'],
+    bronze: ['#63351a', '#965124', '#c47c45', '#f0c19a', '#d69460', '#a35c2c', '#6d3b1c'],
+  };
+
+  const W = 16;
+  const H = 6;
+
+  banners.forEach((el) => {
+    const stops = METALS[el.dataset.metal];
+    if (!stops) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    /* the sweep runs corner to corner, so the highlight sits on a diagonal */
+    const grad = ctx.createLinearGradient(0, H, W, 0);
+    stops.forEach((colour, i) => grad.addColorStop(i / (stops.length - 1), colour));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    /* a little per-block variation, so the bands are not perfectly even */
+    const px = ctx.getImageData(0, 0, W, H);
+    for (let i = 0; i < px.data.length; i += 4) {
+      const shift = ((i / 4) % 3 === 0 ? 10 : (i / 4) % 5 === 0 ? -12 : 0);
+      px.data[i] = Math.max(0, Math.min(255, px.data[i] + shift));
+      px.data[i + 1] = Math.max(0, Math.min(255, px.data[i + 1] + shift));
+      px.data[i + 2] = Math.max(0, Math.min(255, px.data[i + 2] + shift));
+    }
+    ctx.putImageData(px, 0, 0);
+
+    el.style.backgroundImage = `url("${canvas.toDataURL('image/png')}")`;
+  });
+})();
