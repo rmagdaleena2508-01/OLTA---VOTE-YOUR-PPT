@@ -512,6 +512,30 @@ mid-pause sees errors. So a scheduled GitHub Action reads one row every third
 day, which counts as activity and keeps the project awake. It is ten lines of
 YAML and costs nothing.
 
+**The project is live.** `podium`, in the R.MAGDALEENA organisation, Mumbai
+region, free plan, at `https://hfetqtgvscyrmiesdswk.supabase.co`. The schema and
+the policies are applied, and `config.js` points the site at it. Nothing uses it
+yet — every screen still reads browser storage — so the site works exactly as
+before while the screens are moved across one at a time.
+
+**What the security check found, and why it mattered.** Supabase runs advisors
+over a project. After the first two migrations it flagged three things, and all
+three were real:
+
+1. The view that counts votes ran with its creator's rights, so it read vote
+   rows straight past the policies. A visitor could have asked it for counts
+   before voting closed. It now runs as whoever is asking.
+2. The helper functions the policies use sat in the `public` schema, which is
+   published as an API, so anyone could call them directly. They moved to a
+   private schema.
+3. The trigger that refuses to change a vote had no fixed search path — the
+   usual way a privileged function gets tricked into running the wrong code.
+
+Advisors are clean now, and all eight tables have row-level security on. Checked
+from the browser with no account: reading votes returns nothing, and inserting a
+vote, an event or a profile is refused with *"new row violates row-level
+security policy"*.
+
 **What is in the repository now**
 
 | File | What it does |
@@ -521,7 +545,9 @@ YAML and costs nothing.
 | `supabase/03-keepalive.sql` | The single `heartbeat` row the scheduled job reads |
 | `.github/workflows/keep-supabase-awake.yml` | Reads that row every third day so the project never pauses |
 | `config.example.js` | Copy to `config.js` and fill in the keys. `config.js` is git-ignored |
-| `docs/SUPABASE-SETUP.md` | The twenty minutes of clicking that needs your own login |
+| `supabase-client.js` | One module for sign-in, events, decks, votes, counts and results. Returns `{ data, error }` and never throws; if the config is missing it does nothing and the screens fall back to browser storage |
+| `config.js` | The project URL and the publishable key |
+| `docs/SUPABASE-SETUP.md` | What still needs your own login: Google sign-in and the R2 bucket |
 
 **The six rules the database will enforce, not the interface**
 

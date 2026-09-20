@@ -12,6 +12,12 @@ dashboard immediately.
 
 ---
 
+> **Done already:** the project exists (`podium`, Mumbai, free plan) and all
+> three SQL files have been applied to it, with a fourth hardening migration on
+> top. `config.js` already points at it. What is left for you is step 3, Google
+> sign-in, and step 4, the R2 bucket — R2 needs enabling in the dashboard first,
+> which is a billing verification only you can do.
+
 ## 1. Supabase project
 
 1. Sign in at https://supabase.com with GitHub.
