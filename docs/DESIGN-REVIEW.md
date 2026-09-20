@@ -1,4 +1,4 @@
-# Design review — OLTA landing page and onboarding
+# Design review — Podium landing page and onboarding
 
 Written after the light-theme rebuild. Items marked **Done** shipped in commit
 `7fa6ad8`; the rest are the queue, roughly in order of payoff.
@@ -30,7 +30,11 @@ for "accent" text.
 
 ## 2. Hero section
 
-**Fixed rule from the owner:** the hero photograph sits **behind** the hero text
+**Fixed rules from the owner:** the product is called **Podium**. The hero
+photograph must not fade out at the bottom — the picture ends on a clean edge,
+and a hairline closes the join with the page.
+
+ the hero photograph sits **behind** the hero text
 as a full-bleed background, never in a framed card below it. No invented demo
 events ("Startup Summit '26") anywhere on the page — use neutral labels until
 real events exist.
@@ -154,7 +158,7 @@ Today the page sells a feature list. It should sell a job.
 
 **Done** — rebuilt as four columns (brand blurb, Take part, Learn, Small print)
 with a bottom line carrying the payment disclaimer: money stays in UPI, never
-in OLTA. A footer is where trust questions go to be answered.
+in Podium. A footer is where trust questions go to be answered.
 
 **Still worth doing**
 - Real Terms and Privacy pages. Linking both to the FAQ is a placeholder, and

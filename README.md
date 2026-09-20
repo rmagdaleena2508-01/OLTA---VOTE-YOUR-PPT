@@ -1,9 +1,13 @@
-# OLTA — show your slides, win the room
+# Podium — show your slides, win the room
 
-OLTA is a small website for college competitions where teams present slide decks.
-Teams upload their deck, everyone in the hall reads the decks on their phone, and
-everyone votes. When voting closes, the winners go up on a results page that stays
-online.
+Podium is a small website for pitch competitions, hackathons and case contests —
+anywhere a team builds a deck and wants it judged fairly. Teams upload their pitch
+deck, the whole room reads it on their phone, and the room votes. When voting
+closes, the winners go up on a results page that stays online.
+
+The point is a fair shot. Today a panel of three judges decides in ten minutes.
+Podium puts the deck in front of everyone who showed up, so the idea gets read by
+the people it was made for.
 
 **Live:** https://rmagdaleena2508-01.github.io/OLTA---VOTE-YOUR-PPT/
 
@@ -27,7 +31,7 @@ Here is how a normal fest goes today:
 So I am not building a competition platform. I am building the missing middle:
 **one place where the decks live, and one honest way to vote on them.**
 
-## What OLTA does not do
+## What Podium does not do
 
 This part matters as much as the feature list.
 
@@ -36,7 +40,7 @@ poster already carries a Google Form and a UPI QR code. People fill the form, pa
 and upload their screenshot there. The organiser checks it there. That flow already
 works, costs nothing, and needs no bank account or compliance work from me.
 
-OLTA starts one step later. A team arrives with an event code, uploads a deck, and
+Podium starts one step later. A team arrives with an event code, uploads a deck, and
 the room votes. The only line about money on the whole site says where money is not.
 
 ## Who uses it
@@ -116,7 +120,7 @@ version:
 | Source | What I took |
 |---|---|
 | **notchowl.com** | The whole type and spacing system: near-single font family, tight tracking, hairline cards, no shadows, huge section padding, and the two-beat headline shape ("Less switching. More doing."). |
-| **Luma** | How to ask someone who they are. Luma never shows a role form; it splits at the button — "Create Your First Event" or "Discover Events". OLTA does the same with "Upload a deck" and "Browse and vote". |
+| **Luma** | How to ask someone who they are. Luma never shows a role form; it splits at the button — "Create Your First Event" or "Discover Events". Podium does the same with "Upload a deck" and "Browse and vote". |
 | **Clerk** | Proof that a light theme can look sharp: off-white page, near-black text, 64px headline at -1.6px tracking. |
 | **A hero reference shot** | Full-bleed photo, small pill above the headline, one line in a serif italic, and a single capsule holding an input and its button. |
 | **Product Hunt, Devpost, Devfolio, Unstop** | The voting and file rules, not the visuals. |

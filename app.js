@@ -1,4 +1,4 @@
-/* OLTA — landing + onboarding behaviour. No backend yet; choices are kept in
+/* Podium — landing + onboarding behaviour. No backend yet; choices are kept in
    localStorage so the flow can be walked end to end. */
 
 (function reveal() {
@@ -120,7 +120,7 @@
       eventCode: eventCode || null,
     };
     try {
-      localStorage.setItem('olta.profile', JSON.stringify(saved));
+      localStorage.setItem('podium.profile', JSON.stringify(saved));
     } catch (err) {
       /* private mode — the flow still works, it just won't be remembered */
     }

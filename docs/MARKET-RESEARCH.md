@@ -54,7 +54,7 @@ Anti-fraud floor for a college event (cheap to build, catches most abuse):
 
 **Our scope is narrower than either, on purpose.** In a college fest the poster already carries a Google Form and a payment QR. People fill the form, pay, and upload the proof there, and the organiser verifies it there. That flow works, costs nothing and needs no compliance work.
 
-So OLTA does not register anyone, does not take a fee and never sees a payment. It starts one step later: a team arrives with the event code, uploads a deck, and the room votes. The only words about money anywhere on the site say where money is *not*.
+So Podium does not register anyone, does not take a fee and never sees a payment. It starts one step later: a team arrives with the event code, uploads a deck, and the room votes. The only words about money anywhere on the site say where money is *not*.
 
 What this removes from the build: payment verification queues, UPI reference fields, Paid/Pending/Rejected states, refunds, and any need to store a transaction identifier.
 
@@ -126,7 +126,7 @@ Layout, per the brief:
 | Vote rule | Categories exist → one vote per category. No categories → one vote overall. |
 | Credit / weighted votes | Dropped. It is quadratic voting; real, but Sybil-fragile and too complex for a fest. |
 | Live vote counts | Hidden until voting closes (Devpost's explicit recommendation). |
-| Sign-ups and money | Not handled here. The poster's Google Form takes registration, fee and proof; the organiser verifies there. OLTA holds decks and votes only. |
+| Sign-ups and money | Not handled here. The poster's Google Form takes registration, fee and proof; the organiser verifies there. Podium holds decks and votes only. |
 | File types | PDF and PPTX only. PDF recommended. |
 | Size cap | 25 MB, optional 15-slide cap. |
 | Storage | Originals private; slides rendered to watermarked images; no download unless the organiser allows. |
