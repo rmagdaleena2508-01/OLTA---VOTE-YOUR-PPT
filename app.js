@@ -500,11 +500,14 @@
   if (!window.Lenis) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+  /* lerp, not duration. A duration makes every wheel tick play out a fixed
+     animation, which is what reads as sticky; a lerp just chases the real
+     scroll position and settles, so the page keeps up with a fast flick. */
   const lenis = new Lenis({
-    duration: 1.05,
-    easing: (t) => 1 - Math.pow(1 - t, 3),   /* fast start, long settle */
+    lerp: 0.12,
+    wheelMultiplier: 1.15,
     smoothWheel: true,
-    touchMultiplier: 1.6,
+    syncTouch: false,      /* phones keep their own native scrolling */
   });
 
   window.podiumLenis = lenis;
@@ -529,7 +532,7 @@
     const target = document.querySelector(link.getAttribute('href'));
     if (!target) return;
     e.preventDefault();
-    lenis.scrollTo(target, { offset: -90, duration: 1.1 });
+    lenis.scrollTo(target, { offset: -90, duration: 0.7 });
   });
 })();
 
@@ -546,18 +549,20 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
+  gsap.set(media, { willChange: 'transform', force3D: true });
+
   gsap.to(media, {
-    yPercent: 14,
-    scale: 1.06,
+    yPercent: 10,
+    scale: 1.04,
     ease: 'none',
-    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.6 },
+    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.25 },
   });
 
   gsap.to('.hero-content', {
     y: -40,
     opacity: 0.25,
     ease: 'none',
-    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 40%', scrub: 0.6 },
+    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 40%', scrub: 0.25 },
   });
 
   const next = hero.nextElementSibling;
@@ -565,7 +570,7 @@
     gsap.from(next, {
       y: 40,
       ease: 'none',
-      scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 62%', scrub: 0.6 },
+      scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 62%', scrub: 0.25 },
     });
   }
 })();

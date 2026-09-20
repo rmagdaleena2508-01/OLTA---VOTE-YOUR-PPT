@@ -376,6 +376,8 @@ section[id] { scroll-margin-top: 104px; }
   object-fit: cover;
   object-position: center 42%;
   display: block;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .hero-placeholder {
@@ -1987,8 +1989,9 @@ section[id] { scroll-margin-top: 104px; }
 
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 253, 248, 0.22) 42%, rgba(255, 255, 255, 0.4));
-  backdrop-filter: blur(16px) saturate(190%) brightness(1.06);
-  -webkit-backdrop-filter: blur(16px) saturate(190%) brightness(1.06);
+  backdrop-filter: blur(14px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(14px) saturate(180%) brightness(1.05);
+  will-change: backdrop-filter;
 
   border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow:

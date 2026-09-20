@@ -418,6 +418,18 @@ scroll position and anything scroll-linked can never disagree by a frame.
 In-page links are intercepted and passed to `lenis.scrollTo` with a 90px offset,
 so jumping to a section glides and clears the sticky header.
 
+**Tuning, and why the first attempt felt stuck.** Lenis was first configured
+with `duration: 1.05` and a cubic ease. A duration makes every wheel tick play
+out a fixed animation, so a fast flick queues up animation instead of moving the
+page — which reads as lag. It now runs on `lerp: 0.12`, which chases the real
+scroll position and settles, with `wheelMultiplier: 1.15` and `syncTouch: false`
+so phones keep their own native scrolling. The scrub on the hero tweens dropped
+from 0.6 to 0.25 for the same reason. One number controls the whole feel: raise
+`lerp` towards 0.2 for snappier, lower it towards 0.08 for heavier.
+
+Measured after the change: 61 fps across a 1400px scroll with no frame over
+34ms.
+
 **The hero hand-off.** Three scrubbed tweens instead of a cut:
 
 1. The photograph drifts down 14% and grows 6% as you leave it, so it moves
