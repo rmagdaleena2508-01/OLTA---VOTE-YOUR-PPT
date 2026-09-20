@@ -1644,7 +1644,7 @@
       <p class="place-team">${deck.team}</p>
       <p class="place-detail">${[deck.college, deck.group].filter(Boolean).join(' · ')}</p>
       ${deck.line ? `<p class="place-detail" style="margin-top:6px">${deck.line}</p>` : ''}
-      <span class="place-votes">${ARROW}${deck.n} vote${deck.n === 1 ? '' : 's'}</span>`;
+      <span class="place-votes">${ARROW}<b data-n="${deck.n}">0</b> vote${deck.n === 1 ? '' : 's'}</span>`;
     podium.appendChild(el);
   });
 
@@ -1676,15 +1676,89 @@
     list.appendChild(li);
   }
 
-  /* the winners rise into place */
-  if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    gsap.from('.place', {
-      y: 26,
-      opacity: 0,
-      duration: 0.62,
-      ease: 'power3.out',
-      stagger: { each: 0.12, from: 'center' },
+  /* ---- the podium lands ---- */
+
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.gsap;
+
+  const numbers = [...document.querySelectorAll('.place-votes b')];
+
+  function countUp(el, delay) {
+    const to = Number(el.dataset.n) || 0;
+    if (still) {
+      el.textContent = String(to);
+      return;
+    }
+    const counter = { n: 0 };
+    gsap.to(counter, {
+      n: to,
+      duration: 0.7,
+      delay,
+      ease: 'power2.out',
+      snap: { n: 1 },
+      onUpdate: () => {
+        el.textContent = String(Math.round(counter.n));
+      },
     });
+  }
+
+  if (still) {
+    numbers.forEach((el) => countUp(el, 0));
+  } else {
+    /* Third rises, then second, then the winner — lowest step first, so the eye
+       is walked up to the middle. The winner overshoots and settles; the other
+       two do not, which is what makes the top step read as the top step. */
+    const third = document.querySelector('.place.third');
+    const second = document.querySelector('.place.second');
+    const first = document.querySelector('.place.first');
+
+    gsap.set('.place', { opacity: 0, y: 80 });
+
+    const tl = gsap.timeline({ defaults: { duration: 0.62 } });
+
+    if (third) tl.to(third, { opacity: 1, y: 0, ease: 'power3.out' }, 0.1);
+    if (second) tl.to(second, { opacity: 1, y: 0, ease: 'power3.out' }, 0.28);
+    if (first) {
+      tl.to(first, { opacity: 1, y: -18, duration: 0.85, ease: 'back.out(1.7)' }, 0.5);
+      tl.fromTo(
+        first,
+        { boxShadow: '0 18px 46px rgba(38, 30, 20, 0.12)' },
+        {
+          boxShadow: '0 22px 60px rgba(201, 84, 31, 0.28)',
+          duration: 0.5,
+          yoyo: true,
+          repeat: 1,
+          ease: 'sine.inOut',
+        },
+        0.95
+      );
+    }
+
+    countUp(numbers[0], 0.5);   /* second, in DOM order */
+    countUp(numbers[1], 0.9);   /* the winner */
+    countUp(numbers[2], 0.35);  /* third */
+
+    /* One burst, behind the winner, once. Confetti anywhere else on this page
+       would be noise; here it is the only moment that earns it. */
+    if (window.confetti && first) {
+      gsap.delayedCall(0.95, () => {
+        const box = first.getBoundingClientRect();
+        confetti({
+          particleCount: 90,
+          spread: 62,
+          startVelocity: 34,
+          gravity: 0.9,
+          scalar: 0.9,
+          ticks: 160,
+          zIndex: 0,
+          disableForReducedMotion: true,
+          colors: ['#c9541f', '#1f8a4c', '#e8d9c2', '#47564a', '#1b1a16'],
+          origin: {
+            x: (box.left + box.width / 2) / window.innerWidth,
+            y: (box.top + box.height * 0.35) / window.innerHeight,
+          },
+        });
+      });
+    }
   }
 
   /* one line an organiser can paste into a group chat */

@@ -2227,7 +2227,13 @@ section[id] { scroll-margin-top: 104px; }
   transform: translateY(-18px);
   border-color: rgba(201, 84, 31, 0.35);
   box-shadow: 0 18px 46px rgba(38, 30, 20, 0.12);
+  position: relative;
+  z-index: 1;
 }
+
+/* Confetti draws on its own canvas at z-index 0, so the winner card has to sit
+   above it. */
+.place-votes b { font-variant-numeric: tabular-nums; }
 
 .place.first .place-banner { height: 140px; }
 .place.first .place-team { font-size: 22px; }

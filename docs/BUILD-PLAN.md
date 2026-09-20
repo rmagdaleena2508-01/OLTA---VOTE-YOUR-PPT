@@ -69,7 +69,7 @@ upload is the usual one — and I will build that instead.
 
 ---
 
-## Part D — The podium animation
+## Part D — The podium animation — **built**
 
 What is there now: the three cards fade up with a GSAP stagger from the centre.
 
@@ -84,11 +84,13 @@ What is there now: the three cards fade up with a GSAP stagger from the centre.
 | **Motion One** | 18 KB | Same job as GSAP | Skip. Second animation library |
 | **AutoAnimate** | 3 KB | Automatic list transitions | Maybe later for the wall, not the podium |
 
-**What I would build:** steps rise in order 3, 2, 1 with the winner landing last
-and overshooting slightly; vote numbers count up from zero as each lands; a
-single confetti burst behind the winner, once, skipped under reduced motion; the
-winner's card gets a slow shimmer on its border. Around 40 lines, one 2.5 KB
-dependency.
+**Built.** Third rises at 0.1s, second at 0.28s, the winner at 0.5s on
+`back.out(1.7)` so it overshoots its raised position and settles — the other two
+land flat, which is what makes the top step read as the top step. Each card's
+vote count runs from zero as it lands, snapped to whole numbers, in tabular
+figures. At 0.95s a single confetti burst fires from behind the winner's card,
+in the site's own five colours, with `disableForReducedMotion` set as well as
+the manual check. Reduced motion gets the final state with no movement at all.
 
 ---
 
