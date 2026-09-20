@@ -2376,3 +2376,73 @@ section[id] { scroll-margin-top: 104px; }
   .share-grid { grid-template-columns: 1fr; }
   .share-qr { justify-self: start; }
 }
+
+/* ---------- metal banners on the podium ---------- */
+
+/* Three stripes make metal read as metal: a dark edge, a bright band where the
+   light catches, and a warm shadow under it. The 108deg angle keeps the
+   highlight off-centre so it looks lit rather than painted. */
+.metal-gold,
+.metal-silver,
+.metal-bronze {
+  position: relative;
+  overflow: hidden;
+}
+
+.metal-gold {
+  background: linear-gradient(
+    108deg,
+    #9a6a15 0%,
+    #d7a53c 18%,
+    #f6e2a4 38%,
+    #ffffff 46%,
+    #f0d489 54%,
+    #c28f2a 74%,
+    #8a5d12 100%
+  );
+}
+
+.metal-silver {
+  background: linear-gradient(
+    108deg,
+    #7f8288 0%,
+    #b8bcc2 18%,
+    #e9ecef 38%,
+    #ffffff 46%,
+    #dcdfe3 54%,
+    #a4a8ae 74%,
+    #74777d 100%
+  );
+}
+
+.metal-bronze {
+  background: linear-gradient(
+    108deg,
+    #6d3b1c 0%,
+    #a35c2c 18%,
+    #d69460 38%,
+    #f0c19a 46%,
+    #c47c45 54%,
+    #965124 74%,
+    #63351a 100%
+  );
+}
+
+/* a fine brushed grain over all three */
+.metal-gold::after,
+.metal-silver::after,
+.metal-bronze::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    108deg,
+    rgba(255, 255, 255, 0.1) 0 1px,
+    rgba(0, 0, 0, 0.06) 1px 3px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.55;
+}
+
+/* the vote pill on the landing podium sits under the details */
+.place .place-votes { margin-top: 14px; }
