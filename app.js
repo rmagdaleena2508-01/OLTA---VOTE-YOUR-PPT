@@ -490,6 +490,86 @@
   draw();
 })();
 
+/* ---------------- smooth scrolling ---------------- */
+
+/* Lenis carries the page between sections instead of letting the wheel jump it.
+   It is 3.6 KB, keeps the normal DOM (no wrapper element), and turns itself off
+   when the reader asks for reduced motion. Its frame loop is handed to GSAP's
+   ticker so scroll-linked animation and the scroll itself never disagree. */
+(function smoothScroll() {
+  if (!window.Lenis) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const lenis = new Lenis({
+    duration: 1.05,
+    easing: (t) => 1 - Math.pow(1 - t, 3),   /* fast start, long settle */
+    smoothWheel: true,
+    touchMultiplier: 1.6,
+  });
+
+  window.podiumLenis = lenis;
+
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+  } else {
+    const raf = (time) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+  }
+
+  /* in-page links keep the same easing instead of snapping */
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    const target = document.querySelector(link.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    lenis.scrollTo(target, { offset: -90, duration: 1.1 });
+  });
+})();
+
+/* ---------------- hero hand-off ---------------- */
+
+/* The photograph drifts slower than the page and settles back as the next
+   section rises over it, so the seam is a movement rather than a cut. */
+(function heroHandoff() {
+  const hero = document.querySelector('.hero');
+  const media = document.querySelector('.hero-media');
+  if (!hero || !media) return;
+  if (!window.gsap || !window.ScrollTrigger) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.to(media, {
+    yPercent: 14,
+    scale: 1.06,
+    ease: 'none',
+    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.6 },
+  });
+
+  gsap.to('.hero-content', {
+    y: -40,
+    opacity: 0.25,
+    ease: 'none',
+    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 40%', scrub: 0.6 },
+  });
+
+  const next = hero.nextElementSibling;
+  if (next) {
+    gsap.from(next, {
+      y: 40,
+      ease: 'none',
+      scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 62%', scrub: 0.6 },
+    });
+  }
+})();
+
 /* ---------------- the deck wall ---------------- */
 
 (function deckWall() {

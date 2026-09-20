@@ -398,3 +398,49 @@ Two details worth keeping:
   A page that silently picks a winner on alphabetical order would be lying.
 - **The podium rises** with a GSAP stagger played from the centre outwards, so
   the winner lands first. Reduced motion skips it.
+
+
+---
+
+## 18. Smooth scrolling, and readable glass
+
+**Scrolling.** The page now scrolls under **Lenis** (3.6 KB gzipped), with GSAP
+**ScrollTrigger** driving the hero hand-off.
+
+Why Lenis over the alternatives: GSAP's own ScrollSmoother is 32 KB and demands
+a `#smooth-wrapper` structure around the whole page; Locomotive Scroll moves the
+page inside a transformed container, which breaks `position: sticky` — and this
+site has a sticky header and sticky wall controls. Lenis keeps the native DOM
+and the native scrollbar, and it turns smoothing off by itself when the reader
+has asked for reduced motion. Its frame loop is handed to GSAP's ticker, so the
+scroll position and anything scroll-linked can never disagree by a frame.
+
+In-page links are intercepted and passed to `lenis.scrollTo` with a 90px offset,
+so jumping to a section glides and clears the sticky header.
+
+**The hero hand-off.** Three scrubbed tweens instead of a cut:
+
+1. The photograph drifts down 14% and grows 6% as you leave it, so it moves
+   slower than the page.
+2. The hero text lifts 40px and fades to a quarter, so it hands over rather than
+   scrolling away intact.
+3. The next section rises the last 40px into place — and it is now a sheet with
+   34px rounded top corners, a hairline of light along its edge and an upward
+   shadow, lapping 26px over the photograph.
+
+**The glass was pretty and hard to read.** Three fixes, none of which removed
+the glass:
+
+- A column of light behind each cell (`::before`, 92% to 60% warm white), so the
+  words sit on something instead of on the photograph.
+- The numbers are larger (26–36px) and filled with a top-to-bottom gradient from
+  ink `#16150F` to warm brown `#4A3A26`, with a solid-colour fallback where
+  `background-clip: text` is unsupported.
+- The labels changed face and role: Geist, 12px, 500, uppercase with 0.06em
+  tracking, in `#6A6155`. Small caps read as a caption; the old sentence-case
+  grey read as washed-out body text.
+
+**The wall's stage pill** had the same problem: a faint hairline and 13px
+regular text on cream. It now has a white-to-cream gradient, a stronger border, a
+small shadow and 600 weight, and the line under it moved from `--text-faint` to
+`#574F44` at 500.
