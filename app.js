@@ -99,9 +99,19 @@
     /* An organiser did not come here to pick a role — send them to the setup
        screen, carrying any event code along. */
     if (intent === 'host') {
-      location.href = eventCode
-        ? `create-event.html?code=${encodeURIComponent(eventCode)}`
-        : 'create-event.html';
+      let existing = null;
+      try {
+        existing = JSON.parse(localStorage.getItem('podium.event'));
+      } catch (err) {
+        existing = null;
+      }
+      if (existing?.name && !existing.draft) {
+        location.href = 'dashboard.html';
+      } else {
+        location.href = eventCode
+          ? `create-event.html?code=${encodeURIComponent(eventCode)}`
+          : 'create-event.html';
+      }
       return;
     }
 
@@ -465,8 +475,8 @@
     }
 
     save(false);
-    note(`Event created. Your code is ${data.code} — print it on the poster.`, false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    note(`Event created. Your code is ${data.code}. Taking you to your dashboard…`, false);
+    setTimeout(() => (location.href = 'dashboard.html'), 900);
   });
 
   /* sensible starting dates: event tomorrow, voting that evening */
@@ -1319,19 +1329,76 @@
 (function signedInHeader() {
   const who = document.querySelector('[data-who]');
   const signIn = document.querySelector('[data-signin-btn]');
-  if (!who || !signIn) return;
+  if (!who && !signIn) return;
 
-  let profile = null;
-  try {
-    profile = JSON.parse(localStorage.getItem('podium.profile'));
-  } catch (err) {
-    profile = null;
-  }
+  const read = (key) => {
+    try {
+      return JSON.parse(localStorage.getItem(key));
+    } catch (err) {
+      return null;
+    }
+  };
 
-  if (!profile?.name) return;
+  const profile = read('podium.profile');
+  const event = read('podium.event');
 
   /* Once someone is in, "Sign in with Google" is noise. Show them instead. */
-  who.querySelector('[data-who-name]').textContent = profile.name;
-  who.hidden = false;
-  signIn.remove();
+  if (profile?.name && who && signIn) {
+    who.querySelector('[data-who-name]').textContent = profile.name;
+    who.hidden = false;
+    signIn.remove();
+  }
+
+  /* The header says which event you are in, so three screens stop feeling like
+     three websites. */
+  const chip = document.querySelector('[data-event-chip]');
+  if (chip && event?.name) {
+    chip.textContent = event.code ? `${event.name} · ${event.code}` : event.name;
+    chip.hidden = false;
+  }
+
+  /* Dashboard and Settings belong to whoever runs the event. Everyone else
+     sees the wall and nothing they cannot use. */
+  const organiser = profile?.role === 'organiser' || Boolean(event);
+  if (organiser) {
+    document.querySelectorAll('[data-organiser-only]').forEach((el) => {
+      el.hidden = false;
+    });
+  }
+})();
+
+
+/* ---------------- the hero bridge ---------------- */
+
+(function heroBridge() {
+  const bridge = document.querySelector('[data-bridge]');
+  if (!bridge) return;
+
+  const read = (key, fallback) => {
+    try {
+      return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    } catch (err) {
+      return fallback;
+    }
+  };
+
+  const event = read('podium.event', null);
+  const decks = read('podium.decks', []);
+  const rawVotes = read('podium.votes', []);
+  const votes = Array.isArray(rawVotes) ? rawVotes : Object.values(rawVotes || {}).filter(Boolean);
+
+  /* With nothing to count, the strip states the three rules instead. Zeros on a
+     landing page say "nobody is here". */
+  if (!event && !decks.length) return;
+
+  const set = (key, big, small) => {
+    document.querySelector(`[data-bridge-${key}]`).textContent = big;
+    document.querySelector(`[data-bridge-${key}-sub]`).textContent = small;
+  };
+
+  const live = decks.filter((d) => d.status !== 'hidden');
+
+  set('a', event ? '1' : '0', event ? 'Event running' : 'Events running');
+  set('b', String(live.length), live.length === 1 ? 'Deck on the wall' : 'Decks on the wall');
+  set('c', String(votes.length), votes.length === 1 ? 'Vote cast' : 'Votes cast');
 })();

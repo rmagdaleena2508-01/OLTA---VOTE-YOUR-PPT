@@ -20,10 +20,22 @@
 <header class="header">
   <div class="wrap">
     <div class="header-inner">
-      <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"> <rect width="64" height="64" rx="16" fill="#F5F1EA"/> <rect x="9" y="28" width="15.5" height="27" rx="3" fill="#1B1A16"/> <path d="M27.5 18.8c0-1.2.8-2.2 2-2.5l10.5-2.2c1.6-.3 3.1.9 3.1 2.5V52c0 1.7-1.3 3-3 3h-9.6c-1.7 0-3-1.3-3-3V18.8Z" fill="#C9541F"/> <rect x="45.5" y="33" width="14" height="22" rx="3" fill="#1B1A16"/> </svg> Podium</a>
+      <a class="brand" href="index.html">
+        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"> <rect width="64" height="64" rx="16" fill="#F5F1EA"/> <rect x="9" y="28" width="15.5" height="27" rx="3" fill="#1B1A16"/> <path d="M27.5 18.8c0-1.2.8-2.2 2-2.5l10.5-2.2c1.6-.3 3.1.9 3.1 2.5V52c0 1.7-1.3 3-3 3h-9.6c-1.7 0-3-1.3-3-3V18.8Z" fill="#C9541F"/> <rect x="45.5" y="33" width="14" height="22" rx="3" fill="#1B1A16"/> </svg>
+        Podium
+      </a>
+
+      <span class="event-chip" data-event-chip hidden></span>
+
+      <nav class="app-nav" data-app-nav aria-label="Your event">
+        <a href="event.html">Wall</a>
+        <a href="dashboard.html" data-organiser-only hidden>Dashboard</a>
+        <a href="create-event.html" data-organiser-only hidden aria-current="page">Settings</a>
+      </nav>
+
       <div class="header-actions">
-        <a class="btn btn-ghost btn-sm" href="dashboard.html">Dashboard</a>
-        <a class="btn btn-ghost btn-sm" href="index.html">Back to site</a>
+        <span class="who" data-who hidden><span class="who-dot" aria-hidden="true"></span><span data-who-name>You</span></span>
+        <a class="btn btn-primary btn-sm" href="onboarding.html" data-signin-btn>Sign in</a>
       </div>
     </div>
   </div>

@@ -187,6 +187,10 @@ onboarding.html   sign in, pick a role, finish a profile
 create-event.html the organiser screen: banner, basics, deck rules, voting
 event.html        the deck wall: every deck, filters, upload, viewer, voting
 dashboard.html    the organiser's screen: let decks in, open and close voting
+
+The three signed-in screens share one header: wordmark, the event you are in,
+Wall / Dashboard / Settings, and your name. Dashboard and Settings only appear
+for whoever runs the event.
 styles.css        design tokens and every component
 app.js            menu, scroll reveals, event code, onboarding steps
 assets/           hero-desktop.jpg (16:9), hero-mobile.jpg (4:5),

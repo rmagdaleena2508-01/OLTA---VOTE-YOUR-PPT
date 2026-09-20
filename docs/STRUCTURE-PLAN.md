@@ -12,13 +12,13 @@ plus the reason and a rough size (S = under an hour, M = a few hours, L = a day)
 
 ## Part 1 — The two problems you named
 
-### 1.1 The hero stops dead
+### 1.1 The hero stops dead — **done**
 
 Right now the photograph ends on a hairline and the next section starts cold.
 There is no sentence carrying you across, and nothing on screen says "there is
 more below".
 
-**Change (S).** Three small things, in order of value:
+**Shipped.** Three things, in order of value:
 
 1. **A bridge strip that overlaps the photo.** A single white card that sits
    half on the picture and half on the page, carrying three live numbers —
@@ -30,13 +30,13 @@ more below".
    Hero says "Show your slides. Win the room." The next line should be "Here is
    how a night runs.", not "Three steps. That's the whole event."
 
-### 1.2 An organiser cannot find anything
+### 1.2 An organiser cannot find anything — **done**
 
 Today the organiser path is: landing, menu, "Run an event", sign in, setup
 screen. The dashboard is only reachable from the wall or by typing the URL.
 Each page has a different set of header buttons.
 
-**Change (M).** Four fixes:
+**Shipped.** Four fixes:
 
 1. **One header for signed-in people**, the same on every screen: wordmark,
    event name, and three links — Wall, Dashboard, Settings. Which links show
@@ -56,7 +56,7 @@ Each page has a different set of header buttons.
 | # | Section | Now | Recommendation |
 |---|---|---|---|
 | 2.1 | Hero | Photo, badge, headline, subtext, code capsule | **Keep**, plus the bridge strip and scroll cue above |
-| 2.2 | Proof numbers | none | **Add (S)** — three counts inside the bridge strip |
+| 2.2 | Proof numbers | three counts in the bridge strip | **Done** — falls back to three plain facts when there is nothing to count |
 | 2.3 | Open events | none | **Add (M)** — two or three live events with date, college, deck count and a Join button. This is Luma's whole trick: the home page is a directory, not a brochure |
 | 2.4 | Three steps | "Sign up on the poster / Send your slides / Let the room pick" | **Keep**, retitle to "Here is how a night runs" |
 | 2.5 | Participant section | Alternating row | **Change (M)** — collapse 2.5, 2.6 and 2.7 into one section with three tabs: Teams / Voters / Organisers. Three near-identical alternating rows is a lot of scrolling for one idea |

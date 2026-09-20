@@ -231,8 +231,8 @@ section[id] { scroll-margin-top: 104px; }
   position: relative;
   isolation: isolate;
   text-align: center;
-  padding-top: clamp(130px, 17vw, 230px);
-  padding-bottom: clamp(120px, 15vw, 210px);
+  padding-top: clamp(120px, 15vw, 210px);
+  padding-bottom: clamp(20px, 3vw, 34px);
   margin-top: calc(-1 * (58px + 18px));   /* sit under the floating header */
   overflow: hidden;
 }
@@ -1948,4 +1948,118 @@ section[id] { scroll-margin-top: 104px; }
 @media (max-width: 520px) {
   .tabs { width: 100%; }
   .tabs button { flex: 1; padding-inline: 8px; }
+}
+
+/* ---------- the bridge across the hero seam ---------- */
+
+/* The card sits low in the hero and the page below starts right under it, so
+   the eye is carried across the seam instead of falling off it. */
+.bridge-wrap {
+  position: relative;
+  z-index: 3;
+  margin-top: clamp(40px, 6vw, 72px);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.bridge {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  background: rgba(255, 253, 248, 0.94);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px rgba(38, 30, 20, 0.12);
+  overflow: hidden;
+}
+
+.bridge-cell {
+  padding: 22px 20px 20px;
+  text-align: center;
+}
+
+.bridge-cell + .bridge-cell { border-left: 1px solid var(--hairline); }
+
+.bridge-n {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.6vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px;
+}
+
+.bridge-cell .micro { margin: 0; }
+
+.scroll-cue {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-faint);
+  padding: 6px 10px;
+}
+
+.scroll-cue:hover { color: var(--text-dim); }
+
+.cue-arrow { width: 18px; height: 18px; display: block; }
+.cue-arrow svg { width: 18px; height: 18px; display: block; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .cue-arrow { animation: nudge 2.4s var(--ease) infinite; }
+}
+
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+
+/* the section under the hero makes room for the card that hangs into it */
+.hero + section { padding-top: clamp(64px, 8vw, 104px); }
+
+@media (max-width: 640px) {
+  .bridge { grid-template-columns: 1fr; }
+  .bridge-cell + .bridge-cell { border-left: 0; border-top: 1px solid var(--hairline); }
+  .bridge-wrap { margin-bottom: -40px; }
+}
+
+/* ---------- the header every signed-in screen shares ---------- */
+
+.event-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding-inline: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+  font-size: 13px;
+  color: var(--text-dim);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.app-nav { display: flex; gap: 2px; margin-inline: auto; }
+
+.app-nav a {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 12px;
+  border-radius: var(--r-sm);
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.app-nav a:hover { background: #f0eae0; color: var(--text); }
+.app-nav a[aria-current="page"] { background: var(--text); color: var(--surface); }
+
+@media (max-width: 720px) {
+  .event-chip { display: none; }
+  .app-nav a { padding-inline: 9px; font-size: 13px; }
 }
