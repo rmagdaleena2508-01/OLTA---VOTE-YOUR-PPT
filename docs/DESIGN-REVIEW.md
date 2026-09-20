@@ -30,9 +30,14 @@ for "accent" text.
 
 ## 2. Hero section
 
-**Done**
-- Live event chip above the headline ("Startup Summit '26 is voting now") with a
-  soft pulse dot. It answers "is anything happening here?" in one glance.
+**Fixed rule from the owner:** the hero photograph sits **behind** the hero text
+as a full-bleed background, never in a framed card below it. No invented demo
+events ("Startup Summit '26") anywhere on the page — use neutral labels until
+real events exist.
+
+**Done
+- Photograph moved behind the headline, with a light veil over it so the black
+  text stays readable and the bottom edge melts into the page colour.
 - Join-by-code field under the buttons. Someone holding a poster with a code has
   a direct door in, and the code is carried through sign-in.
 - Proof strip: Case competitions · B-plan finals · Tech fests · Club selections.

@@ -39,8 +39,15 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="wrap">
-      <p class="chip"><span class="pulse" aria-hidden="true"></span> <b>Startup Summit '26</b> is voting now</p>
+    <div class="hero-bg" aria-hidden="true">
+      <picture>
+        <source media="(max-width: 720px)" srcset="assets/hero-mobile.jpg" />
+        <img class="hero-media" src="assets/hero-desktop.jpg" alt="" width="1600" height="900" fetchpriority="high" />
+      </picture>
+      <span class="hero-veil"></span>
+    </div>
+
+    <div class="wrap hero-content">
       <h1 class="display">Every deck.<br />One place.</h1>
       <p class="lede">
         Teams send their slides. Everyone reads them. Everyone votes. The best deck
@@ -64,19 +71,6 @@
         <span>B-plan finals</span>
         <span>Tech fests</span>
         <span>Club selections</span>
-      </div>
-
-      <div class="hero-frame reveal">
-        <div class="frame-bar">
-          <span>Startup Summit '26 · Live</span>
-          <span>48 decks</span>
-        </div>
-        <div class="frame-body">
-          <picture>
-            <source media="(max-width: 640px)" srcset="assets/hero-mobile.jpg" />
-            <img class="hero-media" src="assets/hero-desktop.jpg" alt="A snow-capped mountain framed by a train window, seen from an empty carriage" width="1600" height="900" fetchpriority="high" />
-          </picture>
-        </div>
       </div>
     </div>
   </section>
@@ -223,7 +217,7 @@
 
         <div class="card-visual reveal">
           <div class="frame-bar">
-            <span>Startup Summit '26</span>
+            <span>Your event</span>
             <span>Needs action</span>
           </div>
           <div class="frame-body">

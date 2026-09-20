@@ -231,20 +231,50 @@ section[id] { scroll-margin-top: 104px; }
 
 /* ---------- hero ---------- */
 
-.hero { padding-top: clamp(64px, 9vw, 116px); text-align: center; }
+.hero {
+  position: relative;
+  isolation: isolate;
+  text-align: center;
+  padding-top: clamp(96px, 14vw, 190px);
+  padding-bottom: clamp(88px, 12vw, 160px);
+  margin-top: calc(-1 * (58px + 18px));   /* sit under the floating header */
+  overflow: hidden;
+}
 
-.hero .lede { margin-inline: auto; max-width: 54ch; }
+/* The photograph lives behind the words, not in a card below them. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.hero-bg picture,
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* A veil keeps the black text readable over the picture and melts the bottom
+   edge into the page colour. */
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(246, 246, 244, 0.82) 0%,
+      rgba(246, 246, 244, 0.7) 38%,
+      rgba(246, 246, 244, 0.88) 78%,
+      var(--bg) 100%
+    );
+}
+
+.hero-content { position: relative; }
+
+.hero .lede { margin-inline: auto; max-width: 52ch; color: #3d3d45; }
 
 .hero .cta-row { justify-content: center; }
-
-.hero-frame {
-  margin-top: clamp(48px, 7vw, 88px);
-  border: 1px solid var(--hairline);
-  border-radius: var(--r-xl);
-  background: var(--surface);
-  padding: 8px;
-  box-shadow: 0 20px 60px rgba(18, 18, 20, 0.08);
-}
 
 .frame-bar {
   display: flex;
@@ -265,15 +295,11 @@ section[id] { scroll-margin-top: 104px; }
 /* Hero image. Desktop uses the 16:9 crop; phones swap to the taller 3:2 file
    through the <picture> source in index.html. */
 .hero-media {
-  aspect-ratio: 16 / 9;
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
+  object-position: center 42%;
   display: block;
-}
-
-@media (max-width: 640px) {
-  .hero-media { aspect-ratio: 4 / 5; }
 }
 
 .hero-placeholder {
@@ -726,39 +752,6 @@ section[id] { scroll-margin-top: 104px; }
 
 .btn-primary:hover { transform: translateY(-1px); }
 .btn-ghost:hover { transform: translateY(-1px); }
-
-/* live chip in the hero */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding-inline: 14px;
-  border-radius: 999px;
-  border: 1px solid var(--hairline);
-  background: #fff;
-  font-size: 13px;
-  color: var(--text-dim);
-  margin-bottom: 26px;
-  box-shadow: 0 1px 2px rgba(18, 18, 20, 0.04);
-}
-
-.chip b { color: var(--text); font-weight: 600; }
-
-.pulse {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 0 0 rgba(226, 87, 44, 0.5);
-  animation: pulse 2.2s var(--ease) infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(226, 87, 44, 0.45); }
-  70% { box-shadow: 0 0 0 8px rgba(226, 87, 44, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(226, 87, 44, 0); }
-}
 
 /* join-by-code row */
 .join {

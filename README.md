@@ -49,3 +49,13 @@ organiser dashboard, vote storage. The onboarding stores the chosen role in
   winners stay on the results page.
 
 See `docs/MARKET-RESEARCH.md` for the sources behind each of these.
+
+## Hero rules
+
+- The hero image is a **background**: it sits behind the headline and buttons,
+  full bleed, with a light veil over it. It never goes in a framed card below
+  the text.
+- Files: `assets/hero-desktop.jpg` (16:9) and `assets/hero-mobile.jpg` (4:5),
+  swapped at 720px.
+- No invented demo events on the page. Use neutral labels until real events
+  exist.
