@@ -1926,3 +1926,45 @@ function whenSeen(el, fn) {
 
   whenSeen(stage, run);
 })();
+
+/* ---------------- the trusted-by row ---------------- */
+
+/* The row is duplicated once so it can travel for ever: the keyframe moves the
+   track by exactly half its width, at which point the copy is standing where
+   the original began. One list to edit when a college is added. */
+(function trustRow() {
+  const track = document.querySelector('[data-trust]');
+  const row = track && track.querySelector('.trust-row');
+  if (!row) return;
+
+  const copy = row.cloneNode(true);
+  copy.setAttribute('aria-hidden', 'true');
+  copy.querySelectorAll('img').forEach((img) => img.setAttribute('alt', ''));
+  row.append(...copy.children);
+
+  /* One speed, whatever the screen. A duration fixed in CSS would crawl on a
+     wide row and race on a narrow one, so it is worked out from the distance
+     the track actually travels: 46 pixels a second, which is a walking pace —
+     readable without pulling the eye off the page. */
+  const SPEED = 46;
+
+  function setPace() {
+    const half = row.scrollWidth / 2;
+    if (!half) return;
+    row.style.animationDuration = `${(half / SPEED).toFixed(2)}s`;
+  }
+
+  const images = [...row.querySelectorAll('img')];
+  const pending = images.filter((img) => !img.complete);
+
+  if (!pending.length) setPace();
+  else {
+    let left = pending.length;
+    pending.forEach((img) => {
+      img.addEventListener('load', () => --left || setPace(), { once: true });
+      img.addEventListener('error', () => --left || setPace(), { once: true });
+    });
+  }
+
+  window.addEventListener('resize', setPace);
+})();

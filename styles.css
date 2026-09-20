@@ -2561,8 +2561,7 @@ section[id] { scroll-margin-top: 104px; }
   display: flex;
   align-items: center;
   gap: 28px;
-  flex-wrap: wrap;
-  padding: 0 0 clamp(36px, 5vw, 60px);
+  padding: 0 0 clamp(40px, 5vw, 64px);
   margin-bottom: clamp(24px, 4vw, 44px);
   border-bottom: 1px solid var(--hairline);
 }
@@ -2578,53 +2577,70 @@ section[id] { scroll-margin-top: 104px; }
   color: var(--text-faint);
 }
 
-.trust-track { flex: 1; min-width: 0; }
+/* The marks travel through this window, which starts right after the label and
+   runs to the end of the line. Both ends are faded so a mark arrives and leaves
+   instead of appearing at an edge. */
+.trust-track {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
 
+/* The gap is wide on purpose: only two or three marks are in the window at any
+   moment, so it reads as a few colleges moving past rather than a repeating
+   pattern. */
 .trust-row {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
+  gap: clamp(72px, 9vw, 132px);
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 6px clamp(36px, 4.5vw, 66px) 6px 0;
+  width: max-content;
 }
 
-/* Each mark keeps its own proportions: the card fixes the height and lets the
-   width follow the artwork, so nothing is stretched or cropped. */
-.trust-logo {
-  flex: none;
-  padding: 11px 16px;
-  border-radius: var(--r-md);
-  border: 1px solid var(--hairline);
-  background: #ffffff;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 1px 2px rgba(38, 30, 20, 0.05);
-}
+.trust-logo { flex: none; display: grid; place-items: center; }
 
-/* The height is set on the image itself, not the card, so a wide lockup and a
-   tall one both end up the same visual weight and the card grows to fit. */
+/* Height fixed, width follows the artwork, so a wide lockup and a tall one
+   carry the same weight and nothing is stretched. Big enough to read the
+   college, quiet enough not to pull the eye off the page. */
 .trust-logo img {
-  height: 42px;
+  height: 58px;
   width: auto;
-  max-width: 210px;
+  max-width: 260px;
   object-fit: contain;
   display: block;
 }
 
-/* until a real mark is dropped in, the card carries the short name */
 .trust-fallback {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: -0.01em;
   color: var(--text-dim);
   white-space: nowrap;
 }
 
+/* Left to right, one steady speed. The row is duplicated by the script, so the
+   keyframe travels exactly half the track: at the end, the copy sits where the
+   original started and the jump cannot be seen. */
+@media (prefers-reduced-motion: no-preference) {
+  .trust-row {
+    animation: trust-drift 22s linear infinite;   /* replaced at runtime to hold one speed */
+    will-change: transform;
+  }
+  .trust-track:hover .trust-row { animation-play-state: paused; }
+}
+
+@keyframes trust-drift {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
 @media (max-width: 620px) {
-  .trust { gap: 14px; }
-  .trust-logo { padding: 9px 12px; }
-  .trust-logo img { height: 34px; max-width: 150px; }
+  .trust { flex-direction: column; align-items: stretch; gap: 14px; }
+  .trust-logo img { height: 46px; max-width: 200px; }
+  .trust-row { gap: clamp(48px, 14vw, 80px); }
 }
