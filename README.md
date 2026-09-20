@@ -187,7 +187,8 @@ create-event.html the organiser screen: banner, basics, deck rules, voting
 event.html        the deck wall: every deck, filters, upload, viewer, voting
 styles.css        design tokens and every component
 app.js            menu, scroll reveals, event code, onboarding steps
-assets/           hero-desktop.jpg (16:9), hero-mobile.jpg (4:5)
+assets/           hero-desktop.jpg (16:9), hero-mobile.jpg (4:5),
+                  icon.svg and the PNG icon sizes
 docs/             the research and design notes behind the decisions
 ```
 
@@ -214,6 +215,14 @@ All of these live at the top of `styles.css`:
 | `--hairline` | `rgba(18,18,20,.09)` | every border |
 | `--accent` | `#e2572c` | the vote action only |
 | `--dot` | `rgba(18,18,20,.11)` | the background grid |
+
+### The mark
+
+The wordmark is the app icon itself: three podium blocks, the winner's block
+taller and in the accent orange, on a cream squircle. It is inline SVG, so it
+stays sharp at any size and needs no request. `assets/icon.svg` is the same
+drawing as a file, and the PNGs beside it cover the browser tab and the iOS home
+screen.
 
 ### Hero rules
 

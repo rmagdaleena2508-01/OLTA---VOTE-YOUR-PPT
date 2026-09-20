@@ -215,16 +215,14 @@ section[id] { scroll-margin-top: 104px; }
   font-size: 16px;
 }
 
+/* The wordmark carries the app icon itself: the three-step podium. */
 .mark {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
-  background: #1b1a16;
-  color: #fffdf8;
-  display: grid;
-  place-items: center;
-  font-size: 13px;
-  font-weight: 700;
+  display: block;
+  flex: none;
+  border: 1px solid var(--hairline);
 }
 
 /* ---------- hero ---------- */
