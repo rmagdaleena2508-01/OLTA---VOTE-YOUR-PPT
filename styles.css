@@ -221,8 +221,8 @@ section[id] { scroll-margin-top: 104px; }
   position: relative;
   isolation: isolate;
   text-align: center;
-  padding-top: clamp(96px, 14vw, 190px);
-  padding-bottom: clamp(88px, 12vw, 160px);
+  padding-top: clamp(130px, 17vw, 230px);
+  padding-bottom: clamp(120px, 15vw, 210px);
   margin-top: calc(-1 * (58px + 18px));   /* sit under the floating header */
   overflow: hidden;
 }
@@ -243,22 +243,107 @@ section[id] { scroll-margin-top: 104px; }
 
 /* A veil keeps the black text readable over the picture and melts the bottom
    edge into the page colour. */
+/* Two layers: a soft glow that sits behind the words so black type stays
+   readable, and a thin wash that only closes the seam at the bottom. The
+   photograph itself stays visible. */
 .hero-veil {
   position: absolute;
   inset: 0;
   background:
+    radial-gradient(
+      62% 52% at 50% 40%,
+      rgba(248, 248, 246, 0.9) 0%,
+      rgba(248, 248, 246, 0.62) 42%,
+      rgba(248, 248, 246, 0) 72%
+    ),
     linear-gradient(
       180deg,
-      rgba(246, 246, 244, 0.82) 0%,
-      rgba(246, 246, 244, 0.7) 38%,
-      rgba(246, 246, 244, 0.88) 78%,
+      rgba(246, 246, 244, 0.34) 0%,
+      rgba(246, 246, 244, 0) 30%,
+      rgba(246, 246, 244, 0) 66%,
       var(--bg) 100%
     );
 }
 
 .hero-content { position: relative; }
 
-.hero .lede { margin-inline: auto; max-width: 52ch; color: #3d3d45; }
+.hero .lede {
+  margin-inline: auto;
+  max-width: 46ch;
+  color: #2f2f36;
+  font-size: 17px;
+}
+
+/* the accent line, set in a serif italic the way the reference does */
+.hero .display em {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  font-size: 1.12em;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding-inline: 16px;
+  margin: 0 0 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  color: #3a3a42;
+}
+
+/* one capsule holding the code field and its button, as in the reference */
+.capsule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(460px, 100%);
+  margin: 32px auto 0;
+  padding: 6px 6px 6px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 14px 40px rgba(18, 18, 20, 0.12);
+}
+
+.capsule label {
+  position: absolute;
+  left: -9999px;
+}
+
+.capsule input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.capsule input::placeholder {
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text-faint);
+}
+
+.capsule input:focus { outline: none; }
+.capsule:focus-within { border-color: rgba(18, 18, 20, 0.25); }
+
+.capsule .btn { border-radius: 999px; height: 44px; }
+
+.hero .join-note { margin-top: 16px; color: #4a4a53; }
+.hero .join-note a { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 
 .hero .cta-row { justify-content: center; }
 
@@ -738,43 +823,8 @@ section[id] { scroll-margin-top: 104px; }
 .btn-primary:hover { transform: translateY(-1px); }
 .btn-ghost:hover { transform: translateY(-1px); }
 
-/* join-by-code row */
-.join {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 26px;
-  flex-wrap: wrap;
-}
-
-.join input {
-  height: 44px;
-  width: 200px;
-  padding-inline: 16px;
-  border-radius: var(--r-md);
-  border: 1px solid var(--hairline);
-  background: #fff;
-  font: inherit;
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text);
-}
-.join input::placeholder { letter-spacing: normal; text-transform: none; color: var(--text-faint); }
-
 .join-note { margin-top: 10px; min-height: 18px; }
 .join-note[data-state="bad"] { color: var(--accent); }
-
-/* proof strip */
-.proof {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 28px;
-  justify-content: center;
-  padding-top: 34px;
-  font-size: 13px;
-  color: var(--text-faint);
-}
 
 /* footer, rebuilt */
 .footer-grid {
@@ -837,8 +887,6 @@ section[id] { scroll-margin-top: 104px; }
 
 @media (max-width: 480px) {
   .footer-grid { grid-template-columns: 1fr; }
-  .join input { width: 100%; }
-  .join .btn { width: 100%; }
 }
 
 /* ---------- header menu ---------- */

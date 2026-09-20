@@ -232,7 +232,7 @@
 /* Sticky action bar on phones, once the hero buttons scroll away. */
 (function mobileBar() {
   const bar = document.querySelector('[data-mobile-bar]');
-  const hero = document.querySelector('.hero .cta-row');
+  const hero = document.querySelector('.hero .capsule');
   if (!bar || !hero || !('IntersectionObserver' in window)) return;
 
   const io = new IntersectionObserver(

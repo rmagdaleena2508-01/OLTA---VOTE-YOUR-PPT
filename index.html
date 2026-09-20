@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>OLTA — Every deck. One place.</title>
-<meta name="description" content="Upload your presentation, let the room vote, and see who takes the podium. Built for college case competitions, B-plan finals and tech fests." />
+<title>OLTA — Show your slides. Win the room.</title>
+<meta name="description" content="Teams put their decks here, everyone votes, and the best one wins that night. Built for college case competitions, B-plan finals and tech fests." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffffff'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='20' font-weight='bold' text-anchor='middle' fill='%23070707'%3EO%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
 </head>
@@ -64,32 +65,27 @@
     </div>
 
     <div class="wrap hero-content">
-      <h1 class="display">Every deck.<br />One place.</h1>
+      <p class="badge">Free for every college fest</p>
+
+      <h1 class="display">
+        Show your slides.<br />
+        <em>Win the room.</em>
+      </h1>
+
       <p class="lede">
-        Teams send their slides. Everyone reads them. Everyone votes. The best deck
-        wins. No WhatsApp threads, no lost files.
+        Teams put their decks here. Everyone reads them, everyone votes, and the
+        best one wins that night.
       </p>
 
-      <div class="cta-row">
-        <a class="btn btn-primary btn-lg" href="onboarding.html?intent=upload">Upload your deck</a>
-        <a class="btn btn-ghost btn-lg" href="onboarding.html?intent=vote">Browse &amp; vote</a>
-      </div>
-
-      <form class="join" data-join>
-        <label class="micro" for="eventCode" style="position:absolute;left:-9999px">Event code</label>
-        <input id="eventCode" name="code" placeholder="Event code, e.g. K7MQ2P" maxlength="6" autocomplete="off" />
-        <button class="btn btn-ghost" type="submit">Join event</button>
+      <form class="capsule" data-join>
+        <label class="micro" for="eventCode">Event code</label>
+        <input id="eventCode" name="code" placeholder="Type your event code" maxlength="6" autocomplete="off" />
+        <button class="btn btn-primary" type="submit">Open event</button>
       </form>
-      <p class="micro join-note" data-join-note role="status">
-        No code? <a href="onboarding.html?intent=vote">Browse open events</a> · Your organiser hands out codes
-      </p>
 
-      <div class="proof">
-        <span>Case competitions</span>
-        <span>B-plan finals</span>
-        <span>Tech fests</span>
-        <span>Club selections</span>
-      </div>
+      <p class="micro join-note" data-join-note role="status">
+        No code? <a href="onboarding.html?intent=vote">Browse open events</a> · Uploading a deck? <a href="onboarding.html?intent=upload">Start here</a>
+      </p>
     </div>
   </section>
 
