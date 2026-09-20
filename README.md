@@ -181,6 +181,7 @@ knows what you came for, so the right card is pre-selected when you arrive.
 index.html        the landing page
 onboarding.html   sign in, pick a role, finish a profile
 create-event.html the organiser screen: banner, basics, deck rules, voting
+event.html        the deck wall: every deck, filters, upload, viewer, voting
 styles.css        design tokens and every component
 app.js            menu, scroll reveals, event code, onboarding steps
 assets/           hero-desktop.jpg (16:9), hero-mobile.jpg (4:5)
@@ -225,22 +226,21 @@ All of these live at the top of `styles.css`:
 
 **Built:** the landing page, the onboarding flow, the folding menu, the event code
 field (shape check only), the organiser setup screen with a live preview of the
-event card, the results podium layout, and the research behind every rule above.
+event card, the deck wall with upload, filters, a slide viewer and working vote
+rules, the results podium layout, and the research behind every rule above.
+
+The wall reads the event the organiser set up and keeps decks and votes in the
+browser, so the whole flow can be walked end to end before there is a server.
 
 **Not built yet, in the order I plan to build it:**
 
-1. **Deck wall** — a grid of deck cards, filter chips per group, and the round
-   Upload button in the bottom-right corner. This is the screen the product lives
-   or dies on.
-2. **Deck page** — a slide viewer with arrow keys, team details, and one vote button
-   that changes state and never shows a count.
-3. **Event page** — poster, dates, a link out to the organiser's sign-up form, and a
+1. **Event page** — poster, dates, a link out to the organiser's sign-up form, and a
    countdown to the voting deadline.
-4. **Organiser dashboard** — the screen after setup: teams to let in, voting to
+2. **Organiser dashboard** — the screen after setup: teams to let in, voting to
    open and close, and a panel showing vote timing and repeat accounts so a
    rigged result can be spotted.
-5. **Results page** — the podium, plus a share card sized for Instagram stories.
-6. **Real accounts and storage** — Google sign-in, decks in object storage, slides
+3. **Results page** — the podium, plus a share card sized for Instagram stories.
+4. **Real accounts and storage** — Google sign-in, decks in object storage, slides
    rendered to images, and votes in a table with a unique constraint on
    `(voter_id, deck_id)` so a double vote is impossible in the data, not only in
    the interface.

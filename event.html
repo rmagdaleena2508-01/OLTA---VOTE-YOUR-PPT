@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Podium — The deck wall</title>
+<meta name="description" content="Every deck in the event, side by side. Read them, then vote for the one you would back." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffffff'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='20' font-weight='bold' text-anchor='middle' fill='%23070707'%3EP%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="wall-page">
+
+<header class="header">
+  <div class="wrap">
+    <div class="header-inner">
+      <a class="brand" href="index.html"><span class="mark">P</span> Podium</a>
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-sm" href="create-event.html">Event settings</a>
+        <a class="btn btn-primary btn-sm" href="onboarding.html">Sign in</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- EVENT HEAD -->
+  <section class="wall-head">
+    <div class="wrap">
+      <div class="event-banner sw-1" data-event-banner></div>
+      <div class="event-bar">
+        <div>
+          <h1 class="h2" data-event-name>The deck wall</h1>
+          <p class="micro" data-event-meta>No event on this device yet</p>
+        </div>
+        <div class="event-state">
+          <span class="state-pill" data-state-pill>Uploads open</span>
+          <span class="micro" data-vote-left>One vote per group</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTROLS -->
+  <section class="wall-controls">
+    <div class="wrap">
+      <div class="chips" role="group" aria-label="Filter by group" data-chips>
+        <button class="chip-btn" data-group="all" aria-pressed="true">All decks <span data-count-all>0</span></button>
+      </div>
+      <div class="wall-tools">
+        <label class="search">
+          <span class="micro" style="position:absolute;left:-9999px">Search teams</span>
+          <input type="search" placeholder="Search a team" data-search />
+        </label>
+        <select class="sort" data-sort aria-label="Sort decks">
+          <option value="new">Newest first</option>
+          <option value="old">Oldest first</option>
+          <option value="team">Team name</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE WALL -->
+  <section class="wall">
+    <div class="wrap">
+      <div class="deck-grid" data-grid></div>
+
+      <div class="empty" data-empty hidden>
+        <div class="empty-art" aria-hidden="true"></div>
+        <h2 class="h3">No decks yet.</h2>
+        <p class="lede" style="margin-inline:auto">Be the first team on the wall. Your deck opens right in the browser, so the whole room can read it.</p>
+        <button class="btn btn-primary" data-open-upload>Upload your deck</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- UPLOAD BUTTON -->
+<div class="fab-wrap">
+  <button class="fab" data-open-upload aria-label="Upload your deck">＋</button>
+  <span class="fab-label">Upload</span>
+</div>
+
+<!-- UPLOAD SHEET -->
+<dialog class="sheet" data-upload-sheet aria-label="Upload your deck">
+  <form method="dialog" class="sheet-body" data-upload-form>
+    <div class="sheet-head">
+      <h2 class="h3">Upload your deck</h2>
+      <button class="icon-btn" value="cancel" aria-label="Close">✕</button>
+    </div>
+
+    <label class="drop" for="deckFile" data-deck-drop>
+      <input id="deckFile" type="file" accept=".pdf,.pptx,application/pdf" hidden data-deck-file />
+      <span class="drop-icon" aria-hidden="true">＋</span>
+      <span class="drop-title">Pick your file</span>
+      <span class="micro">PDF or PPTX · up to 25 MB · <span data-slide-rule>15 slides</span></span>
+    </label>
+
+    <div class="field">
+      <label for="teamName">Team name</label>
+      <input id="teamName" type="text" placeholder="Team Kestrel" required />
+    </div>
+
+    <div class="field">
+      <label for="teamCollege">College or company</label>
+      <input id="teamCollege" type="text" placeholder="PSG College of Technology" required />
+    </div>
+
+    <div class="field" data-group-field hidden>
+      <label for="deckGroup">Group</label>
+      <select id="deckGroup"></select>
+    </div>
+
+    <div class="field">
+      <label for="oneLiner">One line about your idea</label>
+      <input id="oneLiner" type="text" maxlength="90" placeholder="Cheaper health cover for gig workers" />
+    </div>
+
+    <p class="micro" data-upload-note role="status">Your slides are shown as pictures with your team name on them. The file itself stays private.</p>
+
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" value="cancel" type="submit">Cancel</button>
+      <button class="btn btn-primary" value="save" type="submit">Put it on the wall</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- DECK VIEWER -->
+<dialog class="viewer" data-viewer aria-label="Deck viewer">
+  <div class="viewer-top">
+    <div>
+      <h2 class="h3" data-viewer-team>Team</h2>
+      <p class="micro" data-viewer-sub>College · Group</p>
+    </div>
+    <button class="icon-btn" data-viewer-close aria-label="Close">✕</button>
+  </div>
+
+  <div class="viewer-stage">
+    <button class="nav-arrow" data-prev aria-label="Previous slide">‹</button>
+    <div class="slide" data-slide>
+      <span class="slide-n" data-slide-n>Slide 1</span>
+      <p class="micro" data-slide-note>Slides appear here once the file has been turned into pictures.</p>
+    </div>
+    <button class="nav-arrow" data-next aria-label="Next slide">›</button>
+  </div>
+
+  <div class="viewer-foot">
+    <span class="micro" data-viewer-count>1 of 1</span>
+    <button class="vote-btn" data-viewer-vote>Vote</button>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

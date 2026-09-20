@@ -479,3 +479,411 @@
   form.querySelector('[data-swatch="1"]').setAttribute('aria-pressed', 'true');
   draw();
 })();
+
+/* ---------------- the deck wall ---------------- */
+
+(function deckWall() {
+  const grid = document.querySelector('[data-grid]');
+  if (!grid) return;
+
+  const MAX_BYTES = 25 * 1024 * 1024;
+  const COVERS = [
+    'linear-gradient(140deg, #47564a, #6f8472)',
+    'linear-gradient(140deg, #c9541f, #e59264)',
+    'linear-gradient(140deg, #1b1a16, #4a463c)',
+    'linear-gradient(140deg, #4b5d6b, #7d95a5)',
+    'linear-gradient(140deg, #7a5230, #b98a5d)',
+  ];
+
+  const store = {
+    read(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key)) ?? fallback;
+      } catch (err) {
+        return fallback;
+      }
+    },
+    write(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (err) {
+        /* private mode — the wall still works for this visit */
+      }
+    },
+  };
+
+  const event = store.read('podium.event', null);
+  const profile = store.read('podium.profile', null);
+  let decks = store.read('podium.decks', []);
+  let votes = store.read('podium.votes', {});   /* group name (or "all") -> deck id */
+
+  let filter = 'all';
+  let query = '';
+  let sort = 'new';
+
+  /* ---- event header ---- */
+
+  const els = {
+    banner: document.querySelector('[data-event-banner]'),
+    name: document.querySelector('[data-event-name]'),
+    meta: document.querySelector('[data-event-meta]'),
+    pill: document.querySelector('[data-state-pill]'),
+    left: document.querySelector('[data-vote-left]'),
+    chips: document.querySelector('[data-chips]'),
+    empty: document.querySelector('[data-empty]'),
+    countAll: document.querySelector('[data-count-all]'),
+  };
+
+  const groups = event?.groups?.length ? event.groups : [];
+
+  function stage() {
+    if (!event) return 'open';
+    const now = Date.now();
+    const opens = event.voteOpen ? new Date(event.voteOpen).getTime() : null;
+    const closes = event.voteClose ? new Date(event.voteClose).getTime() : null;
+    if (closes && now > closes) return 'closed';
+    if (opens && now >= opens) return 'voting';
+    return 'open';
+  }
+
+  function clockWord(value) {
+    if (!value) return '';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  }
+
+  function drawHead() {
+    if (!event) return;
+    els.name.textContent = event.name || 'The deck wall';
+    const bits = [event.host, event.venue || (event.mode === 'online' ? 'Online' : '')].filter(Boolean);
+    els.meta.textContent = bits.join(' · ') || 'Your event';
+    if (event.banner) els.banner.className = `event-banner sw-${event.banner}`;
+
+    const now = stage();
+    els.pill.dataset.stage = now;
+    els.pill.textContent =
+      now === 'closed' ? 'Voting closed' : now === 'voting' ? 'Voting open' : 'Uploads open';
+
+    if (now === 'closed') {
+      els.left.textContent = 'Results are in';
+    } else if (now === 'voting') {
+      els.left.textContent = event.voteClose
+        ? `Voting closes ${clockWord(event.voteClose)}`
+        : 'Counts stay hidden until voting closes';
+    } else {
+      els.left.textContent = event.voteOpen
+        ? `Voting opens ${clockWord(event.voteOpen)}`
+        : 'Voting has not opened yet';
+    }
+  }
+
+  function drawChips() {
+    if (!groups.length) return;
+    groups.forEach((g) => {
+      const btn = document.createElement('button');
+      btn.className = 'chip-btn';
+      btn.dataset.group = g;
+      btn.setAttribute('aria-pressed', 'false');
+      btn.innerHTML = `${g} <span data-count="${g}">0</span>`;
+      els.chips.appendChild(btn);
+    });
+  }
+
+  /* ---- the wall ---- */
+
+  function initials(team) {
+    return team
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0].toUpperCase())
+      .join('');
+  }
+
+  function voteKeyFor(deck) {
+    return groups.length ? deck.group : 'all';
+  }
+
+  function isMine(deck) {
+    return profile?.name && deck.owner === profile.name;
+  }
+
+  function visible() {
+    let list = decks.slice();
+    if (filter !== 'all') list = list.filter((d) => d.group === filter);
+    if (query) {
+      const q = query.toLowerCase();
+      list = list.filter(
+        (d) =>
+          d.team.toLowerCase().includes(q) ||
+          (d.college || '').toLowerCase().includes(q) ||
+          (d.line || '').toLowerCase().includes(q)
+      );
+    }
+    if (sort === 'team') list.sort((a, b) => a.team.localeCompare(b.team));
+    else if (sort === 'old') list.sort((a, b) => a.at - b.at);
+    else list.sort((a, b) => b.at - a.at);
+    return list;
+  }
+
+  function counts() {
+    els.countAll.textContent = decks.length;
+    groups.forEach((g) => {
+      const el = document.querySelector(`[data-count="${g}"]`);
+      if (el) el.textContent = decks.filter((d) => d.group === g).length;
+    });
+  }
+
+  function voteLabel(deck) {
+    const key = voteKeyFor(deck);
+    const mine = votes[key];
+    const now = stage();
+
+    if (now === 'closed') return { text: 'Voting closed', disabled: true, voted: mine === deck.id };
+    if (now !== 'voting') return { text: 'Voting soon', disabled: true, voted: false };
+    if (isMine(deck)) return { text: 'Your deck', disabled: true, voted: false };
+    if (mine === deck.id) return { text: 'Voted', disabled: false, voted: true };
+    return { text: 'Vote', disabled: false, voted: false };
+  }
+
+  function render() {
+    const list = visible();
+    grid.innerHTML = '';
+    els.empty.hidden = decks.length > 0;
+
+    list.forEach((deck, i) => {
+      const card = document.createElement('article');
+      card.className = `deck${isMine(deck) ? ' mine' : ''}`;
+      card.style.animationDelay = `${Math.min(i, 8) * 35}ms`;
+
+      const state = voteLabel(deck);
+
+      card.innerHTML = `
+        <button class="deck-cover" style="background:${deck.cover}" data-open="${deck.id}"
+                data-slides="${deck.slides} slides" aria-label="Open ${deck.team}'s deck">
+          ${initials(deck.team)}
+        </button>
+        <div class="deck-info">
+          <h3>${deck.team}</h3>
+          <p>${deck.college || ''}</p>
+          ${deck.line ? `<p class="deck-line">${deck.line}</p>` : ''}
+        </div>
+        <div class="deck-foot">
+          <span class="deck-tag">${deck.group || 'All decks'}</span>
+          <button class="vote-btn${state.voted ? ' voted' : ''}" data-vote="${deck.id}"
+                  ${state.disabled ? 'disabled' : ''}>${state.text}</button>
+        </div>`;
+
+      grid.appendChild(card);
+    });
+
+    counts();
+  }
+
+  /* ---- voting: one per group, never your own, counts stay hidden ---- */
+
+  function castVote(id) {
+    const deck = decks.find((d) => d.id === id);
+    if (!deck || stage() !== 'voting' || isMine(deck)) return;
+
+    const key = voteKeyFor(deck);
+    votes[key] = votes[key] === id ? undefined : id;   /* clicking again takes it back */
+    if (!votes[key]) delete votes[key];
+    store.write('podium.votes', votes);
+    render();
+  }
+
+  grid.addEventListener('click', (e) => {
+    const voteBtn = e.target.closest('[data-vote]');
+    if (voteBtn) {
+      castVote(voteBtn.dataset.vote);
+      return;
+    }
+    const cover = e.target.closest('[data-open]');
+    if (cover) openViewer(cover.dataset.open);
+  });
+
+  els.chips.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chip-btn');
+    if (!btn) return;
+    filter = btn.dataset.group;
+    els.chips.querySelectorAll('.chip-btn').forEach((b) =>
+      b.setAttribute('aria-pressed', String(b === btn))
+    );
+    render();
+  });
+
+  document.querySelector('[data-search]')?.addEventListener('input', (e) => {
+    query = e.target.value.trim();
+    render();
+  });
+
+  document.querySelector('[data-sort]')?.addEventListener('change', (e) => {
+    sort = e.target.value;
+    render();
+  });
+
+  /* ---- upload ---- */
+
+  const sheet = document.querySelector('[data-upload-sheet]');
+  const uploadForm = document.querySelector('[data-upload-form]');
+  const fileInput = document.querySelector('[data-deck-file]');
+  const groupField = document.querySelector('[data-group-field]');
+  const groupSelect = document.querySelector('#deckGroup');
+  const uploadNote = document.querySelector('[data-upload-note]');
+  const defaultNote = uploadNote.textContent;
+  let picked = null;
+
+  if (groups.length) {
+    groupField.hidden = false;
+    groups.forEach((g) => {
+      const opt = document.createElement('option');
+      opt.value = g;
+      opt.textContent = g;
+      groupSelect.appendChild(opt);
+    });
+  }
+
+  if (event?.maxSlides) {
+    document.querySelector('[data-slide-rule]').textContent = `${event.maxSlides} slides`;
+  }
+
+  document.querySelectorAll('[data-open-upload]').forEach((btn) => {
+    btn.addEventListener('click', () => sheet.showModal());
+  });
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const okType = /\.(pdf|pptx)$/i.test(file.name);
+    if (!okType) {
+      uploadNote.textContent = 'That file is not a PDF or a PPTX. Export it again and try once more.';
+      uploadNote.style.color = 'var(--accent)';
+      fileInput.value = '';
+      return;
+    }
+    if (file.size > MAX_BYTES) {
+      const mb = Math.round(file.size / 1048576);
+      uploadNote.textContent = `That file is ${mb} MB. Export it as a PDF and it usually drops under 25 MB.`;
+      uploadNote.style.color = 'var(--accent)';
+      fileInput.value = '';
+      return;
+    }
+
+    picked = { name: file.name, size: file.size };
+    uploadNote.textContent = defaultNote;
+    uploadNote.style.color = '';
+    const drop = document.querySelector('[data-deck-drop]');
+    drop.classList.add('filled');
+    drop.querySelector('.drop-title').textContent = file.name;
+  });
+
+  uploadForm.addEventListener('submit', (e) => {
+    if (e.submitter?.value !== 'save') return;
+
+    const team = uploadForm.querySelector('#teamName').value.trim();
+    const college = uploadForm.querySelector('#teamCollege').value.trim();
+
+    if (!picked || !team || !college) {
+      e.preventDefault();
+      uploadNote.textContent = 'Pick a file, then fill in your team name and college.';
+      uploadNote.style.color = 'var(--accent)';
+      return;
+    }
+
+    decks.push({
+      id: `d${Date.now().toString(36)}`,
+      team,
+      college,
+      group: groups.length ? groupSelect.value : '',
+      line: uploadForm.querySelector('#oneLiner').value.trim(),
+      file: picked.name,
+      /* real slide counts come from the server once the file is rendered */
+      slides: event?.maxSlides || 15,
+      cover: COVERS[decks.length % COVERS.length],
+      owner: profile?.name || team,
+      at: Date.now(),
+    });
+
+    store.write('podium.decks', decks);
+    uploadForm.reset();
+    picked = null;
+    const drop = document.querySelector('[data-deck-drop]');
+    drop.classList.remove('filled');
+    drop.querySelector('.drop-title').textContent = 'Pick your file';
+    uploadNote.textContent = defaultNote;
+    render();
+  });
+
+  /* ---- viewer ---- */
+
+  const viewer = document.querySelector('[data-viewer]');
+  const vTeam = document.querySelector('[data-viewer-team]');
+  const vSub = document.querySelector('[data-viewer-sub]');
+  const vCount = document.querySelector('[data-viewer-count]');
+  const vNum = document.querySelector('[data-slide-n]');
+  const vNote = document.querySelector('[data-slide-note]');
+  const vVote = document.querySelector('[data-viewer-vote]');
+  const prev = document.querySelector('[data-prev]');
+  const next = document.querySelector('[data-next]');
+
+  let open = null;
+  let page = 1;
+
+  function drawViewer() {
+    if (!open) return;
+    vTeam.textContent = open.team;
+    vSub.textContent = [open.college, open.group].filter(Boolean).join(' · ');
+    vNum.textContent = `Slide ${page}`;
+    vCount.textContent = `${page} of ${open.slides}`;
+    vNote.textContent = `From ${open.file}. Slides appear here once the file has been turned into pictures.`;
+    prev.disabled = page === 1;
+    next.disabled = page === open.slides;
+
+    const state = voteLabel(open);
+    vVote.textContent = state.text;
+    vVote.disabled = state.disabled;
+    vVote.classList.toggle('voted', state.voted);
+  }
+
+  function openViewer(id) {
+    open = decks.find((d) => d.id === id);
+    if (!open) return;
+    page = 1;
+    drawViewer();
+    viewer.showModal();
+  }
+
+  prev.addEventListener('click', () => {
+    if (page > 1) { page -= 1; drawViewer(); }
+  });
+  next.addEventListener('click', () => {
+    if (open && page < open.slides) { page += 1; drawViewer(); }
+  });
+
+  vVote.addEventListener('click', () => {
+    if (!open) return;
+    castVote(open.id);
+    drawViewer();
+  });
+
+  document.querySelector('[data-viewer-close]').addEventListener('click', () => viewer.close());
+
+  document.addEventListener('keydown', (e) => {
+    if (!viewer.open) return;
+    if (e.key === 'ArrowLeft') prev.click();
+    if (e.key === 'ArrowRight') next.click();
+    if (e.key.toLowerCase() === 'v' && !vVote.disabled) vVote.click();
+  });
+
+  drawHead();
+  drawChips();
+  render();
+})();
