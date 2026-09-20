@@ -10,6 +10,7 @@ Podium puts the deck in front of everyone who showed up, so the idea gets read b
 the people it was made for.
 
 **Live:** https://rmagdaleena2508-01.github.io/OLTA---VOTE-YOUR-PPT/
+**Version:** v1 — the whole flow runs in the browser. See [What's in v1](#whats-in-v1).
 
 ---
 
@@ -250,27 +251,79 @@ group — event name, wall link, code, file rules and the voting deadline — pl
 QR of the wall they can attach. The poster itself is kept only so a team can tap
 it on the wall and re-read the rules.
 
-## What is built, and what is not
+## What's in v1
 
-**Built:** the landing page, the onboarding flow, the folding menu, the event code
-field (shape check only), the organiser setup screen with a live preview of the
-event card, the deck wall with upload, filters, a slide viewer and working vote
-rules, the organiser dashboard, the results page with the podium, and the
-research behind every rule above.
+Version 1 is everything below. It is the whole flow, front to back, running in
+the browser — the screens are real, the rules are real, and the data lives in
+the browser until a server is added.
 
-The wall reads the event the organiser set up and keeps decks and votes in the
-browser, so the whole flow can be walked end to end before there is a server.
+**The pages**
 
-**Not built yet, in the order I plan to build it:**
+| Page | What it does |
+|---|---|
+| `index.html` | The landing page: hero, live counter bar, the "Trusted by" college row, how an event runs, the three roles in tabs, a sample podium, and the questions people ask |
+| `onboarding.html` | Sign in, say what you came for, add your name and college. Two steps |
+| `create-event.html` | The organiser's setup screen: banner, name, date, mode, sign-up link, deck rules, voting window, who can find it — with a live preview of the event card and the code to share |
+| `event.html` | The deck wall: every deck as a card, filters per group, search, sort, the round Upload button, a slide viewer, and the vote button |
+| `dashboard.html` | The organiser's screen: the share kit, four counts, decks to let in or hide, standings, the checks worth running, and the button that closes voting |
+| `results.html` | The podium, the rest of the field, copy the results, download the CSV |
 
-1. **Event page** — poster, dates, a link out to the organiser's sign-up form, and a
-   countdown to the voting deadline.
-2. **Share card** — a 1080 x 1920 image of the winner, for the stories every
-   team will post anyway.
-3. **Real accounts and storage** — Google sign-in, decks in object storage, slides
-   rendered to images, and votes in a table with a unique constraint on
-   `(voter_id, deck_id)` so a double vote is impossible in the data, not only in
-   the interface.
+**The rules that work today**
+
+- One vote per deck. Back as many decks as you like, once each, and a vote can
+  never be taken back — the button turns into "You have voted" and closes.
+- Nobody can vote for their own deck.
+- No vote count is shown to anyone until the organiser closes voting. The
+  organiser sees counts on their dashboard the whole time.
+- Voting only opens inside the window the organiser set, and the organiser can
+  open it, extend it, or close it by hand.
+- Uploads are PDF or PPTX, up to 25 MB, one deck per team, with a slide limit the
+  organiser chooses.
+- Event codes are six characters with no `O`, `I`, `0` or `1`, so a code read off
+  a poster cannot be mistyped into a different event.
+- Sign-ups and money never touch the site. They stay on the organiser's own form.
+
+**How it looks and moves**
+
+- Warm off-white page with a faint dot grid, Satoshi for headings, Geist for
+  everything else, one line of Instrument Serif italic in the hero, and one
+  accent colour reserved for the vote.
+- The hero photograph sits behind the words, and the section below laps over it as
+  a rounded sheet, so there is no hard seam.
+- A glass card across that seam counts three numbers up from zero.
+- The vote arrow flies up and away when pressed, and the winners' podium rises
+  step by step with one burst of confetti behind the winner.
+- Three college marks drift left to right under "Trusted by" at a steady walking
+  pace.
+
+**What is still a placeholder in v1**
+
+- Sign-in does not sign anyone in yet. Roles are stored in the browser.
+- The counter bar shows 1 event, 3 decks and 6 votes as illustration.
+- The sample podium on the landing page uses made-up team names.
+- Slides are not rendered yet, so the viewer shows a frame per slide rather than
+  the slide itself.
+- Decks and votes are kept in the browser, so counts are per device.
+
+**Next, and why it needs a server**
+
+1. **Real accounts** — one sign-in, and a role that comes from what you did, not
+   from what the browser claims.
+2. **Real decks and votes** — a database with a unique constraint on
+   `(event_id, voter_id, deck_id)`, so a double vote is impossible in the data
+   and not only in the interface.
+3. **Slide rendering** — turn a PDF into page images on upload, and read the real
+   page count while doing it.
+4. **Teams and Voters lists** for the organiser, with CSV.
+5. **Event page** — poster, dates, a link out to the sign-up form, and a countdown.
+6. **Share card** — a 1080 x 1920 image of the winner for the stories teams post
+   anyway.
+
+The plan for all six, with the security holes to close first, is in
+[`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md).
+
+> Keeping this file honest: new work goes under **What's in v2** when I say so.
+> Until then, changes belong in this v1 section.
 
 ## File rules for uploads
 
@@ -298,5 +351,9 @@ browser, so the whole flow can be walked end to end before there is a server.
 - [`docs/MARKET-RESEARCH.md`](docs/MARKET-RESEARCH.md) — how other platforms answer
   voting, files and retention, with sources.
 - [`docs/EVENT-CODES.md`](docs/EVENT-CODES.md) — the full event code design.
+- [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) — what to remove, what to secure, how
+  ties are settled, and the database behind version 2.
+- [`docs/STRUCTURE-PLAN.md`](docs/STRUCTURE-PLAN.md) — the page-by-page review, what
+  to cut and what to add.
 - [`docs/DESIGN-REVIEW.md`](docs/DESIGN-REVIEW.md) — what is good, what to cut, and
   what to add next.
