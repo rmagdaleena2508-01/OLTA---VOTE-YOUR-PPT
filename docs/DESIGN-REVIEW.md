@@ -225,3 +225,38 @@ in Podium. A footer is where trust questions go to be answered.
 - Empty states with a drawing and one sentence, never a blank panel.
 - Respect `prefers-reduced-motion` for the pulse dot as well as the scroll
   reveals (currently only the reveals are covered).
+
+
+---
+
+## 13. The organiser setup screen
+
+Shipped. "Run an event" no longer drops an organiser on the participant's role
+screen — it goes straight to `create-event.html`, because someone who came to
+run an event has already told you who they are.
+
+What the screen asks for, and why each field earns its place:
+
+| Field | Why it is there |
+|---|---|
+| Banner, uploaded or one of four defaults | Sits on the event page and behind every deck card. Defaults mean nobody is blocked on a designer. |
+| Event name, run by | The two lines every deck card shows. |
+| Date and start time | What the event card leads with. |
+| Mode: in person, online, both | Reveals either a venue field or a meeting link, never both. |
+| Sign-up form link | Podium does not take sign-ups. The link sends teams to the organiser's own form. |
+| Entry fee as free text | Shown, never charged. |
+| Poster upload | The poster already carries the form and the payment QR. Teams tap it to sign up. |
+| Slide limit and upload deadline | The two rules organisers always set themselves. File type and size are fixed at PDF or PPTX and 25 MB. |
+| Downloads toggle, off by default | Teams fear their idea being lifted. The safe answer is the default. |
+| Groups, comma separated | Drives the voting rule: one vote per group, or one for the whole event when blank. |
+| Who can vote | Anyone signed in, or only the competing teams. |
+| Voting opens and closes | The window. Counts stay hidden until it closes. |
+| Listed or code-only | Whether the event appears in the open events list. |
+
+The right column holds a live preview of the event card teams will see, plus the
+generated six-character code and the exact line to print on the poster, with a
+copy button. The code is generated in the browser from the same alphabet the
+rest of the product uses.
+
+Left for the server: saving the event, checking the code is unique, storing the
+banner and poster, and the organiser dashboard that follows.

@@ -95,6 +95,16 @@
   card.querySelector('[data-action="signin"]')?.addEventListener('click', (e) => {
     /* Real Google sign-in goes here. For now it just advances the flow. */
     e.preventDefault();
+
+    /* An organiser did not come here to pick a role — send them to the setup
+       screen, carrying any event code along. */
+    if (intent === 'host') {
+      location.href = eventCode
+        ? `create-event.html?code=${encodeURIComponent(eventCode)}`
+        : 'create-event.html';
+      return;
+    }
+
     show(2);
     if (intent && intentToRole[intent]) selectRole(intentToRole[intent]);
   });
@@ -135,8 +145,7 @@
 
   card.querySelector('[data-action="invite"]')?.addEventListener('click', (e) => {
     e.preventDefault();
-    selectRole('organiser');
-    if (teamField) teamField.hidden = true;
+    location.href = 'create-event.html';
   });
 })();
 
@@ -240,4 +249,233 @@
     { threshold: 0 }
   );
   io.observe(hero);
+})();
+
+/* ---------------- organiser: set up your event ---------------- */
+
+(function eventSetup() {
+  const form = document.querySelector('[data-event-form]');
+  if (!form) return;
+
+  /* Same alphabet as the rest of the product: no O, I, zero or one, because
+     those are what people misread off a poster. See docs/EVENT-CODES.md. */
+  const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+  function makeCode() {
+    const bytes = new Uint32Array(6);
+    crypto.getRandomValues(bytes);
+    return [...bytes].map((n) => ALPHABET[n % ALPHABET.length]).join('');
+  }
+
+  const state = {
+    code: makeCode(),
+    mode: 'offline',
+    voters: 'anyone',
+    privacy: 'public',
+    banner: 1,
+  };
+
+  const el = (sel) => form.querySelector(sel) || document.querySelector(sel);
+  const bind = (name) => form.querySelector(`[data-bind="${name}"]`);
+
+  const preview = {
+    banner: el('[data-preview-banner]'),
+    name: el('[data-preview-name]'),
+    host: el('[data-preview-host]'),
+    date: el('[data-preview-date]'),
+    mode: el('[data-preview-mode]'),
+    fee: el('[data-preview-fee]'),
+    code: el('[data-preview-code]'),
+    poster: el('[data-poster-line]'),
+  };
+
+  const MODE_WORDS = { offline: 'In person', online: 'Online', hybrid: 'In person and online' };
+
+  function prettyDate(value, time) {
+    if (!value) return 'Date not set';
+    const d = new Date(`${value}T${time || '00:00'}`);
+    if (Number.isNaN(d.getTime())) return 'Date not set';
+    const day = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
+    if (!time) return day;
+    return `${day}, ${d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })}`;
+  }
+
+  function draw() {
+    const name = bind('name').value.trim();
+    const host = bind('host').value.trim();
+    const fee = bind('fee').value.trim();
+    const venue = bind('venue').value.trim();
+
+    preview.name.textContent = name || 'Your event name';
+    preview.host.textContent = host ? `Run by ${host}` : 'Run by you';
+    preview.date.textContent = prettyDate(bind('date').value, bind('time').value);
+    preview.mode.textContent = venue && state.mode !== 'online'
+      ? `${MODE_WORDS[state.mode]} · ${venue}`
+      : MODE_WORDS[state.mode];
+    preview.fee.textContent = fee || 'Free to enter';
+    preview.code.textContent = state.code;
+    preview.poster.textContent = `Vote on Podium · code ${state.code}`;
+  }
+
+  /* banner: uploaded file wins, otherwise one of the four defaults */
+  form.querySelectorAll('[data-swatch]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.banner = btn.dataset.swatch;
+      form.querySelectorAll('[data-swatch]').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b === btn))
+      );
+      preview.banner.style.backgroundImage = '';
+      preview.banner.className = `preview-banner sw-${state.banner}`;
+    });
+  });
+
+  function showImage(input, target, label) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      note('That image is over 5 MB. Try a smaller one.', true);
+      input.value = '';
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    if (target) {
+      target.className = 'preview-banner';
+      target.style.backgroundImage = `url("${url}")`;
+    }
+    const drop = input.closest('.drop');
+    if (drop) {
+      drop.classList.add('filled');
+      drop.querySelector('.drop-title').textContent = `${label}: ${file.name}`;
+    }
+  }
+
+  form.querySelector('[data-banner-file]')?.addEventListener('change', (e) =>
+    showImage(e.target, preview.banner, 'Banner')
+  );
+  form.querySelector('[data-poster-file]')?.addEventListener('change', (e) =>
+    showImage(e.target, null, 'Poster')
+  );
+
+  /* segmented controls */
+  function segment(attr, key, after) {
+    form.querySelectorAll(`[data-${attr}]`).forEach((btn) => {
+      btn.addEventListener('click', () => {
+        state[key] = btn.dataset[attr];
+        form.querySelectorAll(`[data-${attr}]`).forEach((b) =>
+          b.setAttribute('aria-checked', String(b === btn))
+        );
+        if (after) after();
+        draw();
+      });
+    });
+  }
+
+  segment('mode', 'mode', () => {
+    const offline = form.querySelector('[data-when="offline"]');
+    const online = form.querySelector('[data-when="online"]');
+    offline.hidden = state.mode === 'online';
+    online.hidden = state.mode === 'offline';
+  });
+
+  segment('voters', 'voters');
+
+  segment('privacy', 'privacy', () => {
+    const noteEl = form.querySelector('[data-privacy-note]');
+    noteEl.textContent =
+      state.privacy === 'public'
+        ? 'Listed events show up in the open events list, so people can wander in and vote.'
+        : 'Only people who type the code can open this event. It stays off the list.';
+  });
+
+  form.querySelectorAll('[data-bind]').forEach((input) => {
+    input.addEventListener('input', draw);
+  });
+
+  function note(message, bad) {
+    const n = form.querySelector('[data-form-note]');
+    if (!n) return;
+    n.textContent = message;
+    n.style.color = bad ? 'var(--accent)' : '';
+  }
+
+  form.querySelector('[data-copy]')?.addEventListener('click', async (e) => {
+    try {
+      await navigator.clipboard.writeText(preview.poster.textContent);
+      e.target.textContent = 'Copied';
+      setTimeout(() => (e.target.textContent = 'Copy'), 1600);
+    } catch (err) {
+      note('Could not copy. Select the line and copy it by hand.', true);
+    }
+  });
+
+  function collect() {
+    const groups = bind('groups').value
+      .split(',')
+      .map((g) => g.trim())
+      .filter(Boolean);
+
+    return {
+      code: state.code,
+      name: bind('name').value.trim(),
+      host: bind('host').value.trim(),
+      date: bind('date').value,
+      time: bind('time').value,
+      mode: state.mode,
+      venue: bind('venue').value.trim(),
+      link: bind('link').value.trim(),
+      signupForm: bind('form').value.trim(),
+      fee: bind('fee').value.trim(),
+      maxSlides: Number(bind('slides').value) || 15,
+      uploadsClose: bind('deadline').value,
+      downloads: bind('downloads').checked,
+      groups,
+      voters: state.voters,
+      voteOpen: bind('voteOpen').value,
+      voteClose: bind('voteClose').value,
+      privacy: state.privacy,
+      banner: state.banner,
+    };
+  }
+
+  function save(draft) {
+    try {
+      localStorage.setItem('podium.event', JSON.stringify({ ...collect(), draft }));
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  form.querySelector('[data-save]')?.addEventListener('click', () => {
+    const ok = save(true);
+    note(ok ? 'Draft saved on this device.' : 'Could not save on this device.', !ok);
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = collect();
+
+    if (!data.name || !data.host || !data.date) {
+      note('Fill in the event name, who runs it, and the date.', true);
+      return;
+    }
+    if (data.voteOpen && data.voteClose && data.voteClose <= data.voteOpen) {
+      note('Voting has to close after it opens.', true);
+      return;
+    }
+
+    save(false);
+    note(`Event created. Your code is ${data.code} — print it on the poster.`, false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* sensible starting dates: event tomorrow, voting that evening */
+  const tomorrow = new Date(Date.now() + 864e5);
+  const iso = tomorrow.toISOString().slice(0, 10);
+  bind('date').value = iso;
+  bind('deadline').value = `${iso}T09:00`;
+  bind('voteOpen').value = `${iso}T14:00`;
+  bind('voteClose').value = `${iso}T21:00`;
+  form.querySelector('[data-swatch="1"]').setAttribute('aria-pressed', 'true');
+  draw();
 })();

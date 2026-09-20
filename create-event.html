@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Podium — Set up your event</title>
+<meta name="description" content="Name your event, pick a banner, set the voting window, and get the code to print on your poster." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffffff'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='20' font-weight='bold' text-anchor='middle' fill='%23070707'%3EP%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="setup">
+
+<header class="header">
+  <div class="wrap">
+    <div class="header-inner">
+      <a class="brand" href="index.html"><span class="mark">P</span> Podium</a>
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-sm" href="index.html">Back to site</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap setup-main" id="main">
+
+  <div class="setup-head">
+    <p class="eyebrow">For organisers</p>
+    <h1 class="h2">Set up your event.</h1>
+    <p class="lede">Five minutes. Then you print the code on your poster and teams start uploading.</p>
+  </div>
+
+  <form class="setup-grid" data-event-form>
+
+    <div class="setup-form">
+
+      <!-- BANNER -->
+      <section class="panel">
+        <h2 class="panel-title">Banner</h2>
+        <p class="panel-note">This sits on top of your event page and behind every deck card. Use your own, or pick one of ours.</p>
+
+        <label class="drop" for="bannerFile" data-drop>
+          <input id="bannerFile" type="file" accept="image/png,image/jpeg,image/webp" hidden data-banner-file />
+          <span class="drop-icon" aria-hidden="true">＋</span>
+          <span class="drop-title">Upload a banner</span>
+          <span class="micro">JPG, PNG or WebP · 1600 × 400 or wider · up to 5 MB</span>
+        </label>
+
+        <p class="micro" style="margin:16px 0 10px">Or start with one of these</p>
+        <div class="swatches" role="group" aria-label="Default banners">
+          <button type="button" class="swatch sw-1" data-swatch="1" aria-label="Warm paper banner"></button>
+          <button type="button" class="swatch sw-2" data-swatch="2" aria-label="Carriage green banner"></button>
+          <button type="button" class="swatch sw-3" data-swatch="3" aria-label="Burnt orange banner"></button>
+          <button type="button" class="swatch sw-4" data-swatch="4" aria-label="Ink banner"></button>
+        </div>
+      </section>
+
+      <!-- BASICS -->
+      <section class="panel">
+        <h2 class="panel-title">The basics</h2>
+
+        <div class="field">
+          <label for="eventName">Event name</label>
+          <input id="eventName" type="text" placeholder="Startup Summit, Pitch Night, Hack Finals…" required data-bind="name" />
+        </div>
+
+        <div class="field">
+          <label for="hostName">Run by</label>
+          <input id="hostName" type="text" placeholder="E-Cell, PSG College of Technology" required data-bind="host" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="eventDate">Event date</label>
+            <input id="eventDate" type="date" required data-bind="date" />
+          </div>
+          <div class="field">
+            <label for="eventTime">Start time</label>
+            <input id="eventTime" type="time" value="10:00" data-bind="time" />
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="label-text">Mode</span>
+          <div class="segmented" role="radiogroup" aria-label="Mode">
+            <button type="button" role="radio" aria-checked="true" data-mode="offline">In person</button>
+            <button type="button" role="radio" aria-checked="false" data-mode="online">Online</button>
+            <button type="button" role="radio" aria-checked="false" data-mode="hybrid">Both</button>
+          </div>
+        </div>
+
+        <div class="field" data-when="offline">
+          <label for="venue">Where</label>
+          <input id="venue" type="text" placeholder="Main Auditorium, Block C" data-bind="venue" />
+        </div>
+
+        <div class="field" data-when="online" hidden>
+          <label for="meetLink">Meeting link</label>
+          <input id="meetLink" type="url" placeholder="https://meet.google.com/…" data-bind="link" />
+        </div>
+      </section>
+
+      <!-- SIGN-UPS -->
+      <section class="panel">
+        <h2 class="panel-title">Sign-ups and fee</h2>
+        <p class="panel-note">
+          Podium does not take sign-ups or money. Keep that on your own form, where it already works,
+          and paste the link here so teams can find it.
+        </p>
+
+        <div class="field">
+          <label for="formLink">Sign-up form link</label>
+          <input id="formLink" type="url" placeholder="https://forms.gle/…" data-bind="form" />
+        </div>
+
+        <div class="field">
+          <label for="fee">Entry fee <span class="micro">(shown as text only)</span></label>
+          <input id="fee" type="text" placeholder="₹150 per team, or leave blank if free" data-bind="fee" />
+        </div>
+
+        <label class="drop drop-sm" for="posterFile">
+          <input id="posterFile" type="file" accept="image/png,image/jpeg" hidden data-poster-file />
+          <span class="drop-title">Upload your poster</span>
+          <span class="micro">The one with your form and payment QR on it. Teams tap it to sign up.</span>
+        </label>
+      </section>
+
+      <!-- DECKS -->
+      <section class="panel">
+        <h2 class="panel-title">Deck rules</h2>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="maxSlides">Slide limit</label>
+            <input id="maxSlides" type="number" min="3" max="60" value="15" data-bind="slides" />
+          </div>
+          <div class="field">
+            <label for="deadline">Uploads close</label>
+            <input id="deadline" type="datetime-local" data-bind="deadline" />
+          </div>
+        </div>
+
+        <p class="micro" style="margin:0 0 12px">Every event takes PDF or PPTX, up to 25 MB. One deck per team.</p>
+
+        <label class="toggle">
+          <input type="checkbox" data-bind="downloads" />
+          <span class="toggle-box" aria-hidden="true"></span>
+          <span>
+            <b>Let people download decks</b>
+            <span class="micro">Off by default. Slides are shown as images with the team name on them, so nobody walks off with the file.</span>
+          </span>
+        </label>
+      </section>
+
+      <!-- VOTING -->
+      <section class="panel">
+        <h2 class="panel-title">Voting</h2>
+
+        <div class="field">
+          <label for="groups">Groups <span class="micro">(optional)</span></label>
+          <input id="groups" type="text" placeholder="Fintech, Health, Climate" data-bind="groups" />
+          <p class="micro" style="margin:8px 0 0">Comma separated. Each person gets one vote in every group. Leave it blank and they get one vote for the whole event.</p>
+        </div>
+
+        <div class="field">
+          <span class="label-text">Who can vote</span>
+          <div class="segmented" role="radiogroup" aria-label="Who can vote">
+            <button type="button" role="radio" aria-checked="true" data-voters="anyone">Anyone signed in</button>
+            <button type="button" role="radio" aria-checked="false" data-voters="teams">Only the teams</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="voteOpen">Voting opens</label>
+            <input id="voteOpen" type="datetime-local" data-bind="voteOpen" />
+          </div>
+          <div class="field">
+            <label for="voteClose">Voting closes</label>
+            <input id="voteClose" type="datetime-local" data-bind="voteClose" />
+          </div>
+        </div>
+
+        <p class="micro">Counts stay hidden from everyone until you close voting. Teams cannot vote for themselves.</p>
+      </section>
+
+      <!-- VISIBILITY -->
+      <section class="panel">
+        <h2 class="panel-title">Who can find it</h2>
+
+        <div class="segmented" role="radiogroup" aria-label="Who can find it">
+          <button type="button" role="radio" aria-checked="true" data-privacy="public">Listed</button>
+          <button type="button" role="radio" aria-checked="false" data-privacy="private">Code only</button>
+        </div>
+        <p class="micro" style="margin-top:12px" data-privacy-note>Listed events show up in the open events list, so people can wander in and vote.</p>
+      </section>
+
+      <div class="setup-actions">
+        <button class="btn btn-ghost" type="button" data-save>Save draft</button>
+        <button class="btn btn-primary btn-lg" type="submit">Create event</button>
+      </div>
+      <p class="micro" data-form-note role="status">You can change all of this until voting opens.</p>
+    </div>
+
+    <!-- LIVE PREVIEW -->
+    <aside class="setup-side">
+      <div class="sticky">
+        <p class="micro" style="margin-bottom:10px">How teams will see it</p>
+
+        <div class="preview">
+          <div class="preview-banner sw-1" data-preview-banner></div>
+          <div class="preview-body">
+            <h3 data-preview-name>Your event name</h3>
+            <p class="micro" data-preview-host>Run by you</p>
+
+            <ul class="preview-facts">
+              <li data-preview-date>Date not set</li>
+              <li data-preview-mode>In person</li>
+              <li data-preview-fee>Free to enter</li>
+            </ul>
+
+            <div class="preview-code">
+              <span class="micro">Event code</span>
+              <strong data-preview-code>——————</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-card">
+          <p class="micro">Print this line on your poster</p>
+          <p class="code-line" data-poster-line>Vote on Podium · code ——————</p>
+          <button class="btn btn-ghost btn-sm" type="button" data-copy>Copy</button>
+        </div>
+      </div>
+    </aside>
+
+  </form>
+</main>
+
+<footer class="footer rule">
+  <div class="wrap footer-bottom">
+    <p class="micro">© 2026 Podium</p>
+    <p class="micro">Sign-ups and fees live on your own form. Podium holds decks and votes, never money.</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

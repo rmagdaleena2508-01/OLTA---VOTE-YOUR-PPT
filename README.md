@@ -180,6 +180,7 @@ knows what you came for, so the right card is pre-selected when you arrive.
 ```
 index.html        the landing page
 onboarding.html   sign in, pick a role, finish a profile
+create-event.html the organiser screen: banner, basics, deck rules, voting
 styles.css        design tokens and every component
 app.js            menu, scroll reveals, event code, onboarding steps
 assets/           hero-desktop.jpg (16:9), hero-mobile.jpg (4:5)
@@ -223,8 +224,8 @@ All of these live at the top of `styles.css`:
 ## What is built, and what is not
 
 **Built:** the landing page, the onboarding flow, the folding menu, the event code
-field (shape check only), the results podium layout, and the research behind every
-rule above.
+field (shape check only), the organiser setup screen with a live preview of the
+event card, the results podium layout, and the research behind every rule above.
 
 **Not built yet, in the order I plan to build it:**
 
@@ -235,8 +236,9 @@ rule above.
    that changes state and never shows a count.
 3. **Event page** — poster, dates, a link out to the organiser's sign-up form, and a
    countdown to the voting deadline.
-4. **Organiser dashboard** — teams to let in, voting to open and close, and a panel
-   showing vote timing and repeat accounts so a rigged result can be spotted.
+4. **Organiser dashboard** — the screen after setup: teams to let in, voting to
+   open and close, and a panel showing vote timing and repeat accounts so a
+   rigged result can be spotted.
 5. **Results page** — the podium, plus a share card sized for Instagram stories.
 6. **Real accounts and storage** — Google sign-in, decks in object storage, slides
    rendered to images, and votes in a table with a unique constraint on
