@@ -47,23 +47,16 @@ Anti-fraud floor for a college event (cheap to build, catches most abuse):
 
 ---
 
-## 3. Payment — how the market handles it, and what we do
+## 3. Sign-ups and money — out of scope
 
-- **Luma** does real payment processing via Stripe, supports **UPI in India up to ₹1,00,000 per payment**, and issues every guest a **QR code ticket** used for check-in (email, event page, app, Apple/Google Wallet).
-- **Unstop** keeps most college competitions free to enter; paid ones are handled by the college, off-platform.
+- **Luma** processes payments through Stripe, supports UPI in India up to ₹1,00,000 per payment, and issues every guest a QR ticket for check-in.
+- **Unstop** keeps most college competitions free; paid ones are handled by the college, off-platform.
 
-We are deliberately **not** processing money. Confirmed flow:
+**Our scope is narrower than either, on purpose.** In a college fest the poster already carries a Google Form and a payment QR. People fill the form, pay, and upload the proof there, and the organiser verifies it there. That flow works, costs nothing and needs no compliance work.
 
-1. Organiser uploads the event **poster/banner that already contains their UPI QR** (this is exactly how Indian college fests work today).
-2. Participant opens the event → taps **Register** → the poster opens full-screen → they scan the QR with their own UPI app → pay outside our app.
-3. Participant enters the **UPI transaction / reference ID** and optionally a payment screenshot on the registration form.
-4. Organiser verifies it in an admin queue: **Paid / Pending / Rejected**. Only *Paid* registrations may upload a deck.
+So OLTA does not register anyone, does not take a fee and never sees a payment. It starts one step later: a team arrives with the event code, uploads a deck, and the room votes. The only words about money anywhere on the site say where money is *not*.
 
-Copy to use, borrowed from Luma's plainness: *"Scan the QR on the poster to pay. Then drop your UPI reference number here so the organiser can confirm."*
-
-One line the site must carry for honesty and safety: *"Payments happen in your UPI app, not here. We never see or hold your money."*
-
----
+What this removes from the build: payment verification queues, UPI reference fields, Paid/Pending/Rejected states, refunds, and any need to store a transaction identifier.
 
 ## 4. File types and size limits
 
@@ -133,7 +126,7 @@ Layout, per the brief:
 | Vote rule | Categories exist → one vote per category. No categories → one vote overall. |
 | Credit / weighted votes | Dropped. It is quadratic voting; real, but Sybil-fragile and too complex for a fest. |
 | Live vote counts | Hidden until voting closes (Devpost's explicit recommendation). |
-| Payment | Outside the app. Poster carries the organiser's UPI QR; participant submits the UPI reference; organiser verifies. |
+| Sign-ups and money | Not handled here. The poster's Google Form takes registration, fee and proof; the organiser verifies there. OLTA holds decks and votes only. |
 | File types | PDF and PPTX only. PDF recommended. |
 | Size cap | 25 MB, optional 15-slide cap. |
 | Storage | Originals private; slides rendered to watermarked images; no download unless the organiser allows. |

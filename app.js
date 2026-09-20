@@ -140,33 +140,45 @@
   });
 })();
 
-/* Header menu: the three-line button opens the short navigation. */
+/* Header menu. The panel is always in the DOM so it can fold; `data-open`
+   drives the animation and `inert` keeps the links out of the tab order while
+   it is folded away. */
 (function headerMenu() {
   const btn = document.querySelector('[data-menu-btn]');
   const menu = document.querySelector('[data-menu]');
   if (!btn || !menu) return;
 
-  function setOpen(open) {
-    btn.setAttribute('aria-expanded', String(open));
-    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    menu.hidden = !open;
+  let open = false;
+
+  function setOpen(next) {
+    open = next;
+    menu.dataset.open = String(next);
+    btn.setAttribute('aria-expanded', String(next));
+    btn.setAttribute('aria-label', next ? 'Close menu' : 'Open menu');
+    if (next) menu.removeAttribute('inert');
+    else menu.setAttribute('inert', '');
   }
 
-  btn.addEventListener('click', () => setOpen(menu.hidden));
+  setOpen(false);
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setOpen(!open);
+  });
 
   menu.addEventListener('click', (e) => {
     if (e.target.tagName === 'A') setOpen(false);
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !menu.hidden) {
+    if (e.key === 'Escape' && open) {
       setOpen(false);
       btn.focus();
     }
   });
 
   document.addEventListener('click', (e) => {
-    if (menu.hidden) return;
+    if (!open) return;
     if (!menu.contains(e.target) && !btn.contains(e.target)) setOpen(false);
   });
 })();

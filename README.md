@@ -40,8 +40,10 @@ organiser dashboard, vote storage. The onboarding stores the chosen role in
 - Voting needs a signed-in account. One vote per deck; one vote per category when
   the organiser creates categories, otherwise one vote for the event.
 - Vote counts stay hidden until the organiser closes voting.
-- Entry fees are paid outside the app: the poster carries the organiser's UPI QR,
-  the participant submits the transaction reference, the organiser verifies it.
+- Sign-ups and entry fees never touch this platform. The poster carries the
+  organiser's Google Form and payment QR; people fill it, pay, and upload their
+  proof there, and the organiser verifies it there. OLTA starts afterwards:
+  decks in, votes out.
 - Uploads are PDF or PPTX, 25 MB, 15 slides by default.
 - Decks are shown as rendered images, not downloadable files, unless the organiser
   allows downloads.

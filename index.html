@@ -35,15 +35,18 @@
       </div>
     </div>
 
-    <nav class="menu" id="menu" data-menu hidden aria-label="Main">
-      <a href="#how">How it works</a>
-      <a href="#vote">Voting</a>
-      <a href="#organisers">For organisers</a>
-      <a href="#faq">Questions</a>
-      <div class="menu-split"></div>
-      <a href="onboarding.html?intent=upload">Upload a deck</a>
-      <a href="onboarding.html?intent=vote">Browse and vote</a>
-      <a href="onboarding.html?intent=host">Run an event</a>
+    <nav class="menu" id="menu" data-menu aria-label="Main">
+      <div class="fold fold-1">
+        <a href="#how">How it works</a>
+        <a href="#vote">Voting</a>
+        <a href="#organisers">For organisers</a>
+        <a href="#faq">Questions</a>
+      </div>
+      <div class="fold fold-2">
+        <a href="onboarding.html?intent=upload">Upload a deck</a>
+        <a href="onboarding.html?intent=vote">Browse and vote</a>
+        <a href="onboarding.html?intent=host">Run an event</a>
+      </div>
     </nav>
   </div>
 </header>
@@ -78,7 +81,7 @@
         <button class="btn btn-ghost" type="submit">Join event</button>
       </form>
       <p class="micro join-note" data-join-note role="status">
-        No code? <a href="onboarding.html?intent=vote">Browse open events</a> · Codes come from your organiser
+        No code? <a href="onboarding.html?intent=vote">Browse open events</a> · Your organiser hands out codes
       </p>
 
       <div class="proof">
@@ -99,13 +102,13 @@
       <div class="steps">
         <article class="step reveal">
           <p class="step-n">Step 01</p>
-          <h3>Pay on the poster</h3>
-          <p>Tap the poster. Scan the UPI code on it. Pay in your own app. Then type the payment number here.</p>
+          <h3>Sign up on the poster</h3>
+          <p>The poster carries the organiser's Google Form. Fill it, pay there, and the organiser checks your proof.</p>
         </article>
         <article class="step reveal">
           <p class="step-n">Step 02</p>
-          <h3>Send your slides</h3>
-          <p>One file. One team name. Done. Your slides open right in the browser, so no one needs PowerPoint.</p>
+          <h3>Send your slides here</h3>
+          <p>Type the event code, upload one file, name your team. Your slides open right in the browser, so no one needs PowerPoint.</p>
         </article>
         <article class="step reveal">
           <p class="step-n">Step 03</p>
@@ -220,14 +223,14 @@
           <p class="eyebrow">For organisers</p>
           <h3 class="h2">See what needs you.</h3>
           <p class="lede">
-            Payments to check. Decks to let in. Voting to open and close. Your page is
-            a short list of jobs, not a pile of tabs. Money stays in UPI, where it
-            already works. You only confirm the number.
+            Decks to let in. Voting to open and close. Winners to announce. Your page
+            is a short list of jobs, not a pile of tabs. Sign-ups and money stay on
+            your Google Form, where they already work.
           </p>
           <div class="cta-row">
             <a class="btn btn-ghost" href="onboarding.html?intent=host">Run an event</a>
           </div>
-          <p class="micro cta-note">Organisers get in by invite · Money stays in your UPI app</p>
+          <p class="micro cta-note">Organisers get in by invite · Sign-ups stay on your Google Form</p>
         </div>
 
         <div class="card-visual reveal">
@@ -238,8 +241,8 @@
           <div class="frame-body">
             <div style="display:grid;gap:10px">
               <div class="deck-card" style="padding:14px 16px">
-                <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Payments to verify</h4>
-                <p class="micro">7 UPI references submitted today</p>
+                <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Teams to let in</h4>
+                <p class="micro">7 codes used today</p>
               </div>
               <div class="deck-card" style="padding:14px 16px">
                 <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Decks waiting on you</h4>
@@ -306,8 +309,8 @@
           <p>No. Counts stay hidden until the organiser ends voting. That keeps the race fair and stops an early leader from running away with it.</p>
         </details>
         <details>
-          <summary>How do I pay the entry fee?</summary>
-          <p>Open the poster, scan the UPI code on it, and pay from your own UPI app. Then paste the payment number into the form so the organiser can check it. Money never passes through OLTA.</p>
+          <summary>How do I enter the contest?</summary>
+          <p>Sign up on the poster. The poster carries the organiser's Google Form and payment QR, and the organiser checks the proof there. OLTA starts after that: you come here with the event code, upload your deck, and the room votes.</p>
         </details>
         <details>
           <summary>What files can I upload?</summary>
@@ -340,7 +343,7 @@
         <a class="btn btn-primary btn-lg" href="onboarding.html?intent=upload">Upload your deck</a>
         <a class="btn btn-ghost btn-lg" href="onboarding.html?intent=vote">Browse &amp; vote</a>
       </div>
-      <p class="micro cta-note">Sign in with Google · One deck per team · Free for college events</p>
+      <p class="micro cta-note">Sign in with Google · One deck per team · Free to use</p>
     </div>
   </section>
 
@@ -351,7 +354,7 @@
     <div class="footer-grid">
       <div>
         <a class="brand" href="/"><span class="mark">O</span> OLTA</a>
-        <p class="footer-blurb">A room for college decks. Upload, read, vote, and crown a winner the same evening.</p>
+        <p class="footer-blurb">A room for college decks. Upload, read, vote, and crown a winner the same evening. Sign-ups stay on your own form.</p>
       </div>
       <div>
         <h4>Take part</h4>
@@ -373,7 +376,7 @@
         <h4>Small print</h4>
         <ul>
           <li><a href="#faq">What we store</a></li>
-          <li><a href="#faq">Payments</a></li>
+          <li><a href="#faq">How to enter</a></li>
           <li><a href="mailto:hello@olta.app">Email us</a></li>
         </ul>
       </div>
@@ -381,7 +384,7 @@
 
     <div class="footer-bottom">
       <p class="micro">© 2026 OLTA</p>
-      <p class="micro">You pay in your UPI app, never here. We never touch your money.</p>
+      <p class="micro">Sign-ups and fees live on the organiser's form. OLTA holds decks and votes, never money.</p>
     </div>
   </div>
 </footer>

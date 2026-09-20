@@ -28,9 +28,7 @@ sign-in. Everything below is the design the server will implement.
   "slug": "psg-startup-summit-26",
   "title": "Startup Summit '26",
   "college": "PSG College of Technology",
-  "stage": "voting",
-  "entryFee": 150,
-  "needsPayment": true
+  "stage": "voting"
 }
 ```
 
@@ -40,7 +38,7 @@ sign-in. Everything below is the design the server will implement.
 7. Joining writes one row: `event_members (event_id, user_id, role, joined_at)` with a unique constraint on `(event_id, user_id)`. A second attempt is a no-op, not an error.
 8. What they see next depends on `stage`:
    - `draft` — "This event has not opened yet."
-   - `open` — the deck wall, plus Register if they want to compete.
+   - `open` — the deck wall, plus Upload if they are competing.
    - `voting` — the deck wall with vote buttons live.
    - `closed` — the results page with the podium.
 
@@ -56,13 +54,13 @@ Private events are the only ones that truly need a code: they do not appear in t
 ## Codes we do not use
 
 - **Organiser invites** are not codes. They are single-use signed links with an expiry, because granting organiser rights is a bigger deal than joining an event.
-- **Payment references** are not codes either. Those are the UPI transaction numbers participants paste after paying on the poster.
+- **Sign-ups** are not handled here at all. The poster's Google Form takes the registration, the fee and the payment proof, and the organiser verifies it there. A code only opens the room where decks and votes live.
 
 ## Tables involved
 
 ```
 events         id, slug, code, organiser_id, title, college, stage,
-               entry_fee, upi_qr_url, starts_at, voting_closes_at
+               starts_at, voting_closes_at
 event_members  event_id, user_id, role, joined_at      -- unique (event_id, user_id)
 ```
 

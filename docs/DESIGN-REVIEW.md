@@ -170,8 +170,9 @@ in OLTA. A footer is where trust questions go to be answered.
   hide them; early leaders snowball and losers stop trying.
 - **Do not** let anonymous visitors vote. Account required, one vote per deck,
   and no self-voting.
-- **Do not** take payments in-app. The UPI-QR-on-the-poster flow is what fests
-  already do, and handling money would drag in compliance work nobody wants.
+- **Do not** take payments or sign-ups in-app. The poster's Google Form already
+  does both, and handling money would drag in compliance work nobody wants.
+  Every mention of money on the site should point away from the product.
 - **Do not** serve the original PPTX for download by default. Teams fear idea
   theft, and it is the first objection an organiser will hear.
 - **Do not** add credit or weighted voting. It is quadratic voting, it needs a
@@ -198,8 +199,8 @@ in OLTA. A footer is where trust questions go to be answered.
    Upload button bottom-right. This is the screen the product lives or dies on.
 2. **Deck page** — slide viewer with keyboard arrows, team details, one vote
    button that changes state and never shows a count.
-3. **Event page** — poster, date, mode, fee with the UPI QR, Register button,
-   and a countdown to the voting deadline.
+3. **Event page** — poster, date, mode, a link out to the organiser's sign-up
+   form, and a countdown to the voting deadline.
 4. **Organiser dashboard** — payments to verify, decks to approve, open/close
    voting, and a fraud panel showing vote timing and duplicate accounts.
 5. **Results page** — the podium, a share card sized for Instagram stories, and
