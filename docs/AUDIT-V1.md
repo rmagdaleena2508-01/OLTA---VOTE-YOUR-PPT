@@ -24,18 +24,18 @@ Fixed. What each one does now is in the last column.
 
 ---
 
-## Part 2 — Things that are open doors
+## Part 2 — Things that are open doors — **front end closed, four wait on the server**
 
 Not "bugs" exactly. The interface asks politely and the data does not enforce.
 
 | # | Issue | What happens today | What it needs |
 |---|---|---|---|
-| 2.1 | **Anyone can vote without signing in** | The wall lets a visitor with no profile vote. `isMine()` compares the deck owner to `profile?.name`, so with no profile nothing is "mine" and even your own deck is votable | Gate the vote button on a signed-in account. It is the one action that must know who you are |
-| 2.2 | **Anyone can upload without signing in** | The upload sheet works with no account. "One deck per team" is not enforced at all | Same gate, plus one deck per account per event in the database |
-| 2.3 | **Identity is a string** | Ownership and self-vote checks compare **display names**. Two teams called "Team Kestrel" are the same person as far as the code knows | Compare account ids, never names |
-| 2.4 | **Roles are a browser value** | `podium.profile.role` decides what the header shows. The console can make anyone an organiser | Role from membership rows on the server |
-| 2.5 | **Team names go into the page as HTML** | A team called `<img src=x onerror=...>` runs script for every viewer, organiser included | Build those nodes with `textContent`. This is still the highest-severity item in the whole project |
-| 2.6 | **Votes are a list in the browser** | Clearing site data returns every vote. Counts are per device | Rows in a table with `unique (event_id, voter_id, deck_id)` |
+| 2.1 | **Anyone can vote without signing in** | The wall lets a visitor with no profile vote. `isMine()` compares the deck owner to `profile?.name`, so with no profile nothing is "mine" and even your own deck is votable | **Done.** Reading the wall needs nothing; voting needs a profile. The button reads "Sign in to vote" and goes to sign-in, and `castVote` re-checks every condition before it writes |
+| 2.2 | **Anyone can upload without signing in** | The upload sheet works with no account. "One deck per team" is not enforced at all | **Done in the front end.** Upload needs a profile, refuses once uploads close, and refuses a second deck from the same account. The database has to enforce the same, since a browser check is a courtesy |
+| 2.3 | **Identity is a string** | Ownership and self-vote checks compare **display names**. Two teams called "Team Kestrel" are the same person as far as the code knows | **Done.** A profile now carries a generated id, decks store `ownerId`, and ownership and self-vote checks compare ids. Names are used only for decks uploaded before ids existed |
+| 2.4 | **Roles are a browser value** | `podium.profile.role` decides what the header shows. The console can make anyone an organiser | Still open. Needs the server |
+| 2.5 | **Team names go into the page as HTML** | A team called `<img src=x onerror=...>` runs script for every viewer, organiser included | **Done.** Every value that reaches the page goes through `esc()` first. Verified with a team named `<img src=x onerror=...>`: it renders as text, no element is created, no script runs |
+| 2.6 | **Votes are a list in the browser** | Clearing site data returns every vote. Counts are per device | Still open, but votes are now stored per voter id rather than in one shared list, so the shape matches the table it is going into |
 
 ---
 

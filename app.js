@@ -1,6 +1,65 @@
 /* Podium — landing + onboarding behaviour. No backend yet; choices are kept in
    localStorage so the flow can be walked end to end. */
 
+/* ---------------- shared safety helpers ---------------- */
+
+/* Everything a person types is untrusted. These four are used everywhere a
+   value reaches the page, reaches storage, or is compared. */
+
+/* Escape before any value is interpolated into HTML. A team calling itself
+   `<img src=x onerror=...>` would otherwise run script in every viewer's
+   browser, the organiser's included. */
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[ch]));
+}
+
+/* Clean on the way in: strip control characters, collapse runs of whitespace,
+   trim, and cap the length. Long names break layouts and are the usual way a
+   list gets vandalised. */
+function clean(value, max) {
+  return String(value ?? '')
+    .replace(/[\u0000-\u001F\u007F]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max || 80);
+}
+
+/* Reads that cannot throw. A half-written or hand-edited storage value used to
+   take a whole screen down with it. */
+function readStore(key, fallback) {
+  try {
+    const raw = JSON.parse(localStorage.getItem(key));
+    return raw ?? fallback;
+  } catch (err) {
+    return fallback;
+  }
+}
+
+/* Writes that report failure. Browser storage is about 5 MB and a poster image
+   can fill it, after which every later save fails silently. */
+function writeStore(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+/* One identity for the whole site: the profile id, not the display name. Two
+   teams called "Team Kestrel" are two teams. */
+function currentProfile() {
+  const profile = readStore('podium.profile', null);
+  if (!profile || !profile.name) return null;
+  return profile;
+}
+
 (function reveal() {
   const items = document.querySelectorAll('.reveal');
   if (!items.length) return;
@@ -132,17 +191,28 @@
   });
 
   finishBtn?.addEventListener('click', () => {
+    const existing = readStore('podium.profile', null);
+
+    /* An id, kept for the life of the account. Everything that decides
+       ownership or a vote compares this, never the display name, so two teams
+       with the same name stay two teams. */
+    const id =
+      existing?.id ||
+      (crypto.randomUUID
+        ? crypto.randomUUID()
+        : `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`);
+
     const saved = {
+      id,
       role: state.role,
-      name: nameInput.value.trim(),
-      college: collegeInput.value.trim(),
-      team: card.querySelector('#teamName')?.value.trim() || null,
+      name: clean(nameInput.value, 60),
+      college: clean(collegeInput.value, 80),
+      team: clean(card.querySelector('#teamName')?.value, 60) || null,
       eventCode: eventCode || null,
     };
-    try {
-      localStorage.setItem('podium.profile', JSON.stringify(saved));
-    } catch (err) {
-      /* private mode — the flow still works, it just won't be remembered */
+
+    if (!writeStore('podium.profile', saved)) {
+      /* private mode, or storage full — the flow still works for this visit */
     }
     if (doneLine) {
       doneLine.textContent =
@@ -472,23 +542,30 @@
   });
 
   function collect() {
-    const groups = bind('groups').value
-      .split(',')
-      .map((g) => g.trim())
-      .filter(Boolean);
+    /* Cleaned and capped: eight groups is already more than a fest runs, and a
+       group name is a chip on the wall, not a sentence. */
+    const groups = [
+      ...new Set(
+        bind('groups')
+          .value.split(',')
+          .map((g) => clean(g, 24))
+          .filter(Boolean)
+      ),
+    ].slice(0, 8);
 
     return {
       code: state.code,
-      name: bind('name').value.trim(),
-      host: bind('host').value.trim(),
+      name: clean(bind('name').value, 80),
+      host: clean(bind('host').value, 80),
       date: bind('date').value,
       time: bind('time').value,
       mode: state.mode,
-      venue: bind('venue').value.trim(),
-      link: bind('link').value.trim(),
-      signupForm: bind('form').value.trim(),
-      fee: bind('fee').value.trim(),
-      maxSlides: Number(bind('slides').value) || 15,
+      venue: clean(bind('venue').value, 120),
+      link: safeUrl(bind('link').value),
+      signupForm: safeUrl(bind('form').value),
+      fee: clean(bind('fee').value, 40),
+      /* A slide cap is a number in a range, whatever the field was told. */
+      maxSlides: Math.min(60, Math.max(3, Number(bind('slides').value) || 15)),
       uploadsClose: bind('deadline').value,
       downloads: bind('downloads').checked,
       groups,
@@ -502,13 +579,21 @@
     };
   }
 
-  function save(draft) {
+  /* Only http and https survive. A `javascript:` link typed into the meeting
+     or form field would otherwise become a live link on the event page. */
+  function safeUrl(value) {
+    const raw = clean(value, 300);
+    if (!raw) return '';
     try {
-      localStorage.setItem('podium.event', JSON.stringify({ ...collect(), draft }));
-      return true;
+      const url = new URL(raw);
+      return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
     } catch (err) {
-      return false;
+      return '';
     }
+  }
+
+  function save(draft) {
+    return writeStore('podium.event', { ...collect(), draft });
   }
 
   form.querySelector('[data-save]')?.addEventListener('click', () => {
@@ -528,8 +613,15 @@
       note('Voting has to close after it opens.', true);
       return;
     }
+    if (data.uploadsClose && data.voteOpen && data.voteOpen < data.uploadsClose) {
+      note('Voting cannot open before uploads close.', true);
+      return;
+    }
 
-    save(false);
+    if (!save(false)) {
+      note('This browser is out of storage. Try a smaller banner or poster.', true);
+      return;
+    }
     note(`Event created. Your code is ${data.code}. Taking you to your dashboard…`, false);
     setTimeout(() => (location.href = 'dashboard.html'), 900);
   });
@@ -578,14 +670,28 @@
   };
 
   const event = store.read('podium.event', null);
-  const profile = store.read('podium.profile', null);
+  const profile = currentProfile();
+  const signedIn = Boolean(profile?.id || profile?.name);
+  const voterId = profile?.id || (profile?.name ? `name:${profile.name}` : null);
   let decks = store.read('podium.decks', []);
-  /* Votes used to be one per group, stored as an object. Anything left over
-     from that shape is folded into the list this version expects. */
-  const savedVotes = store.read('podium.votes', []);
-  let votes = Array.isArray(savedVotes)
-    ? savedVotes
-    : Object.values(savedVotes || {}).filter(Boolean);
+  /* Votes are kept per voter, so one browser shared by a queue of people does
+     not hand one person's votes to the next. Older shapes — a flat list, or a
+     map of group to deck — are folded into this one on read. */
+  const savedVotes = store.read('podium.votes', {});
+
+  function readVotes() {
+    if (Array.isArray(savedVotes)) return voterId ? { [voterId]: savedVotes } : {};
+    if (savedVotes && typeof savedVotes === 'object') {
+      const values = Object.values(savedVotes);
+      const legacyGroupMap = values.every((v) => typeof v === 'string');
+      if (legacyGroupMap) return voterId ? { [voterId]: values.filter(Boolean) } : {};
+      return savedVotes;
+    }
+    return {};
+  }
+
+  let votesByVoter = readVotes();
+  let votes = voterId ? votesByVoter[voterId] || [] : [];
 
   let filter = 'all';
   let query = '';
@@ -636,7 +742,7 @@
     els.meta.textContent = bits.join(' · ') || 'Your event';
     if (event.bannerImage) {
       els.banner.className = 'event-banner';
-      els.banner.style.backgroundImage = `url("${event.bannerImage}")`;
+      els.banner.style.backgroundImage = `url("${String(event.bannerImage).replace(/["\\]/g, '')}")`;
     } else if (event.banner) {
       els.banner.className = `event-banner sw-${event.banner}`;
     }
@@ -666,7 +772,7 @@
       btn.className = 'chip-btn';
       btn.dataset.group = g;
       btn.setAttribute('aria-pressed', 'false');
-      btn.innerHTML = `${g} <span data-count="${g}">0</span>`;
+      btn.innerHTML = `${esc(g)} <span data-count="${esc(g)}">0</span>`;
       els.chips.appendChild(btn);
     });
   }
@@ -684,8 +790,27 @@
 
   const hasVoted = (deck) => votes.includes(deck.id);
 
+  /* Uploads close on the organiser's clock, not on trust. */
+  function uploadsOpen() {
+    if (!event) return false;
+    if (stage() === 'closed') return false;
+    if (!event.uploadsClose) return true;
+    const closes = new Date(event.uploadsClose).getTime();
+    return Number.isNaN(closes) ? true : Date.now() <= closes;
+  }
+
+  /* One deck per account per event. Checked here and again before the write. */
+  function myDeck() {
+    if (!signedIn) return null;
+    return decks.find((d) => (d.ownerId ? d.ownerId === profile.id : d.owner === profile.name));
+  }
+
+  /* Ownership by id where there is one, by name only for decks uploaded before
+     ids existed. */
   function isMine(deck) {
-    return profile?.name && deck.owner === profile.name;
+    if (!signedIn) return false;
+    if (deck.ownerId && profile.id) return deck.ownerId === profile.id;
+    return Boolean(profile.name) && deck.owner === profile.name;
   }
 
   function visible() {
@@ -714,7 +839,7 @@
     const shown = decks.filter((d) => d.status !== 'hidden');
     els.countAll.textContent = shown.length;
     groups.forEach((g) => {
-      const el = document.querySelector(`[data-count="${g}"]`);
+      const el = document.querySelector(`[data-count="${CSS.escape(g)}"]`);
       if (el) el.textContent = shown.filter((d) => d.group === g).length;
     });
   }
@@ -728,6 +853,11 @@
     if (now === 'closed') return { text: 'Voting closed', disabled: true, voted: false };
     if (now !== 'voting') return { text: 'Voting soon', disabled: true, voted: false };
     if (isMine(deck)) return { text: 'Your deck', disabled: true, voted: false };
+
+    /* A vote has to belong to somebody. Reading the wall does not need an
+       account; voting does, and the button says so instead of failing later. */
+    if (!signedIn) return { text: 'Sign in to vote', disabled: false, voted: false, gate: true };
+
     return { text: 'Vote now', disabled: false, voted: false };
   }
 
@@ -788,20 +918,21 @@
       const state = voteLabel(deck);
 
       card.innerHTML = `
-        <button class="deck-cover" style="background:${deck.cover}" data-open="${deck.id}"
-                data-slides="${deck.slides ? `${deck.slides} slides` : 'PDF'}" aria-label="Open ${deck.team}'s deck">
-          ${initials(deck.team)}
+        <button class="deck-cover" style="background:${esc(deck.cover)}" data-open="${esc(deck.id)}"
+                data-slides="${deck.slides ? `${Number(deck.slides)} slides` : 'PDF'}"
+                aria-label="Open the deck from ${esc(deck.team)}">
+          ${esc(initials(deck.team))}
         </button>
         <div class="deck-info">
-          <h3>${deck.team}</h3>
-          <p>${deck.college || ''}</p>
-          ${deck.line ? `<p class="deck-line">${deck.line}</p>` : ''}
+          <h3>${esc(deck.team)}</h3>
+          <p>${esc(deck.college || '')}</p>
+          ${deck.line ? `<p class="deck-line">${esc(deck.line)}</p>` : ''}
         </div>
         <div class="deck-foot">
-          <span class="deck-tag">${
+          <span class="deck-tag">${esc(
             deck.status === 'pending' ? 'Waiting on the organiser' : deck.group || 'All decks'
-          }</span>
-          <button class="vote-btn${state.voted ? ' voted' : ''}" data-vote="${deck.id}"
+          )}</span>
+          <button class="vote-btn${state.voted ? ' voted' : ''}" data-vote="${esc(deck.id)}"
                   ${state.disabled ? 'disabled' : ''}>
             <span class="vote-arrow" aria-hidden="true">${ARROW}</span>
             <span class="vote-text">${state.text}</span>
@@ -817,11 +948,27 @@
   /* ---- voting: one per group, never your own, counts stay hidden ---- */
 
   function castVote(id, btn) {
+    /* Anyone can read the wall. Only a signed-in person can vote, and the
+       button they pressed takes them to sign-in rather than silently doing
+       nothing. */
+    if (!signedIn) {
+      location.href = 'onboarding.html?intent=vote';
+      return;
+    }
+
     const deck = decks.find((d) => d.id === id);
-    if (!deck || stage() !== 'voting' || isMine(deck) || hasVoted(deck)) return;
+
+    /* Every condition is re-checked here, not only in the label: the label is
+       what a person sees, this is what actually happens. */
+    if (!deck) return;
+    if (deck.status === 'pending' || deck.status === 'hidden') return;
+    if (stage() !== 'voting') return;
+    if (isMine(deck)) return;
+    if (hasVoted(deck)) return;
 
     votes.push(id);
-    store.write('podium.votes', votes);
+    votesByVoter[voterId] = votes;
+    store.write('podium.votes', votesByVoter);
 
     /* Paint this one button straight away so the animation runs on the element
        the person actually pressed, then redraw the rest of the wall. */
@@ -915,7 +1062,27 @@
   }
 
   document.querySelectorAll('[data-open-upload]').forEach((btn) => {
-    btn.addEventListener('click', () => sheet.showModal());
+    btn.addEventListener('click', () => {
+      /* Same rule as voting: reading is open, adding is not. */
+      if (!signedIn) {
+        location.href = 'onboarding.html?intent=upload';
+        return;
+      }
+      if (!event) {
+        window.alert('There is no event on this device yet. Open one with its code first.');
+        return;
+      }
+      if (!uploadsOpen()) {
+        window.alert('Uploads for this event are closed.');
+        return;
+      }
+      const mine = myDeck();
+      if (mine) {
+        window.alert(`You have already uploaded ${mine.team}. One deck per team.`);
+        return;
+      }
+      sheet.showModal();
+    });
   });
 
   fileInput.addEventListener('change', () => {
@@ -948,33 +1115,51 @@
   uploadForm.addEventListener('submit', (e) => {
     if (e.submitter?.value !== 'save') return;
 
-    const team = uploadForm.querySelector('#teamName').value.trim();
-    const college = uploadForm.querySelector('#teamCollege').value.trim();
+    /* Cleaned, not just trimmed: control characters out, runs of spaces
+       collapsed, and a length cap, so one long name cannot wreck the wall. */
+    const team = clean(uploadForm.querySelector('#teamName').value, 60);
+    const college = clean(uploadForm.querySelector('#teamCollege').value, 80);
+    const line = clean(uploadForm.querySelector('#oneLiner').value, 90);
 
-    if (!picked || !team || !college) {
+    const fail = (message) => {
       e.preventDefault();
-      uploadNote.textContent = 'Pick a file, then fill in your team name and college.';
+      uploadNote.textContent = message;
       uploadNote.style.color = 'var(--accent)';
-      return;
-    }
+    };
+
+    if (!signedIn) return fail('Sign in first, then upload.');
+    if (!picked || !team || !college) return fail('Pick a file, then fill in your team name and college.');
+    if (team.length < 2) return fail('That team name is too short.');
+    if (!uploadsOpen()) return fail('Uploads for this event are closed.');
+    if (myDeck()) return fail('You have already uploaded a deck. One deck per team.');
+
+    /* The group has to be one the organiser actually created, not whatever the
+       select happens to hold. */
+    const group = groups.length ? (groups.includes(groupSelect.value) ? groupSelect.value : groups[0]) : '';
 
     decks.push({
-      id: `d${Date.now().toString(36)}`,
+      id: `d${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
       team,
       college,
-      group: groups.length ? groupSelect.value : '',
-      line: uploadForm.querySelector('#oneLiner').value.trim(),
-      file: picked.name,
+      group,
+      line,
+      file: clean(picked.name, 120),
       /* The real page count arrives when the file is rendered. Until then it
          stays null, and the viewer says "Page 3" rather than inventing a total. */
       slides: null,
       cover: COVERS[decks.length % COVERS.length],
       status: event?.reviewDecks ? 'pending' : 'live',
-      owner: profile?.name || team,
+      ownerId: profile.id || null,
+      owner: profile.name,
       at: Date.now(),
     });
 
-    store.write('podium.decks', decks);
+    /* A poster image can fill browser storage, and every save after that fails
+       silently. Say so rather than pretending the deck is up. */
+    if (!store.write('podium.decks', decks)) {
+      decks.pop();
+      return fail('This browser is out of storage. Remove a large image and try again.');
+    }
     uploadForm.reset();
     picked = null;
     const drop = document.querySelector('[data-deck-drop]');
@@ -1046,6 +1231,36 @@
     if (e.key === 'ArrowRight') next.click();
     if (e.key.toLowerCase() === 'v' && !vVote.disabled) vVote.click();
   });
+
+  /* The upload control tells the truth about the event's state before it is
+     pressed, instead of only after. */
+  (function labelUpload() {
+    const fab = document.querySelector('.fab');
+    const label = document.querySelector('.fab-wrap .fab-label');
+    if (!fab || !label) return;
+
+    if (!event) {
+      label.textContent = 'No event';
+      fab.title = 'Open an event with its code first';
+      return;
+    }
+    if (!uploadsOpen()) {
+      label.textContent = 'Closed';
+      fab.title = 'Uploads for this event are closed';
+      fab.style.opacity = '0.55';
+      return;
+    }
+    if (!signedIn) {
+      label.textContent = 'Sign in';
+      fab.title = 'Sign in to upload your deck';
+      return;
+    }
+    if (myDeck()) {
+      label.textContent = 'Uploaded';
+      fab.title = 'You have already uploaded a deck';
+      fab.style.opacity = '0.55';
+    }
+  })();
 
   drawHead();
   drawChips();
@@ -1219,15 +1434,15 @@
         row.className = 'deck-row';
         row.innerHTML = `
           <div class="row-main">
-            <h3>${deck.team}</h3>
-            <p>${[deck.college, deck.group, deck.file].filter(Boolean).join(' · ')}</p>
+            <h3>${esc(deck.team)}</h3>
+            <p>${esc([deck.college, deck.group, deck.file].filter(Boolean).join(' · '))}</p>
           </div>
           <span class="row-state" data-state="${state}">${
             state === 'live' ? 'On the wall' : state === 'pending' ? 'Waiting on you' : 'Hidden'
           }</span>
           <div class="row-actions">
-            ${state !== 'live' ? `<button class="btn btn-ghost btn-sm" data-let-in="${deck.id}">Let it in</button>` : ''}
-            ${state === 'live' ? `<button class="btn btn-ghost btn-sm" data-hide="${deck.id}">Hide</button>` : ''}
+            ${state !== 'live' ? `<button class="btn btn-ghost btn-sm" data-let-in="${esc(deck.id)}">Let it in</button>` : ''}
+            ${state === 'live' ? `<button class="btn btn-ghost btn-sm" data-hide="${esc(deck.id)}">Hide</button>` : ''}
           </div>`;
         rows.appendChild(row);
       });
@@ -1274,10 +1489,10 @@
       li.innerHTML = `
         <span class="rank">${i + 1}</span>
         <span>
-          <span class="row-top"><span class="team">${deck.team}</span><span class="n">${deck.n}</span></span>
+          <span class="row-top"><span class="team">${esc(deck.team)}</span><span class="n">${Number(deck.n)}</span></span>
           <span class="bar"><span style="width:${Math.round((deck.n / top) * 100)}%"></span></span>
         </span>
-        <span class="micro">${deck.group || ''}</span>`;
+        <span class="micro">${esc(deck.group || '')}</span>`;
       list.appendChild(li);
     });
   }
@@ -1694,12 +1909,12 @@ function whenSeen(el, fn) {
     const el = document.createElement('article');
     el.className = `place ${CLASS[i]}`;
     el.innerHTML = `
-      <div class="place-banner" style="background:${BANNERS[event?.banner || 1]}"></div>
+      <div class="place-banner" style="background:${esc(BANNERS[event?.banner || 1] || BANNERS[1])}"></div>
       <p class="place-rank">${RANK_WORD[i]}</p>
-      <p class="place-team">${deck.team}</p>
-      <p class="place-detail">${[deck.college, deck.group].filter(Boolean).join(' · ')}</p>
-      ${deck.line ? `<p class="place-detail" style="margin-top:6px">${deck.line}</p>` : ''}
-      <span class="place-votes">${ARROW}<b data-n="${deck.n}">0</b> vote${deck.n === 1 ? '' : 's'}</span>`;
+      <p class="place-team">${esc(deck.team)}</p>
+      <p class="place-detail">${esc([deck.college, deck.group].filter(Boolean).join(' · '))}</p>
+      ${deck.line ? `<p class="place-detail" style="margin-top:6px">${esc(deck.line)}</p>` : ''}
+      <span class="place-votes">${ARROW}<b data-n="${Number(deck.n)}">0</b> vote${deck.n === 1 ? '' : 's'}</span>`;
     podium.appendChild(el);
   });
 
@@ -1718,10 +1933,10 @@ function whenSeen(el, fn) {
     li.innerHTML = `
       <span class="rank">${i + 4}</span>
       <span>
-        <span class="team">${deck.team}</span><br />
-        <span class="sub">${[deck.college, deck.group].filter(Boolean).join(' · ')}</span>
+        <span class="team">${esc(deck.team)}</span><br />
+        <span class="sub">${esc([deck.college, deck.group].filter(Boolean).join(' · '))}</span>
       </span>
-      <span class="count">${deck.n} vote${deck.n === 1 ? '' : 's'}</span>`;
+      <span class="count">${Number(deck.n)} vote${deck.n === 1 ? '' : 's'}</span>`;
     list.appendChild(li);
   });
 
