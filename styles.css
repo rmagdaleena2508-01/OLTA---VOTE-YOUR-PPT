@@ -46,6 +46,8 @@
    which is a quiet way to ship a panel that never hides. Settle it once. */
 [hidden] { display: none !important; }
 
+/* The browser's own smooth scrolling, and nothing on top of it. No scroll
+   hijacking: the wheel moves the page exactly as far as the reader asked. */
 html { scroll-behavior: smooth; }
 
 body {
@@ -376,8 +378,6 @@ section[id] { scroll-margin-top: 104px; }
   object-fit: cover;
   object-position: center 42%;
   display: block;
-  will-change: transform;
-  transform: translateZ(0);
 }
 
 .hero-placeholder {
@@ -1991,7 +1991,6 @@ section[id] { scroll-margin-top: 104px; }
     linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 253, 248, 0.22) 42%, rgba(255, 255, 255, 0.4));
   backdrop-filter: blur(14px) saturate(180%) brightness(1.05);
   -webkit-backdrop-filter: blur(14px) saturate(180%) brightness(1.05);
-  will-change: backdrop-filter;
 
   border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow:
