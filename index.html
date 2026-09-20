@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OLTA — Every deck. One place.</title>
+<meta name="description" content="Upload your presentation, let the room vote, and see who takes the podium. Built for college case competitions, B-plan finals and tech fests." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffffff'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='20' font-weight='bold' text-anchor='middle' fill='%23070707'%3EO%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap">
+    <div class="header-inner">
+      <a class="brand" href="/">
+        <span class="mark">O</span>
+        OLTA
+      </a>
+      <nav class="nav">
+        <a href="#how">How it works</a>
+        <a href="#vote">Voting</a>
+        <a href="#organisers">For organisers</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <a class="btn btn-primary btn-sm" href="onboarding.html">Sign in with Google</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <h1 class="display">Every deck.<br />One place.</h1>
+      <p class="lede">
+        Case comps, B-plan finals, tech fests — teams upload their slides, everyone
+        in the room votes, and the winners go up on the podium. No WhatsApp threads,
+        no lost attachments.
+      </p>
+
+      <div class="cta-row">
+        <a class="btn btn-primary btn-lg" href="onboarding.html?intent=upload">Upload your deck</a>
+        <a class="btn btn-ghost btn-lg" href="onboarding.html?intent=vote">Browse &amp; vote</a>
+      </div>
+
+      <p class="micro cta-note">Google sign-in · PDF or PPTX up to 25 MB · Free for student events</p>
+
+      <div class="hero-frame reveal">
+        <div class="frame-bar">
+          <span>Startup Summit '26 · Live</span>
+          <span>48 decks</span>
+        </div>
+        <div class="frame-body">
+          <!-- Drop your hero image at assets/hero.jpg — it replaces this placeholder automatically. -->
+          <img class="hero-media" src="assets/hero.jpg" alt="The OLTA deck gallery" onerror="this.outerHTML='&lt;div class=\'hero-placeholder\'&gt;&lt;span&gt;Hero image slot&lt;/span&gt;&lt;span&gt;save yours as assets/hero.jpg&lt;/span&gt;&lt;/div&gt;'" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="rule">
+    <div class="wrap">
+      <h2 class="h2 reveal">Three steps. That's the event.</h2>
+      <p class="lede reveal">Everything a fest needs, and nothing it doesn't.</p>
+
+      <div class="steps">
+        <article class="step reveal">
+          <p class="step-n">Step 01</p>
+          <h3>Register on the poster</h3>
+          <p>Tap the event poster, scan the organiser's UPI QR, pay in your own app, and drop the reference number back here.</p>
+        </article>
+        <article class="step reveal">
+          <p class="step-n">Step 02</p>
+          <h3>Upload your deck</h3>
+          <p>One file, one team name, done. Your slides render in the browser, so nobody needs PowerPoint to see them.</p>
+        </article>
+        <article class="step reveal">
+          <p class="step-n">Step 03</p>
+          <h3>Let the room decide</h3>
+          <p>Every signed-in person gets one vote per category. Counts stay hidden until voting closes.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTICIPANT -->
+  <section class="rule">
+    <div class="wrap">
+      <div class="row">
+        <div class="row-copy reveal">
+          <p class="eyebrow">For participants</p>
+          <h3 class="h2">Upload once. That's the whole job.</h3>
+          <p class="lede">
+            Pick your file, name your team, hit upload. We turn your slides into
+            images so they open instantly on any phone in the hall — and your
+            original file never leaves our storage.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="onboarding.html?intent=upload">Upload your deck</a>
+          </div>
+          <p class="micro cta-note">PDF or PPTX · up to 25 MB · max 15 slides</p>
+        </div>
+
+        <div class="card-visual reveal">
+          <div class="frame-bar">
+            <span>Your decks</span>
+            <span>Submitted 2:14 PM</span>
+          </div>
+          <div class="frame-body">
+            <div class="grid-2">
+              <div class="deck-card">
+                <div class="deck-thumb">Slide 1 of 12</div>
+                <div class="deck-meta">
+                  <h4>Team Nightshift</h4>
+                  <p>Fintech · 12 slides</p>
+                </div>
+              </div>
+              <div class="fab-demo" style="align-self:center;justify-self:center">
+                <div class="fab">+</div>
+                <span class="fab-label">Upload</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOTER -->
+  <section id="vote" class="rule">
+    <div class="wrap">
+      <div class="row flip">
+        <div class="row-copy reveal">
+          <p class="eyebrow">For voters</p>
+          <h3 class="h2">Pick a side. Cast your vote.</h3>
+          <p class="lede">
+            Read the decks, then back the one you'd fund. One vote per category,
+            one account per person, and no live scoreboard to game. Results appear
+            the moment voting closes.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-ghost" href="onboarding.html?intent=vote">Browse &amp; vote</a>
+          </div>
+        </div>
+
+        <div class="card-visual reveal">
+          <div class="frame-bar">
+            <span>Fintech track</span>
+            <span>1 vote left</span>
+          </div>
+          <div class="frame-body">
+            <div class="grid-2">
+              <div class="deck-card">
+                <div class="deck-thumb">Slide 4 of 10</div>
+                <div class="deck-meta">
+                  <h4>Team Kestrel</h4>
+                  <p>IIT Madras · 10 slides</p>
+                </div>
+                <div class="deck-foot">
+                  <span class="micro">Fintech</span>
+                  <button class="vote-btn" data-vote>Vote</button>
+                </div>
+              </div>
+              <div class="deck-card">
+                <div class="deck-thumb">Slide 2 of 14</div>
+                <div class="deck-meta">
+                  <h4>Team Monsoon</h4>
+                  <p>NIT Trichy · 14 slides</p>
+                </div>
+                <div class="deck-foot">
+                  <span class="micro">Fintech</span>
+                  <button class="vote-btn" data-vote>Vote</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORGANISERS -->
+  <section id="organisers" class="rule">
+    <div class="wrap">
+      <div class="row">
+        <div class="row-copy reveal">
+          <p class="eyebrow">For organisers</p>
+          <h3 class="h2">See what's waiting on you.</h3>
+          <p class="lede">
+            Payments to verify, decks to approve, voting to open and close. Your
+            dashboard is a list of decisions, not a pile of tabs. Keep the money in
+            UPI where it already works — just confirm the reference number.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-ghost" href="onboarding.html?intent=host">Host an event</a>
+          </div>
+          <p class="micro cta-note">Organiser access is granted by invite · Payments stay in your UPI app</p>
+        </div>
+
+        <div class="card-visual reveal">
+          <div class="frame-bar">
+            <span>Startup Summit '26</span>
+            <span>Needs action</span>
+          </div>
+          <div class="frame-body">
+            <div style="display:grid;gap:10px">
+              <div class="deck-card" style="padding:14px 16px">
+                <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Payments to verify</h4>
+                <p class="micro">7 UPI references submitted today</p>
+              </div>
+              <div class="deck-card" style="padding:14px 16px">
+                <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Decks waiting on you</h4>
+                <p class="micro">4 uploads, oldest waiting 2 hours</p>
+              </div>
+              <div class="deck-card" style="padding:14px 16px">
+                <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Voting closes 9:00 PM</h4>
+                <p class="micro">312 votes cast · counts hidden from the room</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PODIUM -->
+  <section class="rule">
+    <div class="wrap" style="text-align:center">
+      <h2 class="h2 reveal">The part everyone screenshots.</h2>
+      <p class="lede reveal" style="margin-inline:auto">
+        When voting closes, the event page becomes a results page. Team banner,
+        team name, the details they submitted. Nothing else.
+      </p>
+
+      <div class="podium">
+        <div class="place second reveal">
+          <div class="place-banner"></div>
+          <p class="place-rank">Second</p>
+          <p class="place-team">Team Monsoon</p>
+          <p class="place-detail">NIT Trichy · Fintech</p>
+        </div>
+        <div class="place first reveal">
+          <div class="place-banner"></div>
+          <p class="place-rank">Winner</p>
+          <p class="place-team">Team Kestrel</p>
+          <p class="place-detail">IIT Madras · Fintech</p>
+        </div>
+        <div class="place third reveal">
+          <div class="place-banner"></div>
+          <p class="place-rank">Third</p>
+          <p class="place-team">Team Nightshift</p>
+          <p class="place-detail">VIT Vellore · Fintech</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="rule">
+    <div class="wrap">
+      <h2 class="h2 reveal" style="text-align:center">A few things worth knowing.</h2>
+      <p class="lede reveal" style="margin-inline:auto;text-align:center">
+        Voting, payments, and what happens to your slides afterwards.
+      </p>
+
+      <div class="faq">
+        <details>
+          <summary>Who can vote?</summary>
+          <p>Anyone signed in with Google who has finished their profile. One vote per deck, and you can't vote for your own team. If the organiser created categories, you get one vote in each.</p>
+        </details>
+        <details>
+          <summary>Can I see the vote counts while voting is open?</summary>
+          <p>No. Counts stay hidden until the organiser closes voting. It keeps the race honest and stops early leaders from snowballing.</p>
+        </details>
+        <details>
+          <summary>How do I pay the entry fee?</summary>
+          <p>Open the event poster, scan the UPI QR on it, and pay from your own UPI app. Then paste the reference number into the registration form so the organiser can confirm it. Money never passes through OLTA.</p>
+        </details>
+        <details>
+          <summary>What files can I upload?</summary>
+          <p>PDF or PPTX, up to 25 MB, and up to 15 slides unless the organiser sets a different limit. PDF is the safer choice — your fonts and layout stay exactly as you designed them.</p>
+        </details>
+        <details>
+          <summary>Can people download my deck?</summary>
+          <p>Not by default. Your slides are shown as images with your team name on them. The organiser can turn downloads on for an event, and you'll see it on the upload screen if they have.</p>
+        </details>
+        <details>
+          <summary>What happens to my deck after the event?</summary>
+          <p>It stays public for 30 days, then only you and the organiser can see it. Original files are deleted after 90 days. Winning decks stay on the results page. You can delete yours at any time.</p>
+        </details>
+        <details>
+          <summary>How do I become an organiser?</summary>
+          <p>Organiser access comes from an invite link sent by whoever runs the fest. Sign in first, then open the link — your account switches to organiser and you can create the event.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="rule">
+    <div class="wrap" style="text-align:center">
+      <h2 class="h2 reveal">Your slides deserve a room.</h2>
+      <p class="lede reveal" style="margin-inline:auto">
+        Put the decks somewhere everyone can see them, and let the room do the rest.
+      </p>
+      <div class="cta-row reveal" style="justify-content:center">
+        <a class="btn btn-primary btn-lg" href="onboarding.html?intent=upload">Upload your deck</a>
+        <a class="btn btn-ghost btn-lg" href="onboarding.html?intent=vote">Browse &amp; vote</a>
+      </div>
+      <p class="micro cta-note">Google sign-in · One deck per team · Free for student events</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer rule">
+  <div class="wrap footer-inner">
+    <a class="brand" href="/"><span class="mark">O</span> OLTA</a>
+    <div class="footer-links">
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+      <a href="onboarding.html">Sign in</a>
+    </div>
+    <p class="micro">© 2026 OLTA</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

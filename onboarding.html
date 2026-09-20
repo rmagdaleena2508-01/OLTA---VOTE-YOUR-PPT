@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OLTA — Sign in</title>
+<meta name="description" content="Sign in with Google and pick how you want to take part." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffffff'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='20' font-weight='bold' text-anchor='middle' fill='%23070707'%3EO%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="onb">
+
+<header class="header">
+  <div class="wrap">
+    <div class="header-inner">
+      <a class="brand" href="index.html"><span class="mark">O</span> OLTA</a>
+      <a class="btn btn-ghost btn-sm" style="margin-inline-start:auto" href="index.html">Back to site</a>
+    </div>
+  </div>
+</header>
+
+<main class="onb-main">
+  <div class="onb-card">
+
+    <div class="dots" aria-hidden="true">
+      <span class="dot on" data-dot="1"></span>
+      <span class="dot" data-dot="2"></span>
+      <span class="dot" data-dot="3"></span>
+    </div>
+
+    <!-- STEP 1 — sign in -->
+    <section class="step-panel on" data-panel="1" aria-label="Sign in">
+      <h1 class="h2">Good to see you.</h1>
+      <p class="lede" style="margin-inline:auto">
+        One account for uploading, voting and organising. We only ever read your
+        name, email and profile photo.
+      </p>
+
+      <button class="btn btn-primary google-btn" data-action="signin">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <p class="micro" style="margin-top:18px">
+        By continuing you agree to the event rules set by each organiser.
+      </p>
+    </section>
+
+    <!-- STEP 2 — what brings you here -->
+    <section class="step-panel" data-panel="2" aria-label="Choose what you came to do">
+      <h1 class="h2">What brings you here?</h1>
+      <p class="lede" style="margin-inline:auto">
+        Pick one to start with. You can do the other one any time — this just sets
+        where you land.
+      </p>
+
+      <div class="role-list" role="group" aria-label="Choose an option">
+        <button class="role" data-role="participant" aria-pressed="false">
+          <span class="role-icon" aria-hidden="true">↑</span>
+          <span class="role-text">
+            <h3>Submit a deck</h3>
+            <p>You're competing. Register for an event, upload your slides, and track how your team is doing.</p>
+          </span>
+          <span class="role-check" aria-hidden="true">✓</span>
+        </button>
+
+        <button class="role" data-role="voter" aria-pressed="false">
+          <span class="role-icon" aria-hidden="true">★</span>
+          <span class="role-text">
+            <h3>Browse &amp; vote</h3>
+            <p>You're in the audience. Read every deck in the event and back the one you'd put your money on.</p>
+          </span>
+          <span class="role-check" aria-hidden="true">✓</span>
+        </button>
+      </div>
+
+      <div class="onb-actions">
+        <button class="btn btn-ghost back-step" data-back="1">Back</button>
+        <button class="btn btn-primary" data-action="role-next" disabled>Continue</button>
+      </div>
+
+      <p class="invite-line">
+        Running the event? <a href="#" data-action="invite">Open your organiser invite</a>
+      </p>
+    </section>
+
+    <!-- STEP 3 — profile -->
+    <section class="step-panel" data-panel="3" aria-label="Finish your profile">
+      <h1 class="h2">Almost there.</h1>
+      <p class="lede" style="margin-inline:auto">
+        Organisers see this next to your vote and your deck. Two fields, then you're in.
+      </p>
+
+      <div style="max-width:400px;margin-inline:auto">
+        <div class="field">
+          <label for="displayName">Your name</label>
+          <input id="displayName" type="text" placeholder="Evangelina R." autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label for="college">College or organisation</label>
+          <input id="college" type="text" placeholder="PSG College of Technology" autocomplete="organization" />
+        </div>
+
+        <div class="field" data-participant-only hidden>
+          <label for="teamName">Team name</label>
+          <input id="teamName" type="text" placeholder="Team Kestrel" />
+        </div>
+      </div>
+
+      <div class="onb-actions" style="max-width:400px;margin-inline:auto">
+        <button class="btn btn-ghost back-step" data-back="2">Back</button>
+        <button class="btn btn-primary" data-action="finish" disabled>Finish</button>
+      </div>
+
+      <p class="micro" style="margin-top:20px">You can change any of this later from your profile.</p>
+    </section>
+
+    <!-- DONE -->
+    <section class="step-panel" data-panel="4" aria-label="You're in">
+      <h1 class="h2">You're in.</h1>
+      <p class="lede" style="margin-inline:auto" data-done-line>Taking you to the decks.</p>
+      <div class="cta-row" style="justify-content:center">
+        <a class="btn btn-primary btn-lg" href="index.html">Back to the site</a>
+      </div>
+      <p class="micro" style="margin-top:18px">The gallery and upload screens come next — not built yet.</p>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <p class="micro">© 2026 OLTA</p>
+    <p class="micro">Payments happen in your UPI app, never here.</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
