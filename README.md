@@ -155,8 +155,9 @@ readable, and only a thin gradient closes the seam at the bottom.
 The whole front end is three files. There is no framework, no bundler, no
 `node_modules`. It loads instantly on a college Wi-Fi, deploys by pushing to GitHub
 Pages, and anyone can open `index.html` and read it. React earns its keep when there
-is real state to manage. Today there is none. When the deck wall and real accounts
-land, that is the moment to reconsider — not before.
+is real state to manage. The deck wall holds some now — decks, filters, votes —
+and plain JavaScript still carries it without strain. The moment to reconsider is
+when real accounts and a server arrive, not before.
 
 **Slides are shown as images, not handed over as files.**
 Teams worry about their idea being copied. So the original PPTX is kept private, the
@@ -185,6 +186,7 @@ index.html        the landing page
 onboarding.html   sign in, pick a role, finish a profile
 create-event.html the organiser screen: banner, basics, deck rules, voting
 event.html        the deck wall: every deck, filters, upload, viewer, voting
+dashboard.html    the organiser's screen: let decks in, open and close voting
 styles.css        design tokens and every component
 app.js            menu, scroll reveals, event code, onboarding steps
 assets/           hero-desktop.jpg (16:9), hero-mobile.jpg (4:5),
@@ -239,7 +241,8 @@ screen.
 **Built:** the landing page, the onboarding flow, the folding menu, the event code
 field (shape check only), the organiser setup screen with a live preview of the
 event card, the deck wall with upload, filters, a slide viewer and working vote
-rules, the results podium layout, and the research behind every rule above.
+rules, the organiser dashboard, the results podium layout, and the research
+behind every rule above.
 
 The wall reads the event the organiser set up and keeps decks and votes in the
 browser, so the whole flow can be walked end to end before there is a server.
@@ -248,11 +251,8 @@ browser, so the whole flow can be walked end to end before there is a server.
 
 1. **Event page** — poster, dates, a link out to the organiser's sign-up form, and a
    countdown to the voting deadline.
-2. **Organiser dashboard** — the screen after setup: teams to let in, voting to
-   open and close, and a panel showing vote timing and repeat accounts so a
-   rigged result can be spotted.
-3. **Results page** — the podium, plus a share card sized for Instagram stories.
-4. **Real accounts and storage** — Google sign-in, decks in object storage, slides
+2. **Results page** — the podium, plus a share card sized for Instagram stories.
+3. **Real accounts and storage** — Google sign-in, decks in object storage, slides
    rendered to images, and votes in a table with a unique constraint on
    `(voter_id, deck_id)` so a double vote is impossible in the data, not only in
    the interface.

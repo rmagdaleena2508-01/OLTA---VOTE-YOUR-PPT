@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Podium — Run the event</title>
+<meta name="description" content="Let decks in, open and close voting, watch for rigging, and announce the winners." />
+<link rel="icon" href="assets/icon.svg" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dash-page">
+
+<header class="header">
+  <div class="wrap">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"> <rect width="64" height="64" rx="16" fill="#F5F1EA"/> <rect x="9" y="28" width="15.5" height="27" rx="3" fill="#1B1A16"/> <path d="M27.5 18.8c0-1.2.8-2.2 2-2.5l10.5-2.2c1.6-.3 3.1.9 3.1 2.5V52c0 1.7-1.3 3-3 3h-9.6c-1.7 0-3-1.3-3-3V18.8Z" fill="#C9541F"/> <rect x="45.5" y="33" width="14" height="22" rx="3" fill="#1B1A16"/> </svg>
+        Podium
+      </a>
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-sm" href="event.html">See the wall</a>
+        <a class="btn btn-ghost btn-sm" href="create-event.html">Settings</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap dash-main" id="main">
+
+  <div class="dash-head">
+    <div>
+      <p class="eyebrow">You are running</p>
+      <h1 class="h2" data-dash-name>No event yet</h1>
+      <p class="micro" data-dash-meta>Set one up first and it will show here.</p>
+    </div>
+    <div class="dash-code">
+      <span class="micro">Event code</span>
+      <strong data-dash-code>——————</strong>
+      <button class="btn btn-ghost btn-sm" data-copy-code>Copy</button>
+    </div>
+  </div>
+
+  <!-- WHAT NEEDS YOU -->
+  <section class="panel dash-now">
+    <div class="now-line">
+      <span class="state-pill" data-dash-pill>Uploads open</span>
+      <p class="micro" data-dash-next>Voting has not opened yet.</p>
+    </div>
+    <div class="now-actions" data-stage-actions></div>
+  </section>
+
+  <!-- NUMBERS -->
+  <section class="stat-row">
+    <article class="stat">
+      <p class="micro">Decks in</p>
+      <p class="stat-n" data-stat-decks>0</p>
+      <p class="micro" data-stat-decks-sub>Nothing uploaded yet</p>
+    </article>
+    <article class="stat">
+      <p class="micro">Votes cast</p>
+      <p class="stat-n" data-stat-votes>0</p>
+      <p class="micro">Only you can see this</p>
+    </article>
+    <article class="stat">
+      <p class="micro">Decks with a vote</p>
+      <p class="stat-n" data-stat-backed>0</p>
+      <p class="micro" data-stat-backed-sub>of 0</p>
+    </article>
+    <article class="stat">
+      <p class="micro">Waiting on you</p>
+      <p class="stat-n" data-stat-pending>0</p>
+      <p class="micro">Decks to let in</p>
+    </article>
+  </section>
+
+  <div class="dash-grid">
+
+    <!-- DECKS -->
+    <section class="panel">
+      <div class="panel-bar">
+        <h2 class="panel-title">Decks</h2>
+        <label class="toggle toggle-inline">
+          <input type="checkbox" data-review-toggle />
+          <span class="toggle-box" aria-hidden="true"></span>
+          <span class="micro">Check decks before they show</span>
+        </label>
+      </div>
+
+      <div class="deck-rows" data-deck-rows></div>
+      <p class="micro empty-line" data-decks-empty hidden>No decks yet. Teams add them from the wall.</p>
+    </section>
+
+    <!-- STANDINGS -->
+    <section class="panel">
+      <h2 class="panel-title">Standings</h2>
+      <p class="panel-note">Counts are yours alone until you close voting. Nobody on the wall sees a number.</p>
+      <ol class="standings" data-standings></ol>
+      <p class="micro empty-line" data-standings-empty hidden>No votes yet.</p>
+    </section>
+
+    <!-- FRAUD -->
+    <section class="panel">
+      <h2 class="panel-title">Anything odd?</h2>
+      <p class="panel-note">Checks worth running before you announce. A flag is a reason to look, not proof.</p>
+      <ul class="check-list" data-checks></ul>
+    </section>
+
+    <!-- CLOSE -->
+    <section class="panel danger">
+      <h2 class="panel-title">Announce the winners</h2>
+      <p class="panel-note">
+        Closing voting is the one step you cannot undo from here. Counts become public, the wall turns
+        into the results page, and no more votes are taken.
+      </p>
+      <label class="confirm">
+        <input type="checkbox" data-confirm-close />
+        <span>I have looked at the checks above.</span>
+      </label>
+      <button class="btn btn-primary" data-close-voting disabled>Close voting and show the podium</button>
+      <p class="micro" data-close-note role="status"></p>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer rule">
+  <div class="wrap footer-bottom">
+    <p class="micro">© 2026 Podium</p>
+    <p class="micro">Sign-ups and fees live on your own form. Podium holds decks and votes, never money.</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -287,3 +287,40 @@ The press is a GSAP timeline, about 0.6s in total:
 The button is painted before the wall re-renders, so the animation runs on the
 element the person actually pressed. Under `prefers-reduced-motion` the state
 changes with no movement at all.
+
+
+---
+
+## 15. The organiser dashboard
+
+Shipped as `dashboard.html`. It is a list of decisions, not a wall of charts.
+
+**Top line:** the event name, who runs it, the code with a copy button, the
+current stage, and what happens next in one sentence.
+
+**Stage buttons change with the stage.** Before voting: open voting now, or push
+uploads back an hour. During: give it another hour. After: see the podium, or
+reopen. An organiser at a fest is holding a microphone in one hand — the button
+they need has to be the one on screen.
+
+**Four numbers:** decks in, votes cast, decks with at least one vote, decks
+waiting on you. The organiser is the only person who ever sees a count before
+voting closes.
+
+**Decks** lists every upload with its state — on the wall, waiting on you, or
+hidden — with one action each. A toggle turns on checking decks before they
+appear; new uploads then arrive as "waiting on you" and only the team that sent
+one can see it on the wall.
+
+**Standings** ranks the decks by votes with a bar each. Same data the public
+sees later, shown early to one person.
+
+**Anything odd?** is the honest version of a fraud panel. It reports what this
+build can actually check — spread of votes across decks, the size of the gap at
+the top, that votes are final and self-votes blocked — and says plainly that
+repeat accounts, IP clustering and brand-new accounts need real sign-in and a
+server. A flag is a reason to look, not proof.
+
+**Closing** needs a ticked box before the button turns on, because it is the one
+step that cannot be undone from the fest floor. It sets the stage to closed, and
+the wall reads that flag rather than only the clock.

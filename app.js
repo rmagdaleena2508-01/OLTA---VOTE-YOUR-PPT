@@ -543,6 +543,7 @@
 
   function stage() {
     if (!event) return 'open';
+    if (event.stage === 'closed') return 'closed';   /* the organiser closed it by hand */
     const now = Date.now();
     const opens = event.voteOpen ? new Date(event.voteOpen).getTime() : null;
     const closes = event.voteClose ? new Date(event.voteClose).getTime() : null;
@@ -618,7 +619,11 @@
   }
 
   function visible() {
-    let list = decks.slice();
+    let list = decks.filter((d) => {
+      if (d.status === 'hidden') return false;
+      if (d.status === 'pending') return isMine(d);
+      return true;
+    });
     if (filter !== 'all') list = list.filter((d) => d.group === filter);
     if (query) {
       const q = query.toLowerCase();
@@ -636,10 +641,11 @@
   }
 
   function counts() {
-    els.countAll.textContent = decks.length;
+    const shown = decks.filter((d) => d.status !== 'hidden');
+    els.countAll.textContent = shown.length;
     groups.forEach((g) => {
       const el = document.querySelector(`[data-count="${g}"]`);
-      if (el) el.textContent = decks.filter((d) => d.group === g).length;
+      if (el) el.textContent = shown.filter((d) => d.group === g).length;
     });
   }
 
@@ -648,6 +654,7 @@
   function voteLabel(deck) {
     const now = stage();
     if (hasVoted(deck)) return { text: 'You have voted', disabled: true, voted: true };
+    if (deck.status === 'pending') return { text: 'Not on the wall yet', disabled: true, voted: false };
     if (now === 'closed') return { text: 'Voting closed', disabled: true, voted: false };
     if (now !== 'voting') return { text: 'Voting soon', disabled: true, voted: false };
     if (isMine(deck)) return { text: 'Your deck', disabled: true, voted: false };
@@ -721,7 +728,9 @@
           ${deck.line ? `<p class="deck-line">${deck.line}</p>` : ''}
         </div>
         <div class="deck-foot">
-          <span class="deck-tag">${deck.group || 'All decks'}</span>
+          <span class="deck-tag">${
+            deck.status === 'pending' ? 'Waiting on the organiser' : deck.group || 'All decks'
+          }</span>
           <button class="vote-btn${state.voted ? ' voted' : ''}" data-vote="${deck.id}"
                   ${state.disabled ? 'disabled' : ''}>
             <span class="vote-arrow" aria-hidden="true">${ARROW}</span>
@@ -866,6 +875,7 @@
       /* real slide counts come from the server once the file is rendered */
       slides: event?.maxSlides || 15,
       cover: COVERS[decks.length % COVERS.length],
+      status: event?.reviewDecks ? 'pending' : 'live',
       owner: profile?.name || team,
       at: Date.now(),
     });
@@ -943,4 +953,327 @@
   drawHead();
   drawChips();
   render();
+})();
+
+/* ---------------- organiser dashboard ---------------- */
+
+(function dashboard() {
+  const main = document.querySelector('.dash-page');
+  if (!main) return;
+
+  const store = {
+    read(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key)) ?? fallback;
+      } catch (err) {
+        return fallback;
+      }
+    },
+    write(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (err) {
+        /* private mode */
+      }
+    },
+  };
+
+  let event = store.read('podium.event', null);
+  let decks = store.read('podium.decks', []);
+
+  /* Votes live per voter in the browser today. On a server this is one table,
+     and these counts come from a group-by. */
+  const raw = store.read('podium.votes', []);
+  const myVotes = Array.isArray(raw) ? raw : Object.values(raw || {}).filter(Boolean);
+
+  const $ = (sel) => document.querySelector(sel);
+
+  function stage() {
+    if (!event) return 'open';
+    if (event.stage === 'closed') return 'closed';
+    const now = Date.now();
+    const opens = event.voteOpen ? new Date(event.voteOpen).getTime() : null;
+    const closes = event.voteClose ? new Date(event.voteClose).getTime() : null;
+    if (closes && now > closes) return 'closed';
+    if (opens && now >= opens) return 'voting';
+    return 'open';
+  }
+
+  function when(value) {
+    if (!value) return '';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+  }
+
+  function countFor(deckId) {
+    return myVotes.filter((id) => id === deckId).length;
+  }
+
+  function save() {
+    store.write('podium.event', event);
+    store.write('podium.decks', decks);
+  }
+
+  /* ---- head and numbers ---- */
+
+  function drawHead() {
+    if (!event) return;
+    $('[data-dash-name]').textContent = event.name || 'Your event';
+    $('[data-dash-meta]').textContent =
+      [event.host, event.venue || (event.mode === 'online' ? 'Online' : '')].filter(Boolean).join(' · ') ||
+      'Your event';
+    $('[data-dash-code]').textContent = event.code || '——————';
+
+    const now = stage();
+    const pill = $('[data-dash-pill]');
+    pill.dataset.stage = now;
+    pill.textContent = now === 'closed' ? 'Voting closed' : now === 'voting' ? 'Voting open' : 'Uploads open';
+
+    $('[data-dash-next]').textContent =
+      now === 'closed'
+        ? 'Results are public. The wall now shows the podium.'
+        : now === 'voting'
+        ? `Voting closes ${when(event.voteClose) || 'when you close it'}.`
+        : `Voting opens ${when(event.voteOpen) || 'when you open it'}.`;
+
+    drawStageActions(now);
+  }
+
+  function drawStageActions(now) {
+    const box = $('[data-stage-actions]');
+    box.innerHTML = '';
+
+    const add = (label, ghost, fn) => {
+      const b = document.createElement('button');
+      b.className = `btn ${ghost ? 'btn-ghost' : 'btn-primary'}`;
+      b.textContent = label;
+      b.addEventListener('click', fn);
+      box.appendChild(b);
+    };
+
+    if (now === 'open') {
+      add('Open voting now', false, () => {
+        event.voteOpen = localStamp(0);
+        if (!event.voteClose) event.voteClose = localStamp(4 * 3600e3);
+        save();
+        drawAll();
+      });
+      add('Push uploads by an hour', true, () => {
+        event.uploadsClose = localStamp(3600e3);
+        save();
+        drawAll();
+      });
+    }
+
+    if (now === 'voting') {
+      add('Give it another hour', true, () => {
+        event.voteClose = localStamp(3600e3);
+        save();
+        drawAll();
+      });
+    }
+
+    if (now === 'closed') {
+      add('See the podium', false, () => (location.href = 'event.html'));
+      add('Reopen voting', true, () => {
+        event.stage = 'open';
+        event.voteClose = localStamp(3600e3);
+        save();
+        drawAll();
+      });
+    }
+  }
+
+  function localStamp(offset) {
+    const d = new Date(Date.now() + offset);
+    const p = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  function drawStats() {
+    const live = decks.filter((d) => d.status !== 'hidden');
+    const pending = decks.filter((d) => d.status === 'pending');
+    const backed = live.filter((d) => countFor(d.id) > 0);
+
+    $('[data-stat-decks]').textContent = live.length;
+    $('[data-stat-decks-sub]').textContent = live.length
+      ? `Newest ${when(new Date(Math.max(...live.map((d) => d.at))).toISOString())}`
+      : 'Nothing uploaded yet';
+    $('[data-stat-votes]').textContent = myVotes.length;
+    $('[data-stat-backed]').textContent = backed.length;
+    $('[data-stat-backed-sub]').textContent = `of ${live.length}`;
+    $('[data-stat-pending]').textContent = pending.length;
+  }
+
+  /* ---- decks ---- */
+
+  function drawDecks() {
+    const rows = $('[data-deck-rows]');
+    rows.innerHTML = '';
+    $('[data-decks-empty]').hidden = decks.length > 0;
+
+    decks
+      .slice()
+      .sort((a, b) => b.at - a.at)
+      .forEach((deck) => {
+        const state = deck.status || 'live';
+        const row = document.createElement('div');
+        row.className = 'deck-row';
+        row.innerHTML = `
+          <div class="row-main">
+            <h3>${deck.team}</h3>
+            <p>${[deck.college, deck.group, deck.file].filter(Boolean).join(' · ')}</p>
+          </div>
+          <span class="row-state" data-state="${state}">${
+            state === 'live' ? 'On the wall' : state === 'pending' ? 'Waiting on you' : 'Hidden'
+          }</span>
+          <div class="row-actions">
+            ${state !== 'live' ? `<button class="btn btn-ghost btn-sm" data-let-in="${deck.id}">Let it in</button>` : ''}
+            ${state === 'live' ? `<button class="btn btn-ghost btn-sm" data-hide="${deck.id}">Hide</button>` : ''}
+          </div>`;
+        rows.appendChild(row);
+      });
+  }
+
+  $('[data-deck-rows]').addEventListener('click', (e) => {
+    const letIn = e.target.closest('[data-let-in]');
+    const hide = e.target.closest('[data-hide]');
+    const id = letIn?.dataset.letIn || hide?.dataset.hide;
+    if (!id) return;
+
+    const deck = decks.find((d) => d.id === id);
+    if (!deck) return;
+    deck.status = letIn ? 'live' : 'hidden';
+    save();
+    drawAll();
+  });
+
+  const reviewToggle = $('[data-review-toggle]');
+  reviewToggle.checked = Boolean(event?.reviewDecks);
+  reviewToggle.addEventListener('change', () => {
+    if (!event) return;
+    event.reviewDecks = reviewToggle.checked;
+    save();
+  });
+
+  /* ---- standings ---- */
+
+  function drawStandings() {
+    const list = $('[data-standings]');
+    list.innerHTML = '';
+
+    const ranked = decks
+      .filter((d) => d.status !== 'hidden')
+      .map((d) => ({ ...d, n: countFor(d.id) }))
+      .filter((d) => d.n > 0)
+      .sort((a, b) => b.n - a.n);
+
+    $('[data-standings-empty]').hidden = ranked.length > 0;
+    const top = ranked[0]?.n || 1;
+
+    ranked.forEach((deck, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="rank">${i + 1}</span>
+        <span>
+          <span class="row-top"><span class="team">${deck.team}</span><span class="n">${deck.n}</span></span>
+          <span class="bar"><span style="width:${Math.round((deck.n / top) * 100)}%"></span></span>
+        </span>
+        <span class="micro">${deck.group || ''}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  /* ---- the checks worth running before announcing ---- */
+
+  function drawChecks() {
+    const list = $('[data-checks]');
+    list.innerHTML = '';
+
+    const live = decks.filter((d) => d.status !== 'hidden');
+    const backed = live.filter((d) => countFor(d.id) > 0);
+    const ranked = live.map((d) => countFor(d.id)).sort((a, b) => b - a);
+    const gap = ranked.length > 1 ? ranked[0] - ranked[1] : ranked[0] || 0;
+
+    const rows = [
+      {
+        flag: myVotes.length ? 'ok' : 'idle',
+        title: 'Votes are one per deck, and final',
+        body: myVotes.length
+          ? `${myVotes.length} vote${myVotes.length === 1 ? '' : 's'} recorded on this device. Nobody can take a vote back, so the count only ever grows.`
+          : 'No votes yet. Nothing to check.',
+      },
+      {
+        flag: backed.length < live.length / 2 && live.length > 3 ? 'warn' : 'ok',
+        title: 'Spread across the decks',
+        body: `${backed.length} of ${live.length} decks have at least one vote. A room voting for only a handful usually means people saw only a handful — check the wall loads for everyone.`,
+      },
+      {
+        flag: gap > 0 && ranked[0] > 3 && gap === ranked[0] ? 'warn' : 'ok',
+        title: 'The gap at the top',
+        body: ranked.length
+          ? `The leader is ${gap} ahead of second. A jump that appears in one burst is worth a second look at the timing.`
+          : 'No leader yet.',
+      },
+      {
+        flag: 'idle',
+        title: 'Self-votes are blocked',
+        body: 'A team cannot back its own deck. This is enforced in the wall and will be enforced again in the database.',
+      },
+      {
+        flag: 'idle',
+        title: 'Waiting on the server',
+        body: 'Repeat accounts, votes from one IP range, and accounts made in the last hour are the checks that need real sign-in. They land with the database.',
+      },
+    ];
+
+    rows.forEach((row) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="check-dot" data-flag="${row.flag}"></span>
+        <span><b>${row.title}</b><span>${row.body}</span></span>`;
+      list.appendChild(li);
+    });
+  }
+
+  /* ---- closing ---- */
+
+  const confirmBox = $('[data-confirm-close]');
+  const closeBtn = $('[data-close-voting]');
+
+  confirmBox.addEventListener('change', () => {
+    closeBtn.disabled = !confirmBox.checked;
+  });
+
+  closeBtn.addEventListener('click', () => {
+    if (!event || !confirmBox.checked) return;
+    event.stage = 'closed';
+    event.voteClose = localStamp(0);
+    save();
+    confirmBox.checked = false;
+    closeBtn.disabled = true;
+    $('[data-close-note]').textContent = 'Voting is closed. The wall shows the podium now.';
+    drawAll();
+  });
+
+  $('[data-copy-code]')?.addEventListener('click', async (e) => {
+    try {
+      await navigator.clipboard.writeText(event?.code || '');
+      e.target.textContent = 'Copied';
+      setTimeout(() => (e.target.textContent = 'Copy'), 1500);
+    } catch (err) {
+      e.target.textContent = 'Copy by hand';
+    }
+  });
+
+  function drawAll() {
+    drawHead();
+    drawStats();
+    drawDecks();
+    drawStandings();
+    drawChecks();
+  }
+
+  drawAll();
 })();
