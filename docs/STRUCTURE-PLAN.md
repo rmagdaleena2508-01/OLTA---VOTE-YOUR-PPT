@@ -103,15 +103,15 @@ Ordered by what a fest would feel first.
 
 ---
 
-## Part 5 — Things to cut from what exists
+## Part 5 — Things to cut from what exists — **done**
 
 | # | Thing | Why |
 |---|---|---|
-| 5.1 | "Free for every college fest" badge | The product is for pitch nights and hackathons too. Either widen the words or drop the badge |
-| 5.2 | The mock cards inside the three role sections | They go away when 2.5 becomes tabs |
-| 5.3 | Three FAQ answers about storage | One answer, not three |
-| 5.4 | "Sign in with Google" as the header's main button on signed-in screens | Once someone is in, that button is noise. It becomes their name |
-| 5.5 | Duplicate "Free to use" lines | Appears twice on the landing page |
+| 5.1 | "Free for every college fest" badge | Cut. The product is for pitch nights and hackathons too |
+| 5.2 | The mock cards inside the three role sections | Cut. The three sections are now one section with Teams / Voters / Organisers tabs |
+| 5.3 | FAQ answers about files and storage | Merged. Seven questions are five |
+| 5.4 | "Sign in with Google" on signed-in screens | Replaced by the person's name with a green dot |
+| 5.5 | Duplicate "Free to use" lines | Cut. The word "free" no longer appears on the landing page |
 
 ---
 

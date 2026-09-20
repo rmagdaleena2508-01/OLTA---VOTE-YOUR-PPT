@@ -66,8 +66,6 @@
     </div>
 
     <div class="wrap hero-content">
-      <p class="badge">Free for every college fest</p>
-
       <h1 class="display">
         Show your slides.<br />
         <em>Win the room.</em>
@@ -116,13 +114,24 @@
     </div>
   </section>
 
-  <!-- PARTICIPANT -->
-  <section class="rule">
+  <!-- ROLES -->
+  <section id="vote" class="rule">
     <div class="wrap">
-      <div class="row">
-        <div class="row-copy reveal">
-          <p class="eyebrow">For participants</p>
-          <h3 class="h2">Upload once. That's the job.</h3>
+      <h2 class="h2 reveal" style="text-align:center">One night, three jobs.</h2>
+      <p class="lede reveal" style="margin-inline:auto;text-align:center">
+        Pick the one that is yours.
+      </p>
+
+      <div class="tabs reveal" role="tablist" aria-label="Who you are">
+        <button role="tab" id="tab-teams" aria-controls="panel-teams" aria-selected="true">Teams</button>
+        <button role="tab" id="tab-voters" aria-controls="panel-voters" aria-selected="false">Voters</button>
+        <button role="tab" id="tab-organisers" aria-controls="panel-organisers" aria-selected="false">Organisers</button>
+      </div>
+
+      <div class="tab-panels reveal">
+
+        <div class="tab-panel" id="panel-teams" role="tabpanel" aria-labelledby="tab-teams">
+          <h3 class="h3">Upload once. That's the job.</h3>
           <p class="lede">
             Pick your file. Name your team. Press upload. We turn your slides into
             pictures, so they open fast on any phone in the hall. Your file itself
@@ -134,124 +143,31 @@
           <p class="micro cta-note">PDF or PPTX · up to 25 MB · max 15 slides</p>
         </div>
 
-        <div class="card-visual reveal">
-          <div class="frame-bar">
-            <span>Your decks</span>
-            <span>Submitted 2:14 PM</span>
-          </div>
-          <div class="frame-body">
-            <div class="grid-2">
-              <div class="deck-card">
-                <div class="deck-thumb">Slide 1 of 12</div>
-                <div class="deck-meta">
-                  <h4>Team Nightshift</h4>
-                  <p>Fintech · 12 slides</p>
-                </div>
-              </div>
-              <div class="fab-demo" style="align-self:center;justify-self:center">
-                <div class="fab">+</div>
-                <span class="fab-label">Upload</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- VOTER -->
-  <section id="vote" class="rule">
-    <div class="wrap">
-      <div class="row flip">
-        <div class="row-copy reveal">
-          <p class="eyebrow">For voters</p>
-          <h3 class="h2">Read them. Then pick one.</h3>
+        <div class="tab-panel" id="panel-voters" role="tabpanel" aria-labelledby="tab-voters" hidden>
+          <h3 class="h3">Read them. Then pick one.</h3>
           <p class="lede">
-            Look at every deck. Vote for the one you would pay for. One vote in each
-            group, one account per person, and no live score to game. Results show up
-            the minute voting ends.
+            Look at every deck. Back the ones you would pay for — as many as you like,
+            once each. A vote is final, and no score shows until voting ends.
           </p>
           <div class="cta-row">
-            <a class="btn btn-ghost" href="onboarding.html?intent=vote">Browse &amp; vote</a>
+            <a class="btn btn-primary" href="onboarding.html?intent=vote">Browse &amp; vote</a>
           </div>
+          <p class="micro cta-note">One account per person · Teams cannot vote for themselves</p>
         </div>
 
-        <div class="card-visual reveal">
-          <div class="frame-bar">
-            <span>Fintech track</span>
-            <span>1 vote left</span>
-          </div>
-          <div class="frame-body">
-            <div class="grid-2">
-              <div class="deck-card">
-                <div class="deck-thumb">Slide 4 of 10</div>
-                <div class="deck-meta">
-                  <h4>Team Kestrel</h4>
-                  <p>IIT Madras · 10 slides</p>
-                </div>
-                <div class="deck-foot">
-                  <span class="micro">Fintech</span>
-                  <button class="vote-btn" data-vote>Vote</button>
-                </div>
-              </div>
-              <div class="deck-card">
-                <div class="deck-thumb">Slide 2 of 14</div>
-                <div class="deck-meta">
-                  <h4>Team Monsoon</h4>
-                  <p>NIT Trichy · 14 slides</p>
-                </div>
-                <div class="deck-foot">
-                  <span class="micro">Fintech</span>
-                  <button class="vote-btn" data-vote>Vote</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ORGANISERS -->
-  <section id="organisers" class="rule">
-    <div class="wrap">
-      <div class="row">
-        <div class="row-copy reveal">
-          <p class="eyebrow">For organisers</p>
-          <h3 class="h2">See what needs you.</h3>
+        <div class="tab-panel" id="panel-organisers" role="tabpanel" aria-labelledby="tab-organisers" hidden>
+          <h3 class="h3">See what needs you.</h3>
           <p class="lede">
             Decks to let in. Voting to open and close. Winners to announce. Your page
             is a short list of jobs, not a pile of tabs. Sign-ups and money stay on
-            your Google Form, where they already work.
+            your own form, where they already work.
           </p>
           <div class="cta-row">
-            <a class="btn btn-ghost" href="onboarding.html?intent=host">Run an event</a>
+            <a class="btn btn-primary" href="onboarding.html?intent=host">Run an event</a>
           </div>
-          <p class="micro cta-note">Organisers get in by invite · Sign-ups stay on your Google Form</p>
+          <p class="micro cta-note">Organisers get in by invite</p>
         </div>
 
-        <div class="card-visual reveal">
-          <div class="frame-bar">
-            <span>Your event</span>
-            <span>Needs action</span>
-          </div>
-          <div class="frame-body">
-            <div style="display:grid;gap:10px">
-              <div class="deck-card" style="padding:14px 16px">
-                <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Teams to let in</h4>
-                <p class="micro">7 codes used today</p>
-              </div>
-              <div class="deck-card" style="padding:14px 16px">
-                <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Decks waiting on you</h4>
-                <p class="micro">4 uploads, oldest waiting 2 hours</p>
-              </div>
-              <div class="deck-card" style="padding:14px 16px">
-                <h4 style="margin:0 0 4px;font-size:15px;font-weight:600">Voting closes 9:00 PM</h4>
-                <p class="micro">312 votes cast · counts hidden from the room</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -310,16 +226,8 @@
           <p>Sign up on the poster. The poster carries the organiser's Google Form and payment QR, and the organiser checks the proof there. Podium starts after that: you come here with the event code, upload your deck, and the room votes.</p>
         </details>
         <details>
-          <summary>What files can I upload?</summary>
-          <p>PDF or PPTX, up to 25 MB, and up to 15 slides unless the organiser sets another limit. PDF is safer: your fonts and layout stay exactly as you made them.</p>
-        </details>
-        <details>
-          <summary>Can people download my deck?</summary>
-          <p>Not unless the organiser allows it. Your slides show up as pictures with your team name on them. If downloads are on, you will see it on the upload screen.</p>
-        </details>
-        <details>
-          <summary>What happens to my deck after the event?</summary>
-          <p>It stays open to everyone for 30 days. After that, only you and the organiser can see it. We delete the file itself after 90 days. Winning decks stay on the results page. You can delete yours any time.</p>
+          <summary>What can I upload, and what happens to it?</summary>
+          <p>PDF or PPTX, up to 25 MB, and up to 15 slides unless the organiser sets another limit. PDF is safer: your fonts and layout stay exactly as you made them. Your slides then show up as pictures with your team name on them, and the file itself stays private unless the organiser turns downloads on. The deck is open to everyone for 30 days, then only you and the organiser can see it, and we delete the file after 90 days. Winning decks stay on the results page, and you can delete yours any time.</p>
         </details>
         <details>
           <summary>How do I become an organiser?</summary>
@@ -340,7 +248,7 @@
         <a class="btn btn-primary btn-lg" href="onboarding.html?intent=upload">Upload your deck</a>
         <a class="btn btn-ghost btn-lg" href="onboarding.html?intent=vote">Browse &amp; vote</a>
       </div>
-      <p class="micro cta-note">Sign in with Google · One deck per team · Free to use</p>
+      <p class="micro cta-note">Sign in with Google · One deck per team</p>
     </div>
   </section>
 

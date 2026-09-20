@@ -1277,3 +1277,61 @@
 
   drawAll();
 })();
+
+
+/* ---------------- landing page role tabs ---------------- */
+
+(function roleTabs() {
+  const list = document.querySelector('.tabs');
+  if (!list) return;
+
+  const tabs = [...list.querySelectorAll('[role="tab"]')];
+
+  function select(tab) {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+
+  list.addEventListener('click', (e) => {
+    const tab = e.target.closest('[role="tab"]');
+    if (tab) select(tab);
+  });
+
+  /* left and right arrows move between tabs, which is what a screen reader
+     user expects from a tablist */
+  list.addEventListener('keydown', (e) => {
+    const i = tabs.indexOf(document.activeElement);
+    if (i < 0) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      next.focus();
+      select(next);
+    }
+  });
+})();
+
+/* ---------------- header: who is signed in ---------------- */
+
+(function signedInHeader() {
+  const who = document.querySelector('[data-who]');
+  const signIn = document.querySelector('[data-signin-btn]');
+  if (!who || !signIn) return;
+
+  let profile = null;
+  try {
+    profile = JSON.parse(localStorage.getItem('podium.profile'));
+  } catch (err) {
+    profile = null;
+  }
+
+  if (!profile?.name) return;
+
+  /* Once someone is in, "Sign in with Google" is noise. Show them instead. */
+  who.querySelector('[data-who-name]').textContent = profile.name;
+  who.hidden = false;
+  signIn.remove();
+})();
