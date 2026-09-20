@@ -298,7 +298,8 @@ the browser until a server is added.
 
 **What is still a placeholder in v1**
 
-- Sign-in does not sign anyone in yet. Roles are stored in the browser.
+- Sign-in does not sign anyone in yet: finishing the profile screen is what
+  counts as being signed in, and roles live in the browser.
 - The counter bar shows 1 event, 3 decks and 6 votes as illustration.
 - The sample podium on the landing page uses made-up team names.
 - Slides are not rendered yet, so the viewer shows a frame per slide rather than
@@ -407,6 +408,80 @@ count appears everywhere on its own.
 **The rule this left behind:** if the interface cannot keep a promise today, it
 should not make it. An honest empty state costs nothing; a confident lie costs
 the reader's trust in everything next to it.
+
+## The open doors, and how they were shut
+
+After the lying buttons came the quieter problem: the screen asked politely and
+the code did not insist. Six of those, in the order they mattered.
+
+**1. A team name could run code in everyone's browser.**
+Deck cards were built by dropping the team name, college and pitch line straight
+into HTML. A team calling itself `<img src=x onerror=...>` would have run script
+in every viewer's browser, the organiser's included — and the organiser is the
+one person holding the results.
+
+Every value a person types now passes through one `esc()` function before it
+reaches the page: the wall cards, the dashboard rows, the standings, the podium
+and the results list. Tested with exactly that team name — it renders as plain
+text, creates no element, and runs nothing.
+
+**2. Anybody could vote, including for their own deck.**
+The wall let a visitor with no account vote, and because "is this mine?"
+compared the deck's owner to a name that did not exist, even your own deck was
+votable.
+
+Reading the wall still needs nothing. Voting needs an account: the button reads
+**Sign in to vote** and goes to sign-in, rather than looking normal and doing
+nothing. Uploading is the same, and the round upload button now says **Sign in**,
+**Closed**, **No event** or **Uploaded** to match the state it is actually in.
+
+**3. Identity was a display name.**
+Ownership and self-vote checks compared what people had typed. Two teams called
+"Team Kestrel" were the same person as far as the code knew.
+
+A profile now carries a generated id, decks store `ownerId`, and every ownership
+or self-vote check compares ids. Names are used only for decks uploaded before
+ids existed. Votes are stored per voter id rather than in one shared list —
+which is also the shape of the database table they are going into.
+
+**4. The interface was the only rule-keeper.**
+Every vote rule lived in the label. Opening the console and re-enabling a
+disabled button was enough to break them.
+
+`castVote` now re-checks the event stage, the deck's status, ownership and any
+earlier vote immediately before it writes. Forcing the button open and clicking
+it changes nothing. Upload does the same: one deck per account per event, nothing
+after the organiser's deadline, and a group has to be one the organiser actually
+created rather than whatever the dropdown was edited to say.
+
+**5. Typed text was taken as typed.**
+Names went in with whatever they contained — invisible control characters, runs
+of spaces, any length at all. That is how a tidy list gets vandalised.
+
+Text is cleaned on the way in: control characters stripped, whitespace
+collapsed, trimmed, and capped — 60 characters for a team, 80 for a college, 90
+for the pitch line, 24 for a group name, eight groups at most. Slide limits are
+clamped to between 3 and 60, and voting can no longer be set to open before
+uploads close.
+
+**6. Two silent failures.**
+A `javascript:` address typed into the meeting or sign-up link field would have
+become a live link on the event page. And a large poster can fill the browser's
+5 MB of storage, after which every save failed without a word — the deck looked
+uploaded and was not.
+
+Links are accepted on `http` and `https` only, and anything else is dropped.
+Storage reads can no longer throw on hand-edited data, and a failed write is
+reported: the deck is rolled back and the screen says the browser is out of
+storage.
+
+**What is still open, and why only a server can close it.** Roles are still a
+value in the browser, so the console can still claim to be an organiser, and
+votes still live on the device. Both need the database: a role is a membership
+row, and a vote is a row with `unique (event_id, voter_id, deck_id)` — which is
+what makes a second vote impossible rather than merely difficult. The plan is in
+[`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md) and the full audit, with what is fixed
+and what is not, is in [`docs/AUDIT-V1.md`](docs/AUDIT-V1.md).
 
 ## File rules for uploads
 
