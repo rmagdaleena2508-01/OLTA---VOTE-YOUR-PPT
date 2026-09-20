@@ -1926,26 +1926,3 @@ function whenSeen(el, fn) {
 
   whenSeen(stage, run);
 })();
-
-
-/* ---------------- the trusted-by ribbon ---------------- */
-
-/* The row is duplicated once so the marks can run left to right for ever: the
-   keyframe shifts the track by exactly half its width, at which point the
-   second copy sits where the first began and the reset cannot be seen. Doing
-   it here rather than in the markup means one list to edit when a college is
-   added. */
-(function trustRibbon() {
-  const track = document.querySelector('[data-trust]');
-  if (!track) return;
-
-  const row = track.querySelector('.trust-row');
-  if (!row) return;
-
-  const clone = row.cloneNode(true);
-  clone.setAttribute('aria-hidden', 'true');
-  /* the copy is decoration, so it is hidden from screen readers and its images
-     lose their alt text */
-  clone.querySelectorAll('img').forEach((img) => img.setAttribute('alt', ''));
-  row.append(...clone.children);
-})();
