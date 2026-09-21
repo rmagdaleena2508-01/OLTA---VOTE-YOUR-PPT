@@ -11,6 +11,7 @@ the people it was made for.
 
 **Live:** https://rmagdaleena2508-01.github.io/OLTA---VOTE-YOUR-PPT/
 **Version:** v1 — the whole flow runs in the browser. See [What's in v1](#whats-in-v1).
+**Backend:** Supabase project `podium` (Mumbai, free plan), schema and policies applied.
 
 ---
 
@@ -569,6 +570,75 @@ security policy"*.
 browser; the policies are what protect the data. The **service_role** key
 bypasses every policy and never goes into this repository, a workflow, or the
 browser.
+
+## Hosting: GitHub Pages
+
+The site is live at
+**https://rmagdaleena2508-01.github.io/OLTA---VOTE-YOUR-PPT/**
+
+It is served by GitHub Pages straight from the `main` branch, root folder. There
+is no build step, so a push is a deploy: commit, push, and the new version is up
+in under a minute.
+
+**Why Pages suits this product.** The whole front end is plain HTML, CSS and
+JavaScript, so there is nothing to compile and nothing to run on a server. Pages
+gives free hosting, HTTPS and a CDN, and the database lives somewhere else, so
+the only thing being served is files. A college fest sending 300 phones at it at
+once is well inside what a static host handles without thinking.
+
+**How it is set up**
+
+| Setting | Value |
+|---|---|
+| Source | Deploy from a branch |
+| Branch | `main`, folder `/` (root) |
+| HTTPS | Enforced |
+| Custom domain | None yet |
+
+Every page is at the top level, so the URLs are plain:
+
+```
+/                     the landing page
+/onboarding.html      sign in
+/create-event.html    set up an event
+/event.html           the deck wall
+/dashboard.html       run the event
+/results.html         the podium
+```
+
+**Two things a static host changes**
+
+1. **Links must be relative.** `href="/"` means the top of the domain, which on
+   Pages is someone else's page, not this one. Every link points at
+   `index.html` and friends instead. This was a real bug on the landing page
+   once; it is fixed and worth remembering.
+2. **Files are cached hard.** The stylesheet and script are requested with a
+   version on the end — `styles.css?v=20260920235659` — which is bumped on
+   every change. Without it a returning visitor keeps yesterday's script.
+
+**Keys on a public host.** `config.js` sits in the open and holds the Supabase
+project URL and its **publishable** key. That key is designed to be public;
+what it can actually do is decided by the row-level policies in
+[`supabase/02-policies.sql`](supabase/02-policies.sql). The **service_role** key
+would ignore all of them and is not in this repository, in any workflow, or in
+the browser.
+
+**Deploying**
+
+```bash
+git add -A
+git commit -m "what changed"
+git push
+```
+
+Then check https://rmagdaleena2508-01.github.io/OLTA---VOTE-YOUR-PPT/ — hard
+reload once with Cmd-Shift-R if you are looking for a change you just made.
+
+To see it locally before pushing:
+
+```bash
+python3 -m http.server 8793 --directory deck-comp
+```
 
 ## File rules for uploads
 
